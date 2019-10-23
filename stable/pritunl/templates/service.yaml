@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pritunl
+  namespace: pritunl
+  annotations:
+    {{- toYaml .Values.pritunl.service.annotations | nindent 4 }}
+  labels:
+    {{ include "pritunl.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.pritunl.service.type }}
+  ports:
+  {{ range $index, $port := .Values.pritunl.service.ports }}
+  - name: {{ $port.name }}
+    port: {{ $port.value }}
+    targetPort: {{ $port.value }}
+    protocol: TCP
+  {{ end }}
+  selector:
+      app.kubernetes.io/name: {{ include "pritunl.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+  namespace: pritunl
+  annotations:
+    {{- toYaml .Values.pritunl.service.annotations | nindent 4 }}
+  labels:
+{{ include "pritunl.labels" . | indent 4 }}
+spec:
+  type: {{ .Values.mongo.service.type }}
+  ports:
+  {{ range $index, $port := .Values.mongo.service.ports }}
+  - name: {{ $port.name }}
+    port: {{ $port.value }}
+    targetPort: {{ $port.value }}
+    protocol: TCP
+  {{ end }}
+  selector:
+    app.kubernetes.io/name: {{ include "pritunl.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pritunl-ui
+  namespace: pritunl
+  annotations:
+    {{- toYaml .Values.pritunl.service.annotations | nindent 4 }}
+  labels:
+{{ include "pritunl.labels" . | indent 4 }}
+spec:
+  type: {{ .Values.pritunlUi.service.type }}
+  ports:
+  {{ range $index, $port := .Values.pritunlUi.service.ports }}
+  - name: {{ $port.name }}
+    port: {{ $port.value }}
+    targetPort: {{ $port.value }}
+    protocol: TCP
+  {{ end }}
+  selector:
+    app.kubernetes.io/name: {{ include "pritunl.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

@@ -1,0 +1,97 @@
+# Default values for pritunl.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+pritunl:
+  image:
+    repository: us.gcr.io/cloudkite-dev/pritunl
+    tag: 2019-10-17
+    pullPolicy: Always
+
+  volumeMounts:
+  - name: pritunl-persistent-storage
+    mountPath: /var/lib/pritunl
+  
+  volumes:
+  - name: pritunl-persistent-storage
+    persistentVolumeClaim:
+      claimName: pritunl-pvc
+  pvc:
+    name: pritunl-pvc
+    request:
+      storage: 5Gi
+
+  service:
+    type: LoadBalancer
+    annotations: {}
+    ports:
+    - name: http
+      value: 80
+    - name: https
+      value: 443
+    - name: openvpn
+      value: 1194
+    environment:
+      - name: MONGODB_SERVER
+        value: "mongodb"
+  
+mongo:
+  image:
+    repository: mongo
+    tag: latest
+
+  volumeMounts:
+   - name: mongo-persistent-storage
+     mountPath: /data/db
+
+  volumes:
+  - name: mongo-persistent-storage
+    persistentVolumeClaim:
+    claimName: mongo-pvc
+
+  pvc:
+    name: mongo-pvc
+    request:
+      storage: 20Gi
+
+  service:
+    type: ClusterIP
+    annotations: {}
+    ports:
+    - name: mongo
+      value: 2107
+
+pritunlUi:
+  service: 
+    type: LoadBalancer
+    annotations: {}
+    ports:
+    - name: http
+      value: 80
+    - name: https
+      value: 443
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
