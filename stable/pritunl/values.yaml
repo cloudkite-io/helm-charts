@@ -40,7 +40,7 @@ pritunl:
       value: 1194
     environment:
       - name: MONGODB_SERVER
-        value: "mongodb"
+        value: "mongo"
   
 mongo:
   image:
