@@ -3,11 +3,20 @@ entries:
   pritunl:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2019-10-23T09:21:04.018482417-05:00"
+    created: "2019-10-23T15:57:07.965937334-05:00"
+    description: A Helm chart for Kubernetes
+    digest: 04cbaa2a4abe52db5bd0311e4d7d1faa806fd573ab6fd12462511e065c7cfc7e
+    name: pritunl
+    urls:
+    - pritunl-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v1
+    appVersion: "1.0"
+    created: "2019-10-23T15:57:07.965659854-05:00"
     description: A Helm chart for Kubernetes
     digest: 0c89eb88bc071c018c916f718c7112cc2f80d5fde2acd114059d2e962f0ecda1
     name: pritunl
     urls:
     - pritunl-0.1.0.tgz
     version: 0.1.0
-generated: "2019-10-23T09:21:04.018028592-05:00"
+generated: "2019-10-23T15:57:07.965244363-05:00"
