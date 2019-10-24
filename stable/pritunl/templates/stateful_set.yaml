@@ -13,9 +13,7 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "pritunl.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
-        app: {{ .Release.Name }}
+{{ include "pritunl.labels" . | indent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:

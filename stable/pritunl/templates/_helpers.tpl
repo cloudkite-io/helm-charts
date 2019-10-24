@@ -35,7 +35,30 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "pritunl.labels" -}}
-app.kubernetes.io/name: {{ include "pritunl.name" . }}
+app.kubernetes.io/name: pritunl
+app: pritunl
+helm.sh/chart: {{ include "pritunl.chart" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{- define "pritunlUi.labels" -}}
+app.kubernetes.io/name: pritunl-ui
+app: pritunl-ui
+helm.sh/chart: {{ include "pritunl.chart" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end -}}
+
+{{- define "mongo.labels" -}}
+app: mongo
+app.kubernetes.io/name: mongo
 helm.sh/chart: {{ include "pritunl.chart" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Chart.AppVersion }}

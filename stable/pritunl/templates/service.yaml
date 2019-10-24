@@ -17,8 +17,7 @@ spec:
     protocol: TCP
   {{ end }}
   selector:
-      app.kubernetes.io/name: {{ include "pritunl.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      app: pritunl
 ---
 apiVersion: v1
 kind: Service
@@ -28,7 +27,7 @@ metadata:
   annotations:
     {{- toYaml .Values.pritunl.service.annotations | nindent 4 }}
   labels:
-{{ include "pritunl.labels" . | indent 4 }}
+{{ include "mongo.labels" . | indent 4 }}
 spec:
   type: {{ .Values.mongo.service.type }}
   ports:
@@ -39,8 +38,7 @@ spec:
     protocol: TCP
   {{ end }}
   selector:
-    app.kubernetes.io/name: {{ include "pritunl.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    app: mongo
 ---
 apiVersion: v1
 kind: Service
@@ -50,7 +48,7 @@ metadata:
   annotations:
     {{- toYaml .Values.pritunl.service.annotations | nindent 4 }}
   labels:
-{{ include "pritunl.labels" . | indent 4 }}
+{{ include "pritunlUi.labels" . | indent 4 }}
 spec:
   type: {{ .Values.pritunlUi.service.type }}
   ports:
@@ -61,5 +59,4 @@ spec:
     protocol: TCP
   {{ end }}
   selector:
-    app.kubernetes.io/name: {{ include "pritunl.name" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
+    app: pritunl-ui
