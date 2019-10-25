@@ -45,32 +45,38 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
 ---
-apiVersion: apps/v1
-kind: StatefulSet
+apiVersion: v1
+kind: Service
 metadata:
-  labels:
-{{ include "mongo.labels" . | indent 4 }}
-  name: mongo
+  name: pritunl
   namespace: pritunl
+  annotations:
+    {{- toYaml .Values.pritunl.service.annotations | nindent 4 }}
+  labels:
+    {{ include "pritunl.labels" . | nindent 4 }}
 spec:
-  replicas: 1
+  type: {{ .Values.pritunl.service.type }}
+  ports:
+  {{ range $index, $port := .Values.pritunl.service.ports }}
+  - name: {{ $port.name }}
+    port: {{ $port.value }}
+    targetPort: {{ $port.value }}
+    protocol: TCP
+  {{ end }}
   selector:
-    matchLabels:
-{{ include "mongo.labels" . | indent 6 }}
-  template:
-    metadata:
-      name: mongo
-      labels:
-{{ include "mongo.labels" . | indent 8 }}
-    spec:
-      containers:
-      - image: "{{ .Values.mongo.image.repository }}:{{ .Values.mongo.image.tag }}"
-        name: mongo
-        ports:
-        - name: mongo
-          containerPort: 27017
-          hostPort: 27017
-        volumeMounts:
-          {{ toYaml .Values.mongo.volumeMounts | nindent 10 }}
-      volumes:
-        {{ toYaml .Values.mongo.volumes | nindent 8 }}
+      app: pritunl
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.pritunl.pvc.name }}
+  namespace: pritunl
+  labels:
+    app: pritunl
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.pritunl.pvc.request.storage }}
+
