@@ -44,3 +44,33 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+{{ include "mongo.labels" . | indent 4 }}
+  name: mongo
+  namespace: pritunl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+{{ include "mongo.labels" . | indent 6 }}
+  template:
+    metadata:
+      name: mongo
+      labels:
+{{ include "mongo.labels" . | indent 8 }}
+    spec:
+      containers:
+      - image: "{{ .Values.mongo.image.repository }}:{{ .Values.mongo.image.tag }}"
+        name: mongo
+        ports:
+        - name: mongo
+          containerPort: 27017
+          hostPort: 27017
+        volumeMounts:
+          {{ toYaml .Values.mongo.volumeMounts | nindent 10 }}
+      volumes:
+        {{ toYaml .Values.mongo.volumes | nindent 8 }}
