@@ -4,7 +4,7 @@ metadata:
   name: pritunl-ui
   namespace: pritunl
   annotations:
-    {{- toYaml .Values.pritunl.service.annotations | nindent 4 }}
+    {{- toYaml .Values.pritunlUi.service.annotations | nindent 4 }}
   labels:
 {{ include "pritunlUi.labels" . | indent 4 }}
 spec:
@@ -14,7 +14,49 @@ spec:
   - name: {{ $port.name }}
     port: {{ $port.value }}
     targetPort: {{ $port.value }}
-    protocol: TCP
+    protocol: {{ $port.protocol }}
   {{ end }}
   selector:
-    app: pritunl-ui
+    app: pritunl
+---
+{{- if .Values.pritunlUi.ingress.enabled -}}
+{{- $fullName := include "pritunl.fullname" . -}}
+{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- else -}}
+apiVersion: extensions/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+{{ include "pritunl.labels" . | indent 4 }}
+  {{- with .Values.pritunlUi.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+{{- if .Values.pritunlUi.ingress.tls }}
+  tls:
+  {{- range .Values.pritunlUi.ingress.tls }}
+    - hosts:
+      {{- range .hosts }}
+        - {{ . | quote }}
+      {{- end }}
+      secretName: {{ .secretName }}
+  {{- end }}
+{{- end }}
+  rules:
+  {{- range .Values.pritunlUi.ingress.hosts }}
+  {{ $svcPort := .port }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+        {{- range .paths }}
+          - path: {{ . }}
+            backend:
+              serviceName: pritunl-ui
+              servicePort: {{ $svcPort }}
+        {{- end }}
+  {{- end }}
+{{- end }}

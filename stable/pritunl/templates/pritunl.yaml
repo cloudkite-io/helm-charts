@@ -61,10 +61,10 @@ spec:
   - name: {{ $port.name }}
     port: {{ $port.value }}
     targetPort: {{ $port.value }}
-    protocol: TCP
+    protocol: {{ $port.protocol }}
   {{ end }}
   selector:
-      app: pritunl
+    app: pritunl
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -79,4 +79,3 @@ spec:
   resources:
     requests:
       storage: {{ .Values.pritunl.pvc.request.storage }}
-
