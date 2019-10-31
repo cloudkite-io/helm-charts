@@ -14,7 +14,7 @@ spec:
   - name: {{ $port.name }}
     port: {{ $port.value }}
     targetPort: {{ $port.value }}
-    protocol: {{ $port.protocol }}
+    protocol: TCP
   {{ end }}
   selector:
     app: pritunl
