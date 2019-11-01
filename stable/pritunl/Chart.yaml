@@ -7,7 +7,7 @@ appVersion: 1.29.2209.0
 description: Enterprise Distributed OpenVPN and IPsec Server
 icon: https://pritunl.com/img/pritunl_onelogin_square.png
 sources:
-- https://github.com/pritunl/pritunlome: https://pritunl.com/
+- https://github.com/pritunl/pritunl
 maintainers:
 - name: Rodolfo
   email: rodolfo@cloudkite.io

@@ -78,20 +78,20 @@ pritunlUi:
 
   ingress:
     enabled: false
-    # annotations: 
+    annotations: {}
     #   kubernetes.io/ingress.class: nginx
     #   kubernetes.io/tls-acme: "true"
     #   certmanager.k8s.io/cluster-issuer: letsencrypt
     #   certmanager.k8s.io/acme-challenge-type: http01
     #   nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     #
-    # hosts: []
+    hosts: []
     # - host: vpn.example.com
     #   port: 443
     #   paths: 
     #     - /
     #
-    # tls: []
+    tls: []
     # - secretName: pritunl-tls
     #   hosts:
     #   - vpn.example.deverus.com
