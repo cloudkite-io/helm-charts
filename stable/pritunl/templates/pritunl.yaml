@@ -15,11 +15,30 @@ spec:
       labels:
 {{ include "pritunl.labels" . | indent 8 }}
     spec:
+      annotations:
+        net.ipv4.ip_forward: "1"
+      securityContext:
+        sysctls:
+        - name: net.ipv4.ip_forward
+          value: "1"
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       containers:
+        # Whitelists net.ipv4.ip_forward sysctl
+        - name: sysctl-buddy
+          image: busybox:1.29
+          securityContext:
+            privileged: true
+          command: ["/bin/sh"]
+          args:
+            - -c
+            - sysctl -w net.ipv4.ip_forward=1
+          resources:
+            requests:
+              cpu: 1m
+              memory: 1Mi
         - name: {{ .Chart.Name }}
           image: "{{ .Values.pritunl.image.repository }}:{{ .Values.pritunl.image.tag }}"
           imagePullPolicy: {{ .Values.pritunl.image.pullPolicy }}
@@ -79,3 +98,28 @@ spec:
   resources:
     requests:
       storage: {{ .Values.pritunl.pvc.request.storage }}
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: ip-forwarding
+spec:
+ allowedUnsafeSysctls:
+   - net.ipv4.ip_forward
+ runAsUser:
+   rule: MustRunAsNonRoot
+ seLinux:
+   # This policy assumes the nodes are using AppArmor rather than SELinux.
+   rule: MustRunAs
+ supplementalGroups:
+   rule: 'MustRunAs'
+   ranges:
+     # Forbid adding the root group.
+     - min: 1
+       max: 65535
+ fsGroup:
+   rule: 'MustRunAs'
+   ranges:
+     # Forbid adding the root group.
+     - min: 1
+       max: 65535
