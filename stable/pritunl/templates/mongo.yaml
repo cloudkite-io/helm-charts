@@ -4,12 +4,12 @@ metadata:
   labels:
 {{ include "mongo.labels" . | indent 4 }}
   name: mongo
-  namespace: pritunl
 spec:
   replicas: 1
   selector:
     matchLabels:
 {{ include "mongo.labels" . | indent 6 }}
+  serviceName: mongo
   template:
     metadata:
       name: mongo
@@ -24,15 +24,17 @@ spec:
           containerPort: 27017
           hostPort: 27017
         volumeMounts:
-          {{ toYaml .Values.mongo.volumeMounts | nindent 10 }}
+          - name: mongo-persistent-storage
+            mountPath: /data/db
       volumes:
-        {{ toYaml .Values.mongo.volumes | nindent 8 }}
+        - name: mongo-persistent-storage
+          persistentVolumeClaim:
+            claimName: {{ .Values.mongo.pvc.name }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: mongo
-  namespace: pritunl
   annotations:
     {{- toYaml .Values.pritunl.service.annotations | nindent 4 }}
   labels:
@@ -53,7 +55,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Values.mongo.pvc.name }}
-  namespace: pritunl
   labels:
     app: mongo
 spec:

@@ -10,6 +10,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: {{ include "pritunl.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
+  serviceName: pritunl
   template:
     metadata:
       labels:
@@ -34,6 +35,13 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           securityContext:
             privileged: true
+          volumeMounts:
+            - name: pritunl-persistent-storage
+              mountPath: /var/lib/pritunl
+      volumes:
+        - name: pritunl-persistent-storage
+          persistentVolumeClaim:
+            claimName: {{ .Values.pritunl.pvc.name }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -51,7 +59,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: pritunl
-  namespace: pritunl
   annotations:
     {{- toYaml .Values.pritunl.service.annotations | nindent 4 }}
   labels:
@@ -72,7 +79,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Values.pritunl.pvc.name }}
-  namespace: pritunl
   labels:
     app: pritunl
 spec:

@@ -1,26 +1,22 @@
-version=$1
+#!/bin/bash
+
+# This script upgrades the pritunl helm chart.
+# After pushing to github, the chart will be available for use.
 
 # Exit after any error
 set -e
 
-if [[ "$version" == "" ]]; then
-        echo "Usage ./upgrade.sh <new-version>"
-        exit
-fi
+version=$(sed -n 's/version: \(.*\)/\1/p' Chart.yaml)
 
 helm template .
-echo "Do you want to upgrade to this new chart?
+echo "Do you want to update the Chart?
 Only 'yes' will be accepted to approve."
 read -p "Enter a value: " shouldContinue
  
  if [[ "$shouldContinue" != "yes" ]]; then
-         echo "You have canceled the upgrade"
+         echo "You have canceled the update"
          exit
  fi
-
-
-cat Chart.yaml | sed "s/version.*/version: $version/g" > Chart.temp.yaml
-mv Chart.temp.yaml Chart.yaml
 
 # Package helm chart
 helm package .

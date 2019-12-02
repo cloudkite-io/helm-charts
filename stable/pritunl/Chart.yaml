@@ -1,9 +1,8 @@
-apiVersion: v1
+apiVersion: v2
 name: pritunl
-namespace: pritunl
 home: https://pritunl.com/
-version: 0.1.10
-appVersion: 1.29.2209.0
+version: 0.2.0
+appVersion: v1.29.2232.32
 description: Enterprise Distributed OpenVPN and IPsec Server
 icon: https://pritunl.com/img/pritunl_onelogin_square.png
 sources:
