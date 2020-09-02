@@ -11,7 +11,7 @@ fullnameOverride: ""
 pritunl:
   image:
     repository: gcr.io/cloudkite-public/pritunl
-    tag: v1.29.2232.32
+    tag: v1.29.2530.72
     pullPolicy: IfNotPresent
 
   pvc:
@@ -50,7 +50,7 @@ mongo:
       value: 27017
 
 pritunlUi:
-  service: 
+  service:
     type: ClusterIP
     annotations: {}
     ports:
@@ -79,17 +79,17 @@ pritunlUi:
     #   hosts:
     #   - vpn.example.com
 
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+# We usually recommend not to specify default resources and to leave this as a conscious
+# choice for the user. This also increases chances charts run on environments with little
+# resources, such as Minikube. If you do want to specify resources, uncomment the following
+# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+resources:
+  limits:
+    cpu: 750m
+    memory: 384Mi
+  requests:
+    cpu: 500m
+    memory: 256Mi
 
 nodeSelector: {}
 

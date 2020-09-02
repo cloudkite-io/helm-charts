@@ -1,13 +1,9 @@
 apiVersion: v2
 name: pritunl
 home: https://pritunl.com/
-version: 0.2.0
-appVersion: v1.29.2232.32
+version: 0.2.1
+appVersion: v1.29.2530.72
 description: Enterprise Distributed OpenVPN and IPsec Server
 icon: https://pritunl.com/img/pritunl_onelogin_square.png
 sources:
 - https://github.com/pritunl/pritunl
-maintainers:
-- name: Rodolfo
-  email: rodolfo@cloudkite.io
-
