@@ -11,7 +11,7 @@ fullnameOverride: ""
 pritunl:
   image:
     repository: gcr.io/cloudkite-public/pritunl
-    tag: v1.29.2530.72
+    tag: v1.29.2547.95
     pullPolicy: IfNotPresent
 
   pvc:
