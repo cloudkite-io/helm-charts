@@ -14,6 +14,14 @@ pritunl:
     tag: v1.29.2547.95
     pullPolicy: IfNotPresent
 
+  resources:
+    limits:
+      cpu: 750m
+      memory: 384Mi
+    requests:
+      cpu: 500m
+      memory: 256Mi
+
   pvc:
     name: pritunl-pvc
     request:
@@ -36,6 +44,14 @@ mongo:
     repository: mongo
     tag: 4.2.1
     pullPolicy: IfNotPresent
+
+  resources:
+    limits:
+      cpu: 750m
+      memory: 2700Mi
+    requests:
+      cpu: 500m
+      memory: 2500Mi
 
   pvc:
     name: mongo-pvc
@@ -78,18 +94,6 @@ pritunlUi:
     # - secretName: pritunl-tls
     #   hosts:
     #   - vpn.example.com
-
-# We usually recommend not to specify default resources and to leave this as a conscious
-# choice for the user. This also increases chances charts run on environments with little
-# resources, such as Minikube. If you do want to specify resources, uncomment the following
-# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-resources:
-  limits:
-    cpu: 750m
-    memory: 384Mi
-  requests:
-    cpu: 500m
-    memory: 256Mi
 
 nodeSelector: {}
 
