@@ -20,12 +20,10 @@ spec:
     app: pritunl
 ---
 {{- if .Values.pritunlUi.ingress.enabled -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
-{{- end }}
 kind: Ingress
 metadata:
-  name: pritunl
+  name: pritunl-ui
   labels:
 {{ include "pritunl.labels" . | indent 4 }}
   {{- with .Values.pritunlUi.ingress.annotations }}
@@ -51,9 +49,12 @@ spec:
         paths:
         {{- range .paths }}
           - path: {{ . }}
+            pathType: ImplementationSpecific
             backend:
-              serviceName: pritunl-ui
-              servicePort: {{ $svcPort }}
+              service:
+                name: pritunl-ui
+                port: 
+                  number: {{ $svcPort }}
         {{- end }}
   {{- end }}
 {{- end }}
