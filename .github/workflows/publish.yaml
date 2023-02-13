@@ -3,7 +3,8 @@ name: Publish monitoring
 env:
   CHART_NAME: monitoring
   GAR_LOCATION: us-central1
-  PROJECT_ID: cloudkite-public
+  PROJECT_NAME: cloudkite-public
+  PROJECT_ID: 297731695546
   REPOSITORY: cloudkite-helm-charts
 
 on:
@@ -25,8 +26,8 @@ jobs:
         id: auth
         uses: google-github-actions/auth@v0
         with:
-          workload_identity_provider: projects/297731695546/locations/global/workloadIdentityPools/github-actions/providers/github-oidc
-          service_account: github-actions@tr-infra-ops.iam.gserviceaccount.com
+          workload_identity_provider: projects/${{ env.PROJECT_ID }}/locations/global/workloadIdentityPools/github-actions/providers/github-oidc
+          service_account: github-actions@${{ env.PROJECT_NAME }}.iam.gserviceaccount.com
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v0
       - name: Update dependencies
@@ -35,4 +36,4 @@ jobs:
       - name: Package chart
         run: helm package $CHART_NAME
       - name: Push chart
-        run: helm push $CHART_NAME-*.tgz oci://$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$CHART_NAME
+        run: helm push $CHART_NAME-*.tgz oci://$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/$CHART_NAME
