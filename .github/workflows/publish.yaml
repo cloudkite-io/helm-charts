@@ -4,7 +4,7 @@ env:
   CHART_NAME: monitoring
   GAR_LOCATION: us-central1
   PROJECT_ID: cloudkite-public
-  REPOSITORY: helm-charts
+  REPOSITORY: cloudkite-helm-charts
 
 on:
   workflow_dispatch:
