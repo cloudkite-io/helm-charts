@@ -38,4 +38,4 @@ jobs:
       - name: Package chart
         run: helm package $CHART_NAME
       - name: Push chart
-        run: helm push $CHART_NAME-*.tgz oci://$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/$CHART_NAME
+        run: helm push $CHART_NAME-*.tgz oci://$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY
