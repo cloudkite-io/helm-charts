@@ -1,4 +1,4 @@
-name: Deploy to Development
+name: Publish monitoring
 
 env:
   CHART_NAME: monitoring
@@ -10,24 +10,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-image:
+  publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
+    # permissions:
+    #   contents: read
+    #   id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Authenticate to Google Cloud
-        id: auth
-        uses: google-github-actions/auth@v0
-        with:
-          workload_identity_provider: projects/637937044048/locations/global/workloadIdentityPools/github-actions/providers/github-oidc
-          service_account: github-actions@tr-infra-ops.iam.gserviceaccount.com
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
+      # - name: Authenticate to Google Cloud
+      #   id: auth
+      #   uses: google-github-actions/auth@v0
+      #   with:
+      #     workload_identity_provider: projects/297731695546/locations/global/workloadIdentityPools/github-actions/providers/github-oidc
+      #     service_account: github-actions@tr-infra-ops.iam.gserviceaccount.com
+      # - name: Set up Cloud SDK
+      #   uses: google-github-actions/setup-gcloud@v0
       - name: Update dependencies
-        working-directory: $CHART_NAME
+        working-directory: ${{ CHART_NAME }}
         run: helm dependency update
       - name: Publish chart
         run: helm publish $CHART_NAME
