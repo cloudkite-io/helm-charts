@@ -1,0 +1,56 @@
+kube-prometheus-stack:
+  grafana:
+    enabled: false
+  defaultRules:
+    create: false
+  alertmanager:
+    enabled: false
+  prometheus:
+    prometheusSpec:
+      resources:
+        requests:
+          memory: 750Mi
+        limits:
+          memory: 750Mi
+      remoteWrite:
+        - url: 
+          basicAuth:
+            username:
+              name: basic-auth-creds
+              key: username
+            password:
+              name: basic-auth-creds
+              key: password
+          headers:
+            # X-Scope-OrgID: CLIENT_NAME
+          writeRelabelConfigs:
+            - sourceLabels:
+              - "__name__"
+              regex: "kubernetes_build_info|version_checker_is_latest_version"
+              action: "keep"
+      # externalLabels:
+      #   cluster: CLUSTER_NAME
+  prometheusOperator:
+    verticalPodAutoscaler:
+      enabled: true
+
+# basic_auth:
+#   username: USERNAME
+#   password: PASSWORD
+
+version-checker:
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      release: "kube-prometheus"
+
+vpaApps:
+  kube-prometheus-kube-state-metrics:
+    kind: Deployment
+    mode: Auto
+  kube-prometheus-prometheus-node-exporter:
+    kind: DaemonSet
+    mode: Auto
+  version-checker:
+    kind: Deployment
+    mode: Auto

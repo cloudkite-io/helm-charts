@@ -1,0 +1,14 @@
+{{- range $vpaAppName, $vpaAppConfig := .Values.vpaApps }}
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: {{ $vpaAppName }}
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind:       {{ $vpaAppConfig.kind }}
+    name:       {{ $vpaAppName }}
+  updatePolicy:
+    updateMode: {{ $vpaAppConfig.mode }}
+---
+{{- end }}
