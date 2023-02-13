@@ -5,7 +5,7 @@ env:
   GAR_LOCATION: us-central1
   PROJECT_NAME: cloudkite-public
   PROJECT_ID: 297731695546
-  REPOSITORY: cloudkite-helm-charts
+  REPOSITORY: public-helm-charts
 
 on:
   workflow_dispatch:
