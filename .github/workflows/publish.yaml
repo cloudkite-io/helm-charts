@@ -27,7 +27,7 @@ jobs:
       # - name: Set up Cloud SDK
       #   uses: google-github-actions/setup-gcloud@v0
       - name: Update dependencies
-        working-directory: ${{ CHART_NAME }}
+        working-directory: $CHART_NAME
         run: helm dependency update
       - name: Publish chart
         run: helm publish $CHART_NAME
