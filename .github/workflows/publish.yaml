@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: $CHART_NAME/**
+    paths: [$CHART_NAME/**]
 
 jobs:
   publish:
