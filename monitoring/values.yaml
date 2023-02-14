@@ -28,6 +28,10 @@ kube-prometheus-stack:
               - "__name__"
               regex: "kubernetes_build_info|version_checker_is_latest_version"
               action: "keep"
+          queueConfig:
+            capacity: 5000
+            maxSamplesPerSend: 1000
+            maxShards: 100
       # externalLabels:
       #   cluster: CLUSTER_NAME
   prometheusOperator:
