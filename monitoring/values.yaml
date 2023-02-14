@@ -32,8 +32,8 @@ kube-prometheus-stack:
             capacity: 5000
             maxSamplesPerSend: 1000
             maxShards: 100
-        externalLabels:
-          cluster: CLUSTER_NAME
+      externalLabels:
+        cluster: CLUSTER_NAME
   prometheusOperator:
     verticalPodAutoscaler:
       enabled: true
