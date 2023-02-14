@@ -13,7 +13,7 @@ kube-prometheus-stack:
         limits:
           memory: 750Mi
       remoteWrite:
-        - url: 
+        - url: https://mimir-CLIENT_NAME.prod.cloudkite.io/api/v1/push
           basicAuth:
             username:
               name: basic-auth-creds
@@ -22,7 +22,7 @@ kube-prometheus-stack:
               name: basic-auth-creds
               key: password
           headers:
-            # X-Scope-OrgID: CLIENT_NAME
+            X-Scope-OrgID: CLIENT_NAME
           writeRelabelConfigs:
             - sourceLabels:
               - "__name__"
@@ -32,8 +32,8 @@ kube-prometheus-stack:
             capacity: 5000
             maxSamplesPerSend: 1000
             maxShards: 100
-      # externalLabels:
-      #   cluster: CLUSTER_NAME
+        externalLabels:
+          cluster: CLUSTER_NAME
   prometheusOperator:
     verticalPodAutoscaler:
       enabled: true
