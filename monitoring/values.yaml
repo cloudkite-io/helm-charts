@@ -46,7 +46,7 @@ version-checker:
   serviceMonitor:
     enabled: true
     additionalLabels:
-      release: "kube-prometheus"
+      release: "monitoring"
 
 vpaApps:
   kube-prometheus-kube-state-metrics:
