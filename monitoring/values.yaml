@@ -9,9 +9,9 @@ kube-prometheus-stack:
     prometheusSpec:
       resources:
         requests:
-          memory: 750Mi
+          memory: 1Gi
         limits:
-          memory: 750Mi
+          memory: 1Gi
       remoteWrite:
         - url: https://mimir-CLIENT_NAME.prod.cloudkite.io/api/v1/push
           basicAuth:
