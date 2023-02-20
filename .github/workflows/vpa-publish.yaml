@@ -1,7 +1,7 @@
 name: Publish Vertical Pod Autoscaler Chart
 
 env:
-  CHART_NAME: vertical-pod-autoescaler
+  CHART_NAME: vertical-pod-autoscaler
   GAR_LOCATION: us-central1
   PROJECT_NAME: cloudkite-public
   PROJECT_ID: 297731695546
@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: [vertical-pod-autoescaler/**]
+    paths: [vertical-pod-autoscaler/**]
 
 jobs:
   publish:
