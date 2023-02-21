@@ -230,11 +230,11 @@ metadata:
   name: vpa-admission-controller
   namespace: kube-system
 ---
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: vpa-recommender
-  namespace: kube-system
+{{/*apiVersion: v1*/}}
+{{/*kind: ServiceAccount*/}}
+{{/*metadata:*/}}
+{{/*  name: vpa-recommender*/}}
+{{/*  namespace: kube-system*/}}
 ---
 apiVersion: v1
 kind: ServiceAccount
