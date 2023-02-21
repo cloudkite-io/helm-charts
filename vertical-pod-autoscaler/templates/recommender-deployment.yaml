@@ -18,12 +18,30 @@ spec:
         runAsNonRoot: true
         runAsUser: 65534 # nobody
       containers:
-      - name: recommender
-        image: "{{ .Values.recommender.image.repository }}:{{ .Values.recommender.image.tag | default .Chart.AppVersion }}"
-        imagePullPolicy: {{ .Values.recommender.image.pullPolicy }}
-        resources:
-          {{- toYaml .Values.recommender.resources | nindent 12 }}
+        - name: recommender
+          image: "{{ .Values.recommender.image.repository }}:{{ .Values.recommender.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.recommender.image.pullPolicy }}
+          args:
+          {{- if eq "high" .Values.recommender.recommendPerformanceLevel }}
+            - --name=performance
+            - --target-cpu-percentile=0.95
+          {{- end }}
+          {{- if eq "low" .Values.recommender.recommendPerformanceLevel }}
+            - --name=frugal
+            - --target-cpu-percentile=0.50
+          {{- end }}
+          {{- if .Values.recommender.tlsCertArgs }}
+            {{- toYaml .Values.recommender.tlsCertArgs | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            {{- toYaml .Values.recommender.volumeMounts | nindent 12 }}
+          resources:
+            {{- toYaml .Values.recommender.resources | nindent 12 }}
 
-        ports:
-        - name: prometheus
-          containerPort: 8942
+          ports:
+          - name: prometheus
+            containerPort: 8942
+      {{- with .Values.recommender.volumes }}
+      volumes:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
