@@ -1,0 +1,27 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: {{ include "name" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "labels" . | nindent 4 }}
+    {{- toYaml .Values.labels | nindent 4 }}
+spec:
+  template:
+    spec:
+      containerConcurrency: 1
+      containers:
+      - args:
+        {{- if .Values.extraArgs }}
+{{ toYaml .Values.extraArgs | indent 8 }}
+          {{- end }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+          {{- toYaml .Values.ports | nindent 10 }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+      serviceAccountName: {{ include "serviceAccountName" . }}
+      timeoutSeconds: 3600
+  traffic:
+  - latestRevision: true
+    percent: 100

@@ -1,0 +1,7 @@
+apiVersion: v2
+name: knative-serving-app
+description: A Helm chart for an app deployed using knative-serving
+type: application
+version: 0.1.0
+
+appVersion: 0.1.0

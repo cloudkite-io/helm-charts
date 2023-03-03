@@ -1,0 +1,22 @@
+image:
+  repository: ""
+  pullPolicy: Always
+  tag: ""
+extraArgs: []
+namespace: knative-apps
+labels:
+  networking.knative.dev/visibility: cluster-local
+env: []
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  annotations:
+    iam.gke.io/gcp-service-account: ""
+ports: []
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
