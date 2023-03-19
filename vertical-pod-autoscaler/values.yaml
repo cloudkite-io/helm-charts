@@ -28,7 +28,7 @@ admissionController:
 
 recommender:
   image:
-    repository: registry.k8s.io/autoscaling/vpa-admission-controller
+    repository: registry.k8s.io/autoscaling/vpa-recommender
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "0.13.0"
