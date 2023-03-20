@@ -30,9 +30,6 @@ spec:
             - --name=frugal
             - --target-cpu-percentile=0.50
           {{- end }}
-          {{- if .Values.recommender.tlsCertArgs }}
-            {{- toYaml .Values.recommender.tlsCertArgs | nindent 12 }}
-          {{- end }}
           volumeMounts:
             {{- toYaml .Values.recommender.volumeMounts | nindent 12 }}
           resources:
