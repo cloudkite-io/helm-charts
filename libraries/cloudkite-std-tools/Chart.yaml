@@ -1,0 +1,27 @@
+apiVersion: v2
+name: cloudkite-infra-tools
+description: A Helm chart for all infra tools
+type: application
+version: 0.1.0
+dependencies:
+- name: cert-manager
+  version: 1.9.1
+  repository: https://charts.jetstack.io
+- name: external-secrets
+  version: 0.7.0
+  repository: https://charts.external-secrets.io
+- name: falco
+  version: 1.19.3
+  repository: https://falcosecurity.github.io/charts
+- name: ingress-nginx
+  version: 4.2.0
+  repository: https://kubernetes.github.io/ingress-nginx
+- name: monitoring
+  version: 0.1.0
+  repository: oci://us-central1-docker.pkg.dev/cloudkite-public/public-helm-charts
+- name: reloader
+  version: 0.0.126
+  repository: https://stakater.github.io/stakater-charts
+- name: velero
+  version: 2.32.3
+  repository: https://vmware-tanzu.github.io/helm-charts/
