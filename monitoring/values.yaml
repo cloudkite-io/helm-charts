@@ -34,6 +34,10 @@ kube-prometheus-stack:
             maxShards: 100
       externalLabels:
         cluster: CLUSTER_NAME
+      image:
+          registry: quay.io
+          repository: prometheus/prometheus
+          tag: v2.44.0-rc.0
   prometheusOperator:
     verticalPodAutoscaler:
       enabled: true
