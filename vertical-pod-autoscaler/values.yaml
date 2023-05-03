@@ -7,6 +7,10 @@ admissionController:
     # Overrides the image tag whose default is the chart appVersion.
     tag: "0.13.0"
 
+  volumes: [ ]
+  
+  volumeMounts: [ ]
+
   resources:
     limits:
       memory: 300Mi
