@@ -1,9 +1,15 @@
 admissionController:
+  # Requires certs to be generated and published as a secret to the cluster
+  # See https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/pkg/admission-controller/gencerts.sh
   image:
     repository: registry.k8s.io/autoscaling/vpa-admission-controller
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: "0.13.0"
+
+  volumes: [ ]
+  
+  volumeMounts: [ ]
 
   resources:
     limits:
@@ -11,20 +17,6 @@ admissionController:
     requests:
       cpu: 50m
       memory: 200Mi
-
-  tlsCertArgs: []
-#    - "--client-ca-file=/etc/tls-certs/ca.crt"
-#    - "--tls-cert-file=/etc/tls-certs/tls.crt"
-#    - "--tls-private-key=/etc/tls-certs/tls.key"
-
-  volumeMounts: []
-  #    - name: tls-certs
-  #      mountPath: "/etc/tls-certs"
-  #      readOnly: true
-  volumes: []
-  #    - name: tls-certs
-  #      secret:
-  #        secretName: vpa-tls-certs
 
 recommender:
   image:

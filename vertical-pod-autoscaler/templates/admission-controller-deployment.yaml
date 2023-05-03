@@ -21,24 +21,28 @@ spec:
         - name: admission-controller
           image: "{{ .Values.admissionController.image.repository }}:{{ .Values.admissionController.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.admissionController.image.pullPolicy }}
-          args:
-          {{- if .Values.admissionController.tlsCertArgs }}
-            {{- toYaml .Values.admissionController.tlsCertArgs | nindent 12 }}
-          {{- end }}
           env:
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
           volumeMounts:
-            {{- toYaml .Values.admissionController.volumeMounts | nindent 12 }}
+            - mountPath: /etc/tls-certs
+              name: tls-certs
+              readOnly: true
+            {{- with .Values.admissionController.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{ end }}
           resources:
             {{- toYaml .Values.admissionController.resources | nindent 12 }}
           ports:
             - containerPort: 8000
             - name: prometheus
               containerPort: 8944
-      {{- with .Values.admissionController.volumes }}
       volumes:
-      {{- toYaml . | nindent 8 }}
-      {{- end }}
+        - name: tls-certs
+          secret:
+            secretName: vpa-tls-certs
+        {{- with .Values.admissionController.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{ end }}
