@@ -62,3 +62,6 @@ vpaApps:
   version-checker:
     kind: Deployment
     mode: Auto
+  prometheus-monitoring-kube-prometheus-prometheus:
+    kind: StatefulSet
+    mode: Auto

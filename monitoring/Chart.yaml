@@ -9,6 +9,6 @@ dependencies:
   appVersion: v0.62.0
   repository: https://prometheus-community.github.io/helm-charts
 - name: version-checker
+  version: 0.1.0
   appVersion: v0.2.1
-  version: 0.2.3
-  repository: https://ymrsmns.github.io/helm-charts
+  repository: oci://us-central1-docker.pkg.dev/cloudkite-public/public-helm-charts
