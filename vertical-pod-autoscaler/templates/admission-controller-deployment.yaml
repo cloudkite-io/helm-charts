@@ -30,6 +30,9 @@ spec:
             - mountPath: /etc/tls-certs
               name: tls-certs
               readOnly: true
+            {{- with .Values.admissionController.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{ end }}
           resources:
             {{- toYaml .Values.admissionController.resources | nindent 12 }}
           ports:
@@ -40,3 +43,6 @@ spec:
         - name: tls-certs
           secret:
             secretName: vpa-tls-certs
+        {{- with .Values.admissionController.volumes }}
+        {{- toYaml . | nindent 8 }}
+        {{ end }}
