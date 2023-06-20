@@ -7,6 +7,13 @@ admissionController:
     # Overrides the image tag whose default is the chart appVersion.
     tag: "0.13.0"
 
+  args:
+    # - "--client-ca-file=/etc/tls-certs/ca.crt"
+    # - "--client-ca-file=/etc/tls-certs/ca.crt"
+    # - "--client-ca-file=/etc/tls-certs/ca.crt"
+  command:
+    # - ./admission-controller
+
   volumes: [ ]
   
   volumeMounts: [ ]
