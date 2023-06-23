@@ -1,0 +1,17 @@
+replicas: 1
+
+namespace: webhooks
+
+webhook:
+  rules:
+    - operations: [""]
+      apiGroups: [""]
+      apiVersions: ["*"]
+      resources: [""]
+      scope: "*"
+  timeoutSeconds: 5
+
+env:
+  PATCH_VALUE: ""
+  PATCH_PATH: ""
+  MATCH_NAMESPACES: ""

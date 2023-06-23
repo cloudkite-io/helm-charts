@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      {{- include "selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: gcr.io/cloudkite-public/custom-mutating-webhook:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 443
+        envFrom:
+          - configMapRef:
+              name: {{ .Chart.Name }}
+        volumeMounts:
+        - name: certs-volume
+          readOnly: true
+          mountPath: "/certs"
+      volumes:
+      - name: certs-volume
+        secret:
+          secretName: {{ .Chart.Name }}
