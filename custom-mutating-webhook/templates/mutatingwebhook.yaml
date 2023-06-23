@@ -1,9 +1,9 @@
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
-  name: {{ .Chart.Name }}
+  name: {{ include "name" . }}
 webhooks:
-- name: {{ $.Chart.Name }}.{{ $.Values.namespace }}.svc
+- name: {{ include "name" . }}.{{ $.Values.namespace }}.svc
   matchPolicy: Equivalent
   admissionReviewVersions: ["v1"]
   sideEffects: None
@@ -17,5 +17,5 @@ webhooks:
     caBundle: {{ .Values.secrets.tls_crt}}
     service:
       namespace: {{ .Values.namespace }}
-      name: {{ .Chart.Name }}
+      name: {{ include "name" . }}
       path: /mutate/
