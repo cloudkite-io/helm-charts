@@ -5,7 +5,7 @@ env:
   GAR_LOCATION: us-central1
   PROJECT_NAME: cloudkite-public
   PROJECT_ID: 297731695546
-  REPOSITORY: libraries/public-helm-charts
+  REPOSITORY: public-helm-charts
 
 on:
   workflow_dispatch:
@@ -33,7 +33,7 @@ jobs:
       - name: Docker configuration
         run: gcloud auth configure-docker $GAR_LOCATION-docker.pkg.dev --quiet
       - name: Update dependencies
-        working-directory: ${{ env.CHART_NAME }}
+        working-directory: libraries/${{ env.CHART_NAME }}
         run: helm dependency update
       - name: Package chart
         run: helm package $CHART_NAME
