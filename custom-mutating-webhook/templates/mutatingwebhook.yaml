@@ -12,6 +12,10 @@ webhooks:
   rules:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- if .Values.webhook.objectSelector }}
+  objectSelector:
+    {{- toYaml .Values.webhook.objectSelector | nindent 4 }}
+  {{- end }}
   timeoutSeconds: {{ .Values.webhook.timeoutSeconds }}
   clientConfig:
     caBundle: {{ .Values.secrets.tls_crt}}
