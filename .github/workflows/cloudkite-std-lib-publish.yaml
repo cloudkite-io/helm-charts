@@ -36,6 +36,6 @@ jobs:
         working-directory: libraries/${{ env.CHART_NAME }}
         run: helm dependency update
       - name: Package chart
-        run: helm package $CHART_NAME
+        run: helm package libraries/$CHART_NAME
       - name: Push chart
         run: helm push $CHART_NAME-*.tgz oci://$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY
