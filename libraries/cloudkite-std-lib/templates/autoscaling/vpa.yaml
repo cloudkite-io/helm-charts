@@ -13,3 +13,4 @@ spec:
     updateMode: {{ $appConfig.vpa.mode }}
 ---
 {{- end }}
+{{- end }}
