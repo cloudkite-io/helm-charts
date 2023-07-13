@@ -37,7 +37,7 @@ kube-prometheus-stack:
       image:
           registry: quay.io
           repository: prometheus/prometheus
-          tag: v2.44.0-rc.0
+          tag: v2.45.0
   prometheusOperator:
     verticalPodAutoscaler:
       enabled: true
