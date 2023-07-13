@@ -10,5 +10,6 @@ spec:
     name:       {{ $vpaAppName }}
   updatePolicy:
     updateMode: {{ $vpaAppConfig.mode }}
+    minReplicas: {{ $vpaAppConfig.minReplicas }}
 ---
 {{- end }}

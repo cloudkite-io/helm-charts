@@ -53,15 +53,19 @@ version-checker:
       release: "monitoring"
 
 vpaApps:
-  kube-prometheus-kube-state-metrics:
+  monitoring-kube-state-metrics:
     kind: Deployment
     mode: Auto
-  kube-prometheus-prometheus-node-exporter:
+    minReplicas: 1
+  monitoring-prometheus-node-exporter:
     kind: DaemonSet
     mode: Auto
+    minReplicas: 2
   version-checker:
     kind: Deployment
     mode: Auto
+    minReplicas: 1
   prometheus-monitoring-kube-prometheus-prometheus:
     kind: StatefulSet
     mode: Auto
+    minReplicas: 1
