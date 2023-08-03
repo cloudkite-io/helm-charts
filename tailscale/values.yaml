@@ -1,0 +1,5 @@
+env: dev
+# comma seperated routes to advertise example 0.0.0.1/24, 0.0.0.1/32
+TS_ROUTES: ''
+# auth key generated from tailscale admin console
+authKey: tskey-auth-xxxxx
