@@ -3,3 +3,5 @@ env: dev
 TS_ROUTES: ''
 # auth key generated from tailscale admin console
 authKey: tskey-auth-xxxxx
+# comma separated ACL tags, example, tag:server,tag:development
+tags: tag:server
