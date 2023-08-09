@@ -33,6 +33,8 @@ spec:
             value: {{ include "tailscale.fullname" . }}
           - name: TS_USERSPACE
             value: "true"
+          - name: TS_ACCEPT_DNS
+            value: "true"
           - name: TS_EXTRA_ARGS
             value: "--advertise-tags={{ .Values.tags }} --hostname={{ include "tailscale.fullname" . }}-{{ .Values.env }}-cluster"
           - name: TS_AUTH_KEY
