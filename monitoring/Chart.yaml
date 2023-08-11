@@ -2,13 +2,17 @@ apiVersion: v2
 name: monitoring
 description: Helm chart for Prometheus
 type: application
-version: 0.1.0
+version: 0.2.0
 dependencies:
 - name: kube-prometheus-stack
-  version: 44.2.1
+  version: 45.4.0
   appVersion: v0.62.0
   repository: https://prometheus-community.github.io/helm-charts
 - name: version-checker
   version: 0.1.0
   appVersion: v0.2.1
   repository: oci://us-central1-docker.pkg.dev/cloudkite-public/public-helm-charts
+- name: loki
+  version: 5.10.0
+  appVersion: 2.8.3
+  repository: https://grafana.github.io/helm-charts
