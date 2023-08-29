@@ -1,0 +1,44 @@
+awsauth:
+  enable: true
+  configmapdata:
+    - name: mapRoles
+      value: |
+        - groups:
+          - system:bootstrappers
+          - system:nodes
+          rolearn: <role-arn>
+          username: system:node:{{EC2PrivateDNSName}}
+    - name: mapUsers
+      value: |
+        - groups:
+          - system:bootstrappers
+          - system:nodes
+          rolearn: <role-arn>
+          username: system:node:{{EC2PrivateDNSName}}
+
+clusterroles:
+  enable: false
+  roles:
+    - name: clusterRole1
+      rules:
+        - apiGroups:
+            - "*"
+          resources:
+            - "*"
+          verbs:
+            - "*"
+
+clusterrolebindings:
+  enable: false
+  clusterrolebindings:
+    - name: clusterrolebinding1
+      roleRef:
+        kind: ClusterRole
+        name: cluster-admin
+        apiGroup: rbac.authorization.k8s.io
+      subjects:
+        - kind: User
+          name: user1@example.com
+        - kind: ServiceAccount
+          name: service-account-1
+          namespace: my-namespace
