@@ -1,6 +1,6 @@
 apiVersion: v2
 name: rbac
-description: Helm chart for Version Checker app
+description: Helm chart for role based access control
 type: application
 version: 0.1.0
 appVersion: v0.1.0
