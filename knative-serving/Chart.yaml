@@ -1,0 +1,11 @@
+apiVersion: v2
+name: knative-serving
+description: A Helm chart for knative-serving
+type: application
+version: 0.1.0
+appVersion: "1.11.0"
+sources:
+  - https://github.com/knative/serving/releases/download/knative-v1.11.0/serving-crds.yaml
+  - https://github.com/knative/serving/releases/download/knative-v1.11.0/serving-core.yaml
+  - https://github.com/knative/net-istio/releases/download/knative-v1.11.0/istio.yaml
+  - https://github.com/knative/net-istio/releases/download/knative-v1.11.0/net-istio.yaml
