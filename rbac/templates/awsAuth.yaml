@@ -1,0 +1,12 @@
+{{- if .Values.awsauth.enable }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aws-auth
+  namespace: kube-system
+data:
+{{- range $item := .Values.awsauth.configmapdata }}
+  {{ $item.name }}: |
+{{ $item.value | indent 4 }}
+{{- end }}
+{{- end }}
