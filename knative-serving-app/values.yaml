@@ -4,8 +4,11 @@ image:
   tag: ""
 extraArgs: []
 namespace: knative-apps
-labels:
-  networking.knative.dev/visibility: cluster-local
+service:
+  labels:
+    networking.knative.dev/visibility: cluster-local
+  annotations:
+    autoscaling.knative.dev/target-utilization-percentage: "100"
 env: []
 serviceAccount:
   # Specifies whether a service account should be created
@@ -15,8 +18,5 @@ serviceAccount:
 ports: []
 resources:
   limits:
-    cpu: 100m
-    memory: 128Mi
-  requests:
     cpu: 200m
-    memory: 256Mi
+    memory: 128Mi

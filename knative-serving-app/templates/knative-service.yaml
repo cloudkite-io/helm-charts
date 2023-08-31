@@ -5,7 +5,9 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     {{- include "labels" . | nindent 4 }}
-    {{- toYaml .Values.labels | nindent 4 }}
+    {{- toYaml .Values.service.labels | nindent 4 }}
+  annotations: 
+    {{ toYaml .Values.service.annotations | nindent 4 }}
 spec:
   template:
     spec:
