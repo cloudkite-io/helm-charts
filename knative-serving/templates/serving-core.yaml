@@ -15,6 +15,8 @@
 apiVersion: v1
 kind: Namespace
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving
   labels:
     app.kubernetes.io/name: knative-serving
@@ -38,6 +40,8 @@ metadata:
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-activator
   namespace: knative-serving
   labels:
@@ -56,6 +60,8 @@ rules:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-activator-cluster
   labels:
     serving.knative.dev/controller: "true"
@@ -88,6 +94,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   # Named like this to avoid clashing with eventing's existing `addressable-resolver` role
   # (which should be identical, but isn't guaranteed to be installed alongside serving).
   name: knative-serving-aggregated-addressable-resolver
@@ -102,6 +110,8 @@ aggregationRule:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-addressable-resolver
   labels:
     app.kubernetes.io/version: "1.11.0"
@@ -140,6 +150,8 @@ rules:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-namespaced-admin
   labels:
     rbac.authorization.k8s.io/aggregate-to-admin: "true"
@@ -156,6 +168,8 @@ rules:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-namespaced-edit
   labels:
     rbac.authorization.k8s.io/aggregate-to-edit: "true"
@@ -172,6 +186,8 @@ rules:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-namespaced-view
   labels:
     rbac.authorization.k8s.io/aggregate-to-view: "true"
@@ -200,6 +216,8 @@ rules:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-core
   labels:
     serving.knative.dev/controller: "true"
@@ -255,6 +273,8 @@ rules:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-podspecable-binding
   labels:
     app.kubernetes.io/version: "1.11.0"
@@ -291,6 +311,8 @@ rules:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: controller
   namespace: knative-serving
   labels:
@@ -301,6 +323,8 @@ metadata:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-admin
   labels:
     app.kubernetes.io/name: knative-serving
@@ -313,6 +337,8 @@ aggregationRule:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-controller-admin
   labels:
     app.kubernetes.io/component: controller
@@ -330,6 +356,8 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-controller-addressable-resolver
   labels:
     app.kubernetes.io/component: controller
@@ -347,6 +375,8 @@ roleRef:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: activator
   namespace: knative-serving
   labels:
@@ -357,6 +387,8 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-activator
   namespace: knative-serving
   labels:
@@ -375,6 +407,8 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-activator-cluster
   labels:
     app.kubernetes.io/component: activator
@@ -407,6 +441,8 @@ roleRef:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: images.caching.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -528,6 +564,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: certificates.networking.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -678,6 +716,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: configurations.serving.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -1583,6 +1623,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: clusterdomainclaims.networking.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -1648,6 +1690,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: domainmappings.serving.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -1936,6 +1980,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: ingresses.networking.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -2197,6 +2243,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: metrics.autoscaling.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -2319,6 +2367,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: podautoscalers.autoscaling.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -2479,6 +2529,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: revisions.serving.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -3392,6 +3444,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: routes.serving.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -3571,6 +3625,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: serverlessservices.networking.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -3738,6 +3794,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: services.serving.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -4714,6 +4772,8 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   # Do not drop -ctrl-ca suffix as certificate creation requires it
   # https://github.com/knative/networking/blob/main/pkg/certificates/reconciler/controller.go#L38
   name: serving-certs-ctrl-ca
@@ -4727,6 +4787,8 @@ metadata:
 apiVersion: v1
 kind: Secret
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: knative-serving-certs
   namespace: knative-serving
   labels:
@@ -4738,6 +4800,8 @@ metadata:
 apiVersion: v1
 kind: Secret
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: control-serving-certs
   namespace: knative-serving
   labels:
@@ -4749,6 +4813,8 @@ metadata:
 apiVersion: v1
 kind: Secret
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: routing-serving-certs
   namespace: knative-serving
   labels:
@@ -4775,6 +4841,8 @@ metadata:
 apiVersion: caching.internal.knative.dev/v1alpha1
 kind: Image
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: queue-proxy
   namespace: knative-serving
   labels:
@@ -4804,14 +4872,15 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    knative.dev/example-checksum: "47c2487f"
   name: config-autoscaler
   namespace: knative-serving
   labels:
     app.kubernetes.io/component: autoscaler
     app.kubernetes.io/name: knative-serving
     app.kubernetes.io/version: "1.11.0"
-  annotations:
-    knative.dev/example-checksum: "47c2487f"
 data:
   _example: |
     ################################
@@ -5015,14 +5084,15 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    knative.dev/example-checksum: "e7973912"
   name: config-defaults
   namespace: knative-serving
   labels:
     app.kubernetes.io/name: knative-serving
     app.kubernetes.io/component: controller
     app.kubernetes.io/version: "1.11.0"
-  annotations:
-    knative.dev/example-checksum: "e7973912"
 data:
   _example: |
     ################################
@@ -5170,14 +5240,15 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    knative.dev/example-checksum: "ed77183a"
   name: config-deployment
   namespace: knative-serving
   labels:
     app.kubernetes.io/name: knative-serving
     app.kubernetes.io/component: controller
     app.kubernetes.io/version: "1.11.0"
-  annotations:
-    knative.dev/example-checksum: "ed77183a"
 data:
   # This is the Go import path for the binary that is containerized
   # and substituted here.
@@ -5265,14 +5336,15 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    knative.dev/example-checksum: "26c09de5"
   name: config-domain
   namespace: knative-serving
   labels:
     app.kubernetes.io/name: knative-serving
     app.kubernetes.io/component: controller
     app.kubernetes.io/version: "1.11.0"
-  annotations:
-    knative.dev/example-checksum: "26c09de5"
 data:
   _example: |
     ################################
@@ -5330,14 +5402,15 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    knative.dev/example-checksum: "eb70e734"
   name: config-features
   namespace: knative-serving
   labels:
     app.kubernetes.io/name: knative-serving
     app.kubernetes.io/component: controller
     app.kubernetes.io/version: "1.11.0"
-  annotations:
-    knative.dev/example-checksum: "eb70e734"
 data:
   _example: |-
     ################################
@@ -5539,14 +5612,15 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    knative.dev/example-checksum: "f4b71f57"
   name: config-leader-election
   namespace: knative-serving
   labels:
     app.kubernetes.io/name: knative-serving
     app.kubernetes.io/component: controller
     app.kubernetes.io/version: "1.11.0"
-  annotations:
-    knative.dev/example-checksum: "f4b71f57"
 data:
   _example: |
     ################################
@@ -5601,14 +5675,15 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    knative.dev/example-checksum: "53fda05f"
   name: config-logging
   namespace: knative-serving
   labels:
     app.kubernetes.io/version: "1.11.0"
     app.kubernetes.io/component: logging
     app.kubernetes.io/name: knative-serving
-  annotations:
-    knative.dev/example-checksum: "53fda05f"
 data:
   _example: |
     ################################
@@ -5683,14 +5758,15 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    knative.dev/example-checksum: "2b6d10ba"
   name: config-network
   namespace: knative-serving
   labels:
     app.kubernetes.io/name: knative-serving
     app.kubernetes.io/component: networking
     app.kubernetes.io/version: "1.11.0"
-  annotations:
-    knative.dev/example-checksum: "2b6d10ba"
 data:
   _example: {{ .Values.configNetwork.example | toYaml | indent 2 }}
 
@@ -5712,14 +5788,15 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    knative.dev/example-checksum: "54abd711"
   name: config-observability
   namespace: knative-serving
   labels:
     app.kubernetes.io/name: knative-serving
     app.kubernetes.io/component: observability
     app.kubernetes.io/version: "1.11.0"
-  annotations:
-    knative.dev/example-checksum: "54abd711"
 data:
   _example: {{ .Values.configObservability.example | toYaml | indent 2 }}
 
@@ -5741,14 +5818,15 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
+    knative.dev/example-checksum: "26614636"
   name: config-tracing
   namespace: knative-serving
   labels:
     app.kubernetes.io/name: knative-serving
     app.kubernetes.io/component: tracing
     app.kubernetes.io/version: "1.11.0"
-  annotations:
-    knative.dev/example-checksum: "26614636"
 data:
   _example: |
     ################################
@@ -5798,6 +5876,8 @@ data:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: activator
   namespace: knative-serving
   labels:
@@ -5826,6 +5906,8 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: activator-pdb
   namespace: knative-serving
   labels:
@@ -5856,6 +5938,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: activator
   namespace: knative-serving
   labels:
@@ -5961,6 +6045,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: activator-service
   namespace: knative-serving
   labels:
@@ -6008,6 +6094,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: autoscaler
   namespace: knative-serving
   labels:
@@ -6107,6 +6195,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   labels:
     app: autoscaler
     app.kubernetes.io/component: autoscaler
@@ -6147,6 +6237,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: controller
   namespace: knative-serving
   labels:
@@ -6238,6 +6330,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   labels:
     app: controller
     app.kubernetes.io/component: controller
@@ -6275,6 +6369,8 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: webhook
   namespace: knative-serving
   labels:
@@ -6301,6 +6397,8 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: webhook-pdb
   namespace: knative-serving
   labels:
@@ -6331,6 +6429,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: webhook
   namespace: knative-serving
   labels:
@@ -6435,6 +6535,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   labels:
     role: webhook
     app.kubernetes.io/component: webhook
@@ -6476,6 +6578,8 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: config.webhook.serving.knative.dev
   labels:
     app.kubernetes.io/component: webhook
@@ -6518,6 +6622,8 @@ webhooks:
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: webhook.serving.knative.dev
   labels:
     app.kubernetes.io/component: webhook
@@ -6575,6 +6681,8 @@ webhooks:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: validation.webhook.serving.knative.dev
   labels:
     app.kubernetes.io/component: webhook
@@ -6633,6 +6741,8 @@ webhooks:
 apiVersion: v1
 kind: Secret
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-3"
   name: webhook-certs
   namespace: knative-serving
   labels:

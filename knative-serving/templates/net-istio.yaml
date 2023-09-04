@@ -17,6 +17,8 @@
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   # These are the permissions needed by the Istio Ingress implementation.
   name: knative-serving-istio
   labels:
@@ -49,6 +51,8 @@ rules:
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   name: knative-ingress-gateway
   namespace: knative-serving
   labels:
@@ -88,6 +92,8 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   name: knative-local-gateway
   namespace: knative-serving
   labels:
@@ -109,6 +115,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   name: knative-local-gateway
   namespace: istio-system
   labels:
@@ -144,6 +152,8 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   name: config-istio
   namespace: knative-serving
   labels:
@@ -161,6 +171,8 @@ data:
 apiVersion: "security.istio.io/v1beta1"
 kind: "PeerAuthentication"
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   name: "webhook"
   namespace: "knative-serving"
   labels:
@@ -179,6 +191,8 @@ spec:
 apiVersion: "security.istio.io/v1beta1"
 kind: "PeerAuthentication"
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   name: "net-istio-webhook"
   namespace: "knative-serving"
   labels:
@@ -212,6 +226,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   name: net-istio-controller
   namespace: knative-serving
   labels:
@@ -315,6 +331,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   name: net-istio-webhook
   namespace: knative-serving
   labels:
@@ -420,6 +438,8 @@ spec:
 apiVersion: v1
 kind: Secret
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   name: net-istio-webhook-certs
   namespace: knative-serving
   labels:
@@ -446,6 +466,8 @@ metadata:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   name: net-istio-webhook
   namespace: knative-serving
   labels:
@@ -487,6 +509,8 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   name: webhook.istio.networking.internal.knative.dev
   labels:
     app.kubernetes.io/component: net-istio
@@ -526,6 +550,8 @@ webhooks:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
   name: config.webhook.istio.networking.internal.knative.dev
   labels:
     app.kubernetes.io/component: net-istio

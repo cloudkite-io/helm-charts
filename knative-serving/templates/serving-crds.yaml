@@ -15,6 +15,8 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
   name: certificates.networking.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -165,6 +167,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
   name: configurations.serving.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -1070,6 +1074,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
   name: clusterdomainclaims.networking.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -1135,6 +1141,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
   name: domainmappings.serving.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -1423,6 +1431,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
   name: ingresses.networking.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -1684,6 +1694,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
   name: metrics.autoscaling.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -1806,6 +1818,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
   name: podautoscalers.autoscaling.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -1966,6 +1980,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
   name: revisions.serving.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -2879,6 +2895,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
   name: routes.serving.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -3058,6 +3076,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
   name: serverlessservices.networking.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -3225,6 +3245,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
   name: services.serving.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving
@@ -4201,6 +4223,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-4"
   name: images.caching.internal.knative.dev
   labels:
     app.kubernetes.io/name: knative-serving

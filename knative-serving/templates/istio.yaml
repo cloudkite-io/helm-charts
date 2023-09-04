@@ -1,11 +1,15 @@
 apiVersion: v1
 kind: Namespace
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-system
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-ingressgateway-service-account
   namespace: istio-system
   labels:
@@ -19,6 +23,8 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-reader-service-account
   namespace: istio-system
   labels:
@@ -28,6 +34,8 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod
   namespace: istio-system
   labels:
@@ -37,6 +45,8 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod-service-account
   namespace: istio-system
   labels:
@@ -46,6 +56,8 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-reader-clusterrole-istio-system
   labels:
     app: istio-reader
@@ -143,6 +155,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-reader-istio-system
   labels:
     app: istio-reader
@@ -238,6 +252,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod-clusterrole-istio-system
   labels:
     app: istiod
@@ -421,6 +437,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod-gateway-controller-istio-system
   labels:
     app: istiod
@@ -466,6 +484,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod-istio-system
   labels:
     app: istiod
@@ -667,6 +687,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-reader-clusterrole-istio-system
   labels:
     app: istio-reader
@@ -683,6 +705,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-reader-istio-system
   labels:
     app: istio-reader
@@ -699,6 +723,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod-clusterrole-istio-system
   labels:
     app: istiod
@@ -715,6 +741,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod-gateway-controller-istio-system
   labels:
     app: istiod
@@ -731,6 +759,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod-istio-system
   labels:
     app: istiod
@@ -747,6 +777,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-ingressgateway-sds
   namespace: istio-system
   labels:
@@ -767,6 +799,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod
   namespace: istio-system
   labels:
@@ -809,6 +843,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod-istio-system
   namespace: istio-system
   labels:
@@ -836,6 +872,8 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-ingressgateway-sds
   namespace: istio-system
   labels:
@@ -854,6 +892,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod
   namespace: istio-system
   labels:
@@ -871,6 +911,8 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod-istio-system
   namespace: istio-system
   labels:
@@ -889,6 +931,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "-2"
     helm.sh/resource-policy: keep
   labels:
     app: istio-pilot
@@ -1277,6 +1320,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "-2"
     helm.sh/resource-policy: keep
   labels:
     app: istio-pilot
@@ -3890,6 +3934,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "-2"
     helm.sh/resource-policy: keep
   labels:
     app: istio-pilot
@@ -4123,6 +4168,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "-2"
     helm.sh/resource-policy: keep
   labels:
     app: istio-pilot
@@ -4373,6 +4419,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiooperators.install.istio.io
   labels:
     release: istio
@@ -4418,6 +4466,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "-2"
     helm.sh/resource-policy: keep
   labels:
     app: istio-pilot
@@ -4505,6 +4554,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "-2"
     helm.sh/resource-policy: keep
   labels:
     app: istio-pilot
@@ -4570,6 +4620,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "-2"
     helm.sh/resource-policy: keep
   labels:
     app: istio-pilot
@@ -4754,6 +4805,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "-2"
     helm.sh/resource-policy: keep
   labels:
     app: istio-pilot
@@ -5017,6 +5069,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "-2"
     helm.sh/resource-policy: keep
   labels:
     app: istio-pilot
@@ -5380,6 +5433,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "-2"
     helm.sh/resource-policy: keep
   labels:
     app: istio-pilot
@@ -5637,6 +5691,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "-2"
     helm.sh/resource-policy: keep
   labels:
     app: istio-pilot
@@ -7118,6 +7173,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "-2"
     helm.sh/resource-policy: keep
   labels:
     app: istio-pilot
@@ -7248,6 +7304,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+    argocd.argoproj.io/sync-wave: "-2"
     helm.sh/resource-policy: keep
   labels:
     app: istio-pilot
@@ -7368,6 +7425,8 @@ spec:
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   labels:
     app: istio-pilot
     chart: istio
@@ -7670,6 +7729,8 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio
   namespace: istio-system
   labels:
@@ -7697,6 +7758,8 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-sidecar-injector
   namespace: istio-system
   labels:
@@ -7823,6 +7886,8 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   labels:
     app: istio-ingressgateway
     install.operator.istio.io/owning-resource: unknown
@@ -8046,6 +8111,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod
   namespace: istio-system
   labels:
@@ -8209,6 +8276,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-ingressgateway
   namespace: istio-system
   annotations: null
@@ -8241,6 +8310,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod
   namespace: istio-system
   labels:
@@ -8272,6 +8343,8 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod
   namespace: istio-system
   labels:
@@ -8298,6 +8371,8 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-ingressgateway
   namespace: istio-system
   labels:
@@ -8317,6 +8392,8 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istiod
   namespace: istio-system
   labels:
@@ -8336,6 +8413,8 @@ spec:
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-sidecar-injector
   labels:
     istio.io/rev: default
@@ -8488,6 +8567,8 @@ webhooks:
 apiVersion: admissionregistration.k8s.io/v1
 kind: ValidatingWebhookConfiguration
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
   name: istio-validator-istio-system
   labels:
     app: istiod
