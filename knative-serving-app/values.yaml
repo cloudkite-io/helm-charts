@@ -17,6 +17,3 @@ serviceAccount:
     iam.gke.io/gcp-service-account: ""
 ports: []
 resources:
-  limits:
-    cpu: 200m
-    memory: 128Mi
