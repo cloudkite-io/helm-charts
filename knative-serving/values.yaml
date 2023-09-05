@@ -2,6 +2,9 @@ gcConfig:
   retain-since-create-time: "disabled"
   retain-since-last-active-time: "disabled"
   max-non-active-revisions: "2"
+defaultConfig:
+  max-revision-timeout-seconds: "3600"
+
 configIstio:
   example: |
     ################################
