@@ -22,6 +22,7 @@ metadata:
     app.kubernetes.io/component: controller
     app.kubernetes.io/version: "1.11.0"
   annotations:
+    argocd.argoproj.io/sync-wave: "-4"
     knative.dev/example-checksum: "aa3813a8"
 data:
   _example: |
