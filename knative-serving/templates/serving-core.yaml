@@ -5437,7 +5437,7 @@ data:
 
     # Default queue proxy resource requests and limits to good values for most cases if set.
     queueproxy.resource-defaults: "disabled"
-
+{{ .Values.configCoreFeatures | toYaml | indent 2}}
 ---
 
 # Copyright 2020 The Knative Authors
