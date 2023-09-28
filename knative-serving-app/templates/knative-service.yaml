@@ -25,13 +25,13 @@ spec:
           {{- toYaml .Values.resources | nindent 10 }}
         volumeMounts:
           {{- if .Values.volumeMounts }}
-            {{ toYaml .Values.volumeMounts | indent 10}}
+            {{- toYaml .Values.volumeMounts | indent 10}}
           {{- end }} 
       serviceAccountName: {{ include "serviceAccountName" . }}
       timeoutSeconds: 3600
       volumes:
         {{- if .Values.volumes }}
-          {{ toYaml .Values.volumes | indent 8 }}
+          {{- toYaml .Values.volumes | indent 8 }}
         {{- end }}
         
 
