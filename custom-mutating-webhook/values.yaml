@@ -12,6 +12,4 @@ webhook:
   timeoutSeconds: 5
 
 env:
-  PATCH_VALUE: ""
-  PATCH_PATH: ""
-  MATCH_NAMESPACES: ""
+  PATCH_DICT: ""
