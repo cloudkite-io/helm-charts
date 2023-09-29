@@ -13,3 +13,4 @@ webhook:
 
 env:
   PATCH_DICT: ""
+  MATCH_NAMESPACES: ""
