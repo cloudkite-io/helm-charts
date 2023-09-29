@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: {{ .Chart.Name }}
-        image: gcr.io/cloudkite-public/custom-mutating-webhook:latest
+        image: gcr.io/cloudkite-public/custom-mutating-webhook:multi-patch
         imagePullPolicy: Always
         ports:
         - containerPort: 443
