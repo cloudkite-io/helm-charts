@@ -4,6 +4,7 @@ image:
   tag: ""
 extraArgs: []
 namespace: knative-apps
+createNamespace: true
 service:
   labels:
     networking.knative.dev/visibility: cluster-local
