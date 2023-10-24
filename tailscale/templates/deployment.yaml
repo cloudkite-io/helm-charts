@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "tailscale.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "tailscale.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "tailscale.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "tailscale.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{  include "tailscale.fullname" .  }}
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: tailscale
+          imagePullPolicy: Always
+          image: "ghcr.io/tailscale/tailscale:latest"
+          env:
+          # Store the state in a k8s secret
+          - name: TS_KUBE_SECRET
+            value: {{ include "tailscale.fullname" . }}
+          - name: TS_USERSPACE
+            value: "true"
+          - name: TS_ACCEPT_DNS
+            value: "true"
+          - name: TS_EXTRA_ARGS
+            value: "--advertise-tags={{ .Values.tags }} --hostname={{ include "tailscale.fullname" . }}-{{ .Values.env }}-cluster"
+          - name: TS_AUTH_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ include "tailscale.fullname" . }}
+                key: TS_AUTH_KEY
+                optional: true
+          - name: TS_ROUTES
+            value: {{ .Values.TS_ROUTES }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
