@@ -16,6 +16,11 @@ webhooks:
   objectSelector:
     {{- toYaml .Values.webhook.objectSelector | nindent 4 }}
   {{- end }}
+  {{- if .Values.webhook.namespaceSelector }}
+  namespaceSelector:
+    matchExpressions:
+      {{- toYaml .Values.webhook.namespaceSelector | nindent 6 }}
+  {{- end }}
   timeoutSeconds: {{ .Values.webhook.timeoutSeconds }}
   clientConfig:
     caBundle: {{ .Values.secrets.tls_crt}}
