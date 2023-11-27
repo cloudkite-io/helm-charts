@@ -7,6 +7,7 @@ defaultConfig:
 configCoreFeatures:
   kubernetes.podspec-persistent-volume-claim: "enabled"
   kubernetes.podspec-persistent-volume-write: "enabled"
+  kubernetes.podspec-tolerations: "enabled"
 configIstio:
   example: |
     ################################
