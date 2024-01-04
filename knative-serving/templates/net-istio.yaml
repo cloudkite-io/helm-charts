@@ -259,12 +259,7 @@ spec:
           # and substituted here.
           image: gcr.io/knative-releases/knative.dev/net-istio/cmd/controller@sha256:27e7beb7c62036216fc464fb2181e56b030158ad4ceb57a7de172f54b4fe43db
           resources:
-            requests:
-              cpu: 30m
-              memory: 40Mi
-            limits:
-              cpu: 300m
-              memory: 400Mi
+            {{- toYaml .Values.resources.netIstioController | nindent 12 }}      
           env:
             - name: SYSTEM_NAMESPACE
               valueFrom:
