@@ -2028,7 +2028,7 @@ resources:
   netIstioController:
     requests:
       cpu: 30m
-      memory: 40Mi
+      memory: 400Mi
     limits:
       cpu: 300m
       memory: 400Mi
