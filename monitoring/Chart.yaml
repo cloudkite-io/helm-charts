@@ -2,7 +2,7 @@ apiVersion: v2
 name: monitoring
 description: Helm chart for Prometheus
 type: application
-version: 0.2.1
+version: 0.2.2
 dependencies:
 - name: kube-prometheus-stack
   version: 48.3.0
@@ -12,3 +12,7 @@ dependencies:
   version: 0.1.0
   appVersion: v0.2.1
   repository: oci://us-central1-docker.pkg.dev/cloudkite-public/public-helm-charts
+- name: x509-certificate-exporter
+  version: 3.12.0
+  appVersion: 3.12.0
+  repository: https://charts.enix.io
