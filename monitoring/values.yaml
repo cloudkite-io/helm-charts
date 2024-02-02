@@ -52,6 +52,12 @@ version-checker:
     additionalLabels:
       release: "monitoring"
 
+x509-certificate-exporter:
+  prometheusServiceMonitor:
+    create: true
+    extraLabels:
+      release: "monitoring"
+      
 vpaApps:
   monitoring-kube-state-metrics:
     kind: Deployment
