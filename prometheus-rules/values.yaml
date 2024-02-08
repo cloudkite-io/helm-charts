@@ -43,9 +43,7 @@ prometheusRule:
             severity: warning
           annotations:
             summary: 'Prometheus too many restarts (instance {{ "{{" }} $labels.instance }})'
-            description: 'Prometheus has restarted more than twice in the last 15 minutes. It might be crashlooping.
-            VALUE = {{ "{{" }} $value }}
-            LABELS = {{ "{{" }} $labels }}'
+            description: 'Prometheus has restarted more than twice in the last 15 minutes. It might be crashlooping.{{ "\n" }} VALUE = {{ "{{" }} $value }}{{ "\n" }} LABELS = {{ "{{" }} $labels }}'
 
 
     - name: solr_cloud
@@ -53,9 +51,7 @@ prometheusRule:
         - alert: SolrCloudLowLiveNodeCount
           annotations:
             summary: Solr low live node count
-            description: 'Solr collection {{ "{{" }} $labels.collection }} has less than two live nodes for replica {{ "{{" }} $labels.replica }} on {{ "{{" }} $labels.base_url }}.
-             VALUE = {{ "{{" }} $value }}  
-             LABELS = {{ "{{" }} $labels }}'
+            description: 'Solr collection {{ "{{" }} $labels.collection }} has less than two live nodes for replica {{ "{{" }} $labels.replica }} on {{ "{{" }} $labels.base_url }}.{{ "\n" }} VALUE = {{ "{{" }} $value }}{{ "\n" }} LABELS = {{ "{{" }} $labels }}'
           expr: 'solr_collections_live_nodes < 2'
           for: 20m
           labels:
