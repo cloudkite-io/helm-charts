@@ -16,7 +16,8 @@ prometheusRule:
       rules:
         - alert: KubePodCrashLooping
           annotations:
-            description: Pod stuck in crashbackloop
+            description: 'Pod {{ "{{" }} $labels.namespace }}/{{ "{{" }} $labels.pod }} ({{ "{{" }} $labels.container
+          }}) is restarting {{ "{{" }} printf "%.2f" $value }} times / 5 minutes.'
           expr: 'rate(kube_pod_container_status_restarts_total{job="kube-state-metrics"}[15m]) * 60 * 5 > 0'
           for: 1h
           labels:
@@ -25,22 +26,38 @@ prometheusRule:
     - name: kubernetes_jobs
       rules:
         - alert: KubernetesJobFailed
-          expr: 'kube_job_status_failed > 5'
+          expr: 'kube_job_status_failed > 2'
           for: 10m
           labels:
             severity: warning
           annotations:
-            summary: Kubernetes Job failed
+            summary: 'Job {{ "{{" }} $labels.namespace }}/{{ "{{" }} $labels.job_name }} failed to complete.'
             description: "Job"
+
+    - name: prometheus
+      rules:
+        - alert: PrometheusTooManyRestarts
+          expr: 'changes(process_start_time_seconds{job=~"prometheus|pushgateway|alertmanager"}[15m]) > 2'
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: 'Prometheus too many restarts (instance {{ "{{" }} $labels.instance }})'
+            description: 'Prometheus has restarted more than twice in the last 15 minutes. It might be crashlooping.
+            VALUE = {{ "{{" }} $value }}
+            LABELS = {{ "{{" }} $labels }}'
+
 
     - name: solr_cloud
       rules:
         - alert: SolrCloudLowLiveNodeCount
           annotations:
             summary: Solr low live node count
-            description: "Solr has less than two live nodes for replica"
-          expr: 'solr_collections_live_nodes > 2'
-          for: 5m
+            description: 'Solr collection {{ "{{" }} $labels.collection }} has less than two live nodes for replica {{ "{{" }} $labels.replica }} on {{ "{{" }} $labels.base_url }}.
+             VALUE = {{ "{{" }} $value }}  
+             LABELS = {{ "{{" }} $labels }}'
+          expr: 'solr_collections_live_nodes < 2'
+          for: 20m
           labels:
             severity: warning
             instance: solr
@@ -53,5 +70,6 @@ prometheusRule:
           labels:
             severity: warning
           annotations:
-            description: Velero backup failure
+            description: 'Velero backup {{ "{{" }} $labels.schedule }} has {{ "{{" }} $value | humanizePercentage }} failed backups.'
             summary: Velero backup has failed backups.
+
