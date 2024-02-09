@@ -1,0 +1,18 @@
+{{- if .Values.nginx_ingress.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: nginx-ingress-rules
+spec:
+  groups:
+    - name: nginx_ingress
+      rules:
+        - alert: NGINXTooMany500s
+          expr: '100 * ( sum( nginx_ingress_controller_requests{status=~"5.+"} ) / sum(nginx_ingress_controller_requests) ) > 5'
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            description: Too many 5XXs
+            summary: More than 5% of all requests returned 5XX, this requires your attention
+{{- end }}

@@ -1,0 +1,19 @@
+{{- if .Values.solr.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: solr-cloud-rules
+spec:
+  groups:
+    - name: solr_cloud
+      rules:
+        - alert: SolrCloudLowLiveNodeCount
+          annotations:
+            summary: Solr low live node count
+            description: 'Solr collection {{ "{{" }} $labels.collection }} has less than two live nodes for replica {{ "{{" }} $labels.replica }} on {{ "{{" }} $labels.base_url }}.'
+          expr: 'solr_collections_live_nodes < 2'
+          for: 20m
+          labels:
+            severity: warning
+            instance: solr
+{{- end }}

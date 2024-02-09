@@ -1,0 +1,8 @@
+nginx_ingress:
+  enabled: false
+velero:
+  enabled: true
+solr:
+  enabled: false
+kubernetes:
+  enabled: true

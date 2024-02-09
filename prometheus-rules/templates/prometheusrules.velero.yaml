@@ -1,0 +1,18 @@
+{{- if .Values.velero.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: velero-rules
+spec:
+  groups:
+    - name: velero
+      rules:
+        - alert: VeleroBackupFailures
+          expr: 'velero_backup_failure_total{schedule!=""} / velero_backup_attempt_total{schedule!=""} > 0.25'
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            description: 'Velero backup {{ "{{" }} $labels.schedule }} has {{ "{{" }} $value | humanizePercentage }} failed backups.'
+            summary: Velero backup has failed backups.
+{{- end }}
