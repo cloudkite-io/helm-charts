@@ -43,13 +43,13 @@ To install this Helm chart, follow these steps:
 
     ```values.yaml
     nginx_ingress:
-    enabled: false
+      enabled: false
     velero:
-    enabled: true
+      enabled: true
     solr:
-    enabled: false
+      enabled: false
     kubernetes:
-    enabled: true
+      enabled: true
 
     ```
 
