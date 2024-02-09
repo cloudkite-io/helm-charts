@@ -1,71 +1,8 @@
-prometheusRule:
-- name: default-groups
-  groups:
-    - name: nginx_ingress
-      rules:
-        - alert: NGINXTooMany500s
-          expr: '100 * ( sum( nginx_ingress_controller_requests{status=~"5.+"} ) / sum(nginx_ingress_controller_requests) ) > 5'
-          for: 5m
-          labels:
-            severity: warning
-          annotations:
-            description: Too many 5XXs
-            summary: More than 5% of all requests returned 5XX, this requires your attention
-
-    - name: kubernetes_apps
-      rules:
-        - alert: KubePodCrashLooping
-          annotations:
-            description: 'Pod {{ "{{" }} $labels.namespace }}/{{ "{{" }} $labels.pod }} ({{ "{{" }} $labels.container
-          }}) is restarting {{ "{{" }} printf "%.2f" $value }} times / 5 minutes.'
-          expr: 'rate(kube_pod_container_status_restarts_total{job="kube-state-metrics"}[15m]) * 60 * 5 > 5'
-          for: 30m
-          labels:
-            severity: warning
-
-    - name: kubernetes_jobs
-      rules:
-        - alert: KubernetesJobFailed
-          expr: 'kube_job_status_failed > 2'
-          for: 10m
-          labels:
-            severity: warning
-          annotations:
-            summary: 'Job {{ "{{" }} $labels.namespace }}/{{ "{{" }} $labels.job_name }} failed to complete.'
-            description: "Job"
-
-    - name: prometheus
-      rules:
-        - alert: PrometheusTooManyRestarts
-          expr: 'changes(process_start_time_seconds{job=~"prometheus|pushgateway|alertmanager"}[15m]) > 2'
-          for: 0m
-          labels:
-            severity: warning
-          annotations:
-            summary: 'Prometheus too many restarts (instance {{ "{{" }} $labels.instance }})'
-            description: 'Prometheus has restarted more than twice in the last 15 minutes. It might be crashlooping.{{ "\n" }} VALUE = {{ "{{" }} $value }}{{ "\n" }} LABELS = {{ "{{" }} $labels }}'
-
-
-    - name: solr_cloud
-      rules:
-        - alert: SolrCloudLowLiveNodeCount
-          annotations:
-            summary: Solr low live node count
-            description: 'Solr collection {{ "{{" }} $labels.collection }} has less than two live nodes for replica {{ "{{" }} $labels.replica }} on {{ "{{" }} $labels.base_url }}.{{ "\n" }} VALUE = {{ "{{" }} $value }}{{ "\n" }} LABELS = {{ "{{" }} $labels }}'
-          expr: 'solr_collections_live_nodes < 2'
-          for: 20m
-          labels:
-            severity: warning
-            instance: solr
-
-    - name: velero
-      rules:
-        - alert: VeleroBackupFailures
-          expr: 'velero_backup_failure_total{schedule!=""} / velero_backup_attempt_total{schedule!=""} > 0.25'
-          for: 30m
-          labels:
-            severity: warning
-          annotations:
-            description: 'Velero backup {{ "{{" }} $labels.schedule }} has {{ "{{" }} $value | humanizePercentage }} failed backups.'
-            summary: Velero backup has failed backups.
-
+nginx_ingress:
+  enabled: false
+velero:
+  enabled: true
+solr:
+  enabled: false
+kubernetes:
+  enabled: true
