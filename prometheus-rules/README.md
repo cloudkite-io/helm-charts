@@ -30,7 +30,7 @@ To install this Helm chart, follow these steps:
     ```sh
     cd helm-charts/prometheus-rules
     ```
-   Modify the `values.yaml` file with your custom values.
+   Modify the `values.yaml` to enable the list of rules you want.
 
 3. Install the Helm chart with a release name (e.g., `cloudkitepromrules`):
 
@@ -42,19 +42,15 @@ To install this Helm chart, follow these steps:
 1. Create a values.yaml file to customise your values.
 
     ```values.yaml
-    prometheusRule:
-    - name: custom-groups
-    groups:
-        - name: nginx_ingress
-        rules:
-            - alert: NGINXTooMany500s
-            expr: '100 * ( sum( nginx_ingress_controller_requests{status=~"5.+"} ) / sum(nginx_ingress_controller_requests) ) > 5'
-            for: 5m
-            labels:
-                severity: warning
-            annotations:
-                description: Too many 5XXs
-                summary: More than 5% of all requests returned 5XX, this requires your attention
+    nginx_ingress:
+    enabled: false
+    velero:
+    enabled: true
+    solr:
+    enabled: false
+    kubernetes:
+    enabled: true
+
     ```
 
 Charts.yaml file:
