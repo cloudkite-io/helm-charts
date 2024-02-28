@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      {{- with $.Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ .Chart.Name }}
+      containers:
+      - name: cloudsql-proxy
+        image: {{ .Values.image }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        command:
+          - /cloud_sql_proxy
+          - -instances={{ range $instance := .Values.cloudsql_instances -}}
+                          {{ $instance.project }}:{{ $instance.name }}=tcp:0.0.0.0:{{ $instance.port }},
+                       {{- end }}
+        ports:
+          {{- range $instance := .Values.cloudsql_instances }}
+          - name: {{ $instance.name }}
+            containerPort: {{ $instance.port }}
+          {{- end }}

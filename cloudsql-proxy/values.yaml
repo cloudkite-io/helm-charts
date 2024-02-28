@@ -1,0 +1,37 @@
+
+image: gcr.io/cloudsql-docker/gce-proxy:1.28.0
+imagePullPolicy: Always
+replicaCount: 1
+
+# The service acount that would be used should have cloudsql.client role for cloudsql-proxy to connect to the instance, and a iam.workloadIdentityUser enabled to allow our cloudsql-proxy workload access GCP resources.
+serviceAccount:
+  annotations:
+    iam.gke.io/gcp-service-account: cloudsql-proxy@<project>.iam.gserviceaccount.com
+
+resources:
+  limits:
+    memory: 0.2Gi
+  requests:
+    cpu: 100m
+    memory: 0.2Gi
+
+cloudsql_instances:
+  - name: <instance-name-1>
+    project: <gcp-project>:<location>
+    port: <instance-port>
+  # - name: <instance-name-2>
+  #   project: <gcp-project>:<location>
+  #   port: <instance-port>
+
+vpaApps:
+  cloudsql-proxy:
+    kind: Deployment
+    mode: "Off"
+
+hpaApps:
+  cloudsql-proxy:
+    enabled: false
+    maxReplicas: 9
+    minReplicas: 3
+    cpuTarget: 50
+    memoryTarget: 95
