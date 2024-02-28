@@ -35,3 +35,6 @@ hpaApps:
     minReplicas: 3
     cpuTarget: 50
     memoryTarget: 95
+
+# To Connect(recommend to pass as secret enviroment variable): 
+# postgres://<username>:<password>@<instance-svc-in-namespace>.<cloudsql-proxy-namespace>:<instance-port>/<database>
