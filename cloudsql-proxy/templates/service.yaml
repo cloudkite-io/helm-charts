@@ -1,0 +1,13 @@
+{{ range $instance := .Values.cloudsql_instances }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Chart.Name }}-{{ $instance.name }}
+spec:
+  ports:
+    - port: {{ $instance.port }}
+      targetPort: {{ $instance.name }}
+  selector:
+    app: {{ $.Chart.Name }}
+---
+{{- end }}
