@@ -16,4 +16,31 @@ spec:
           labels:
             severity: warning
             instance: solr
+        - alert: SolrCloudUpdateError
+          annotations:
+            summary: Solr update error
+            description: 'Solr collection {{ "{{" }} $labels.collection }} has failed updates for replica {{ "{{" }} $labels.replica }} on {{ "{{" }} $labels.base_url }}.'
+          expr: 'increase(solr_metrics_core_update_handler_errors_total[1m]) > 1'
+          for: 20m
+          labels:
+            severity: critical
+            instance: solr
+        - alert: SolrCloudQueryError
+          annotations:
+            summary: Solr query error
+            description: 'Solr has increased query errors in collection {{ "{{" }} $labels.collection }} for replica {{ "{{" }} $labels.replica }} on {{ "{{" }} $labels.base_url }}.'
+          expr: 'increase(solr_metrics_core_errors_total{category="QUERY"}[1m]) > 1'
+          for: 5m
+          labels:
+            severity: warning
+            instance: solr
+        - alert: SolrCloudReplicationError
+          annotations:
+            summary: Solr replication error
+            description: 'Solr collection {{ "{{" }} $labels.collection }} has failed updates for replica {{ "{{" }} $labels.replica }} on {{ "{{" }} $labels.base_url }}.'
+          expr: 'increase(solr_metrics_core_errors_total{category="REPLICATION"}[1m]) > 1'
+          for: 5m
+          labels:
+            severity: critical
+            instance: solr
 {{- end }}
