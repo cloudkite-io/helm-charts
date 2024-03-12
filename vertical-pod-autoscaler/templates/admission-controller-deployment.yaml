@@ -45,9 +45,6 @@ spec:
             - name: prometheus
               containerPort: 8944
       volumes:
-        - name: tls-certs
-          secret:
-            secretName: vpa-tls-certs
         {{- with .Values.admissionController.volumes }}
         {{- toYaml . | nindent 8 }}
         {{ end }}
