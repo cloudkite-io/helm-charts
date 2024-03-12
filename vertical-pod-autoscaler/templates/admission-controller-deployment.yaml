@@ -35,9 +35,6 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
           volumeMounts:
-            - mountPath: /etc/tls-certs
-              name: tls-certs
-              readOnly: true
             {{- with .Values.admissionController.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{ end }}
