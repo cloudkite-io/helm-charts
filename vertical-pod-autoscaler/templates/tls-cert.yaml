@@ -18,3 +18,19 @@ spec:
     - key encipherment
     - server auth
     - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: vpa-selfsigned-ca-cert
+spec:
+  isCA: true
+  commonName: vpa-ca
+  secretName: vpa-ca-root-secret
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: cluster-selfsigned-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
