@@ -43,4 +43,22 @@ spec:
           labels:
             severity: critical
             instance: solr
+        - alert: SolrZookeeperUnhealthy
+          annotations:
+            summary: Solr zookeeper is unhealthy
+            description: 'Solr zookeeper status is {{ "{{" }} $labels.status }}. This means one or more nodes is unhealthy'
+          expr: 'solr_zookeeper_status{} != 1'
+          for: 10m
+          labels:
+            severity: critical
+            instance: solr
+        - alert: TooManyReplicasInactive
+          annotations:
+            summary: Inactive SOLR replicas detected
+            description: 'Multiple collection replicas are in inactive state, they could be recovering or in down state'
+          expr: 'count(solr_collections_replica_state{state="active"} == 1) > 5'
+          for: 10m
+          labels:
+            severity: warning
+            instance: solr
 {{- end }}
