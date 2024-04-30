@@ -92,6 +92,8 @@ x509-certificate-exporter:
     create: true
     extraLabels:
       release: "monitoring"
+  prometheusRules:
+    create: false
       
 vpaApps:
   monitoring-kube-state-metrics:
