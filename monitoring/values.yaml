@@ -96,19 +96,10 @@ x509-certificate-exporter:
     create: false
       
 vpaApps:
-  monitoring-kube-state-metrics:
-    kind: Deployment
-    mode: Auto
-    minReplicas: 1
-  monitoring-prometheus-node-exporter:
-    kind: DaemonSet
-    mode: Auto
-    minReplicas: 2
-  version-checker:
-    kind: Deployment
-    mode: Auto
-    minReplicas: 1
-  prometheus-monitoring-kube-prometheus-prometheus:
+  prometheus:
     kind: StatefulSet
-    mode: Auto
-    minReplicas: 1
+  kube-state-metrics:
+    kind: Deployment
+  prometheus-node-exporter:
+    kind: DaemonSet
+    minReplicas: 2
