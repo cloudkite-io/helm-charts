@@ -14,7 +14,7 @@ spec:
 ---
 {{- end }}
 
-{{- with .Values.vpaApps.prometheus }}
+{{- with .Values.vpaApps.kube-state-metrics }}
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
@@ -30,7 +30,7 @@ spec:
 ---
 {{- end }}
 
-{{- with .Values.vpaApps.prometheus }}
+{{- with .Values.vpaApps.prometheus-node-exporter }}
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
