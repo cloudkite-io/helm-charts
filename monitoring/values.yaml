@@ -10,35 +10,22 @@ kube-prometheus-stack:
         group_by: ['alertname', 'cluster', 'service', 'job']
     templateFiles:
       default_template.tmpl: |-
-          {{ define "cluster" }}{{ .ExternalURL | reReplaceAll ".*alertmanager\\.(.*)" "$1" }}{{ end }}
+        {{ define "cluster" }}{{ .ExternalURL | reReplaceAll ".*alertmanager\\.(.*)" "$1" }}{{ end }}
 
-          {{ define "msteams.ck.text" }}
-          {{- $root := . -}}
-          {{ range .Alerts -}}
-          *Alert:* {{ .Annotations.title }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
+        {{ define "msteams.ck.text" }}
+        {{- $root := . -}}
+        {{ range .Alerts -}}
+        *Severity:* `{{ .Labels.severity }}`
 
-          *Description:* {{ .Annotations.description }}
+        *Description:* {{ .Annotations.summary }}
 
-          *Details:*
-            {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
-            {{ end }}
-          {{ end }}
-          {{ end }}
+        *URL:* {{ .Annotations.query }}
+        {{ end }}
+        {{ end }}
 
-          {{ define "msteams.ck.title" }}
-          [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }} for {{ .CommonLabels.job }}
-          {{- if gt (len .CommonLabels) (len .GroupLabels) -}}
-            {{" "}}(
-            {{- with .CommonLabels.Remove .GroupLabels.Names }}
-              {{- range $index, $label := .SortedPairs -}}
-                {{ if $index }}, {{ end }}
-                {{- $label.Name }}="{{ $label.Value -}}"
-              {{- end }}
-            {{- end -}}
-            )
-          {{- end }}
-          {{ end }}
-
+        {{ define "msteams.ck.title" }}
+        [{{ .Status | toUpper }}{{ end }}] {{ .CommonLabels.alertname }}
+        {{ end }}
 
   prometheus:
     prometheusSpec:
@@ -96,19 +83,10 @@ x509-certificate-exporter:
     create: false
       
 vpaApps:
-  monitoring-kube-state-metrics:
-    kind: Deployment
-    mode: Auto
-    minReplicas: 1
-  monitoring-prometheus-node-exporter:
-    kind: DaemonSet
-    mode: Auto
-    minReplicas: 2
-  version-checker:
-    kind: Deployment
-    mode: Auto
-    minReplicas: 1
-  prometheus-monitoring-kube-prometheus-prometheus:
+  prometheus:
     kind: StatefulSet
-    mode: Auto
-    minReplicas: 1
+  kube-state-metrics:
+    kind: Deployment
+  prometheus-node-exporter:
+    kind: DaemonSet
+    minReplicas: 2
