@@ -1,63 +1,15 @@
-{{- with .Values.vpaApps.prometheus }}
+{{- range $vpaAppName, $vpaAppConfig := .Values.vpaApps }}
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: prometheus-{{ $.Chart.Name }}-prometheus
+  name: {{ if eq $vpaAppName "prometheus" }}{{ $vpaAppName }}-{{ $.Chart.Name }}-{{ $vpaAppName }}{{ else }}{{ $.Chart.Name }}-{{ $vpaAppName }}{{- end }}
 spec:
   targetRef:
     apiVersion: apps/v1
-    kind:       {{ .kind }}
-    name:       prometheus-{{ $.Chart.Name }}-prometheus
+    kind:       {{ $vpaAppConfig.kind }}
+    name:       {{ $.Chart.Name }}-{{ $vpaAppName }}
   updatePolicy:
-    updateMode: {{ .mode | default "Auto" }}
-    minReplicas: {{ .minReplicas | default "1" }}
+    updateMode: {{ $vpaAppConfig.mode | default "Auto" }}
+    minReplicas: {{ $vpaAppConfig.minReplicas | default "1" }}
 ---
 {{- end }}
-
-{{- with .Values.vpaApps.kube-state-metrics }}
-apiVersion: autoscaling.k8s.io/v1
-kind: VerticalPodAutoscaler
-metadata:
-  name: {{ $.Chart.Name }}-kube-state-metrics
-spec:
-  targetRef:
-    apiVersion: apps/v1
-    kind:       {{ .kind }}
-    name:       {{ $.Chart.Name }}-kube-state-metrics
-  updatePolicy:
-    updateMode: {{ .mode | default "Auto" }}
-    minReplicas: {{ .minReplicas | default "1" }}
----
-{{- end }}
-
-{{- with .Values.vpaApps.prometheus-node-exporter }}
-apiVersion: autoscaling.k8s.io/v1
-kind: VerticalPodAutoscaler
-metadata:
-  name: {{ $.Chart.Name }}-prometheus-node-exporter
-spec:
-  targetRef:
-    apiVersion: apps/v1
-    kind:       {{ .kind }}
-    name:       {{ $.Chart.Name }}-prometheus-node-exporter
-  updatePolicy:
-    updateMode: {{ .mode | default "Auto" }}
-    minReplicas: {{ .minReplicas | default "1" }}
----
-{{- end }}
-
-# {{- range $vpaAppName, $vpaAppConfig := .Values.vpaApps }}
-# apiVersion: autoscaling.k8s.io/v1
-# kind: VerticalPodAutoscaler
-# metadata:
-#   name: {{ $vpaAppName }}
-# spec:
-#   targetRef:
-#     apiVersion: apps/v1
-#     kind:       {{ $vpaAppConfig.kind }}
-#     name:       {{ $vpaAppName }}
-#   updatePolicy:
-#     updateMode: {{ $vpaAppConfig.mode }}
-#     minReplicas: {{ $vpaAppConfig.minReplicas }}
-# ---
-# {{- end }}
