@@ -2,12 +2,12 @@
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
-  name: {{ if eq $vpaAppName "prometheus" }}{{ $vpaAppName }}-{{ $.Chart.Name }}-{{ $vpaAppName }}{{ else }}{{ $.Chart.Name }}-{{ $vpaAppName }}{{- end }}
+  name: {{ if eq $vpaAppName "prometheus" }}{{ $vpaAppName }}-{{ template "monitoring.fullname" $ }}-{{ $vpaAppName }}{{ else }}{{ template "monitoring.fullname" $ }}-{{ $vpaAppName }}{{- end }}
 spec:
   targetRef:
     apiVersion: apps/v1
     kind:       {{ $vpaAppConfig.kind }}
-    name:       {{ if eq $vpaAppName "prometheus" }}{{ $vpaAppName }}-{{ $.Chart.Name }}-{{ $vpaAppName }}{{ else }}{{ $.Chart.Name }}-{{ $vpaAppName }}{{- end }}
+    name:       {{ if eq $vpaAppName "prometheus" }}{{ $vpaAppName }}-{{ template "monitoring.fullname" $ }}-{{ $vpaAppName }}{{ else }}{{ template "monitoring.fullname" $ }}-{{ $vpaAppName }}{{- end }}
   updatePolicy:
     updateMode: {{ $vpaAppConfig.mode | default "Auto" }}
     minReplicas: {{ $vpaAppConfig.minReplicas | default "1" }}
