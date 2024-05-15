@@ -7,7 +7,7 @@ spec:
   targetRef:
     apiVersion: apps/v1
     kind:       {{ $vpaAppConfig.kind }}
-    name:       {{ $.Chart.Name }}-{{ $vpaAppName }}
+    name:       {{ if eq $vpaAppName "prometheus" }}{{ $vpaAppName }}-{{ $.Chart.Name }}-{{ $vpaAppName }}{{ else }}{{ $.Chart.Name }}-{{ $vpaAppName }}{{- end }}
   updatePolicy:
     updateMode: {{ $vpaAppConfig.mode | default "Auto" }}
     minReplicas: {{ $vpaAppConfig.minReplicas | default "1" }}
