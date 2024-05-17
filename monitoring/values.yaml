@@ -24,7 +24,7 @@ kube-prometheus-stack:
         {{ end }}
 
         {{ define "msteams.ck.title" }}
-        [{{ .Status | toUpper }}{{ end }}] {{ .CommonLabels.alertname }}
+        [{{ .Status | toUpper }}] {{ .CommonLabels.alertname }}
         {{ end }}
 
   prometheus:
