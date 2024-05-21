@@ -10,8 +10,8 @@ fullnameOverride: ""
 
 pritunl:
   image:
-    repository: gcr.io/cloudkite-public/pritunl
-    tag: v1.29.2547.95
+    repository: us-central1-docker.pkg.dev/cloudkite-public/docker-images/pritunl
+    tag: v1.32.3897.75
     pullPolicy: IfNotPresent
 
   resources:
@@ -42,7 +42,7 @@ pritunl:
 mongo:
   image:
     repository: mongo
-    tag: 4.2.1
+    tag: 5.0.26
     pullPolicy: IfNotPresent
 
   resources:
