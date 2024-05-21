@@ -42,7 +42,7 @@ pritunl:
 mongo:
   image:
     repository: mongo
-    tag: 5.0.26
+    tag: 4.2.1
     pullPolicy: IfNotPresent
 
   resources:
