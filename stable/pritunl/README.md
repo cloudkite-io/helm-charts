@@ -2,7 +2,7 @@
 
 ## Install helm chart
 ```bash
-helm install --name pritunl --version 0.2.0 cloudkite/pritunl
+helm install --name pritunl --version 0.3.2 cloudkite/pritunl
 ```
 
 ## Development

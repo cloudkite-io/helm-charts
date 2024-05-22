@@ -3,7 +3,20 @@ entries:
   pritunl:
   - apiVersion: v2
     appVersion: v1.32.3897.75
-    created: "2024-05-21T11:39:45.982610516-06:00"
+    created: "2024-05-22T16:57:37.902407779-06:00"
+    description: Enterprise Distributed OpenVPN and IPsec Server
+    digest: 2ddac9de91e9a5e5ca6f4f946949fc0339fe1652d5a5119b112bf9332eeef0fe
+    home: https://pritunl.com/
+    icon: https://pritunl.com/img/pritunl_onelogin_square.png
+    name: pritunl
+    sources:
+    - https://github.com/pritunl/pritunl
+    urls:
+    - pritunl-0.3.2.tgz
+    version: 0.3.2
+  - apiVersion: v2
+    appVersion: v1.32.3897.75
+    created: "2024-05-22T16:57:37.902088655-06:00"
     description: Enterprise Distributed OpenVPN and IPsec Server
     digest: 9c075c60c78bbbca21a5e375de2fb5168bfafb344db099d024cf1cb12d2be8fb
     home: https://pritunl.com/
@@ -16,7 +29,7 @@ entries:
     version: 0.3.1
   - apiVersion: v2
     appVersion: v1.29.2530.72
-    created: "2024-05-21T11:39:45.982305427-06:00"
+    created: "2024-05-22T16:57:37.901549066-06:00"
     description: Enterprise Distributed OpenVPN and IPsec Server
     digest: da334b92751aefef16220d500d08b391d580e30dc495b86a25195416e8f87986
     home: https://pritunl.com/
@@ -29,7 +42,7 @@ entries:
     version: 0.2.1
   - apiVersion: v2
     appVersion: v1.29.2232.32
-    created: "2024-05-21T11:39:45.981991436-06:00"
+    created: "2024-05-22T16:57:37.900982755-06:00"
     description: Enterprise Distributed OpenVPN and IPsec Server
     digest: 543dfbf87f22283b6f10e552a17ba629cdeec076cd09040d6817d52578cedd40
     home: https://pritunl.com/
@@ -45,7 +58,7 @@ entries:
     version: 0.2.0
   - apiVersion: v1
     appVersion: 1.29.2209.0
-    created: "2024-05-21T11:39:45.978488701-06:00"
+    created: "2024-05-22T16:57:37.897962256-06:00"
     description: Enterprise Distributed OpenVPN and IPsec Server
     digest: c716a59492aae681f2154af7daa8a409f56b082bd0ab309a17a30301884eebc1
     home: https://pritunl.com/
@@ -61,7 +74,7 @@ entries:
     version: 0.1.10
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2024-05-21T11:39:45.981680399-06:00"
+    created: "2024-05-22T16:57:37.900605582-06:00"
     description: A Helm chart for Kubernetes
     digest: d9a2f346d02d5f127e752324db7df48fca1f090d540f33bf528899af0a344e65
     name: pritunl
@@ -70,7 +83,7 @@ entries:
     version: 0.1.9
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2024-05-21T11:39:45.981243238-06:00"
+    created: "2024-05-22T16:57:37.90018399-06:00"
     description: A Helm chart for Kubernetes
     digest: e61e8c635b841cebdb6a87bdd1c73ba7448e3161dae5f84679e2cf1cc2661e0e
     name: pritunl
@@ -79,7 +92,7 @@ entries:
     version: 0.1.8
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2024-05-21T11:39:45.98068836-06:00"
+    created: "2024-05-22T16:57:37.899888173-06:00"
     description: A Helm chart for Kubernetes
     digest: 2821dda52de60d25022b7b7cc7398699dc238a1dfed863961453a0668123726e
     name: pritunl
@@ -88,7 +101,7 @@ entries:
     version: 0.1.7
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2024-05-21T11:39:45.980272183-06:00"
+    created: "2024-05-22T16:57:37.899581645-06:00"
     description: A Helm chart for Kubernetes
     digest: 8aec79c6e6c99cd0cc829d718069fb13c172cf301a41b4c16df63b540f105b82
     name: pritunl
@@ -97,7 +110,7 @@ entries:
     version: 0.1.6
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2024-05-21T11:39:45.979955041-06:00"
+    created: "2024-05-22T16:57:37.899263228-06:00"
     description: A Helm chart for Kubernetes
     digest: 99ed68a7e11297415eab07854269ec4fb705e777c360e0c3e87122d9288d708a
     name: pritunl
@@ -106,7 +119,7 @@ entries:
     version: 0.1.5
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2024-05-21T11:39:45.979656134-06:00"
+    created: "2024-05-22T16:57:37.898948772-06:00"
     description: A Helm chart for Kubernetes
     digest: 4b2a64a0a759655cb4a1b62a37092d423550973671e245652e2765cbc1de59f8
     name: pritunl
@@ -115,7 +128,7 @@ entries:
     version: 0.1.4
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2024-05-21T11:39:45.979341736-06:00"
+    created: "2024-05-22T16:57:37.898654413-06:00"
     description: A Helm chart for Kubernetes
     digest: edd8644b74e853253123f9ea4cd0575c9d02e473538da190a154f2e4e67e12c2
     name: pritunl
@@ -124,7 +137,7 @@ entries:
     version: 0.1.3
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2024-05-21T11:39:45.978957541-06:00"
+    created: "2024-05-22T16:57:37.898296285-06:00"
     description: A Helm chart for Kubernetes
     digest: 456fff3e0effd1469a3bc01ac2c40ba92b6687e832ef396a289f286c782524c6
     name: pritunl
@@ -133,7 +146,7 @@ entries:
     version: 0.1.2
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2024-05-21T11:39:45.977966064-06:00"
+    created: "2024-05-22T16:57:37.897571116-06:00"
     description: A Helm chart for Kubernetes
     digest: 04cbaa2a4abe52db5bd0311e4d7d1faa806fd573ab6fd12462511e065c7cfc7e
     name: pritunl
@@ -142,11 +155,11 @@ entries:
     version: 0.1.1
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2024-05-21T11:39:45.977658984-06:00"
+    created: "2024-05-22T16:57:37.897285748-06:00"
     description: A Helm chart for Kubernetes
     digest: 0c89eb88bc071c018c916f718c7112cc2f80d5fde2acd114059d2e962f0ecda1
     name: pritunl
     urls:
     - pritunl-0.1.0.tgz
     version: 0.1.0
-generated: "2024-05-21T11:39:45.977187038-06:00"
+generated: "2024-05-22T16:57:37.896844437-06:00"
