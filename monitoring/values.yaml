@@ -17,9 +17,11 @@ kube-prometheus-stack:
         {{ range .Alerts -}}
         *Severity:* `{{ .Labels.severity }}`
 
-        *Description:* {{ .Annotations.summary }}
+        *Description:* {{ .Annotations.description }}
 
-        *URL:* {{ .Annotations.query }}
+        {{- with .Annotations.query }}
+        *Query:* {{ . }}
+        {{- end }}
         {{ end }}
         {{ end }}
 
