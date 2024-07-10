@@ -19,7 +19,7 @@ kube-prometheus-stack:
 
         *Description:* {{ .Annotations.description }}
 
-        {{- with .Annotations.query }}
+        {{ with .Annotations.query }}
         *Query:* {{ . }}
         {{- end }}
         {{ end }}
