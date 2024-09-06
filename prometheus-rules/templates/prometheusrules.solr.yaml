@@ -55,7 +55,7 @@ spec:
         - alert: TooManyReplicasInactive
           annotations:
             summary: Inactive SOLR replicas detected
-            description: 'More than 5 replicas are not in inactive state, they could be recovering or down'
+            description: 'More than 5 replicas are not in the active state, they could be recovering or down'
           expr: 'count(solr_collections_replica_state{state!="active"}) > 5'
           for: 10m
           labels:
