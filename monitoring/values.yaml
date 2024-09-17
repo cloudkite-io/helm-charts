@@ -71,6 +71,7 @@ kube-prometheus-stack:
 #   password: PASSWORD
 
 version-checker:
+  replicaCount: 1
   additionalAnnotations: {}
   additionalLabels: {}
   acr:
@@ -90,13 +91,18 @@ version-checker:
     token:
   gcr:
     token:
-
+  env: {}
+  selfhosted: []
+  resources: {}
   versionChecker:
     logLevel: info
     metricsServingAddress: 0.0.0.0:8080
     testAllContainers: true
     imageCacheTimeout: 30m
-
+  service:
+    annotations: {}
+    labels: {}
+    port: 8080
   serviceMonitor:
     enabled: true
     additionalLabels:
