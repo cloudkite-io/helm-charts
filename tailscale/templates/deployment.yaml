@@ -43,6 +43,18 @@ spec:
                 name: {{ include "tailscale.fullname" . }}
                 key: TS_AUTH_KEY
                 optional: true
+          - name: TAILSCALE_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: tailscale
+                key: clientId
+          - name: TAILSCALE_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: tailscale
+                key: clientSecret
+          - name: TAILSCALE_AUTH_METHOD
+            value: "oauth"  # Use OAuth instead of auth key
           - name: TS_ROUTES
             value: {{ .Values.TS_ROUTES }}
       {{- with .Values.nodeSelector }}

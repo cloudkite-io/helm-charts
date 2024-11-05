@@ -1,7 +1,8 @@
 env: dev
 # comma seperated routes to advertise example 0.0.0.1/24, 0.0.0.1/32
 TS_ROUTES: ''
-# auth key generated from tailscale admin console
-authKey: tskey-auth-xxxxx
 # comma separated ACL tags, example, tag:server,tag:development
 tags: tag:server
+secrets:
+  clientId: '<YOUR_CLIENT_ID>' # generated from tailscale admin console, docs https://tailscale.com/kb/1215/oauth-clients
+  clientSecret: '<YOUR_CLIENT_SECRET>' # generated from tailscale admin console, docs https://tailscale.com/kb/1215/oauth-clients
