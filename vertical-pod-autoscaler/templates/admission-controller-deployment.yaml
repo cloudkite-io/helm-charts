@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: vpa-admission-controller
-  namespace: kube-system
+  namespace: {{ $.Release.Namespace }}
 spec:
   replicas: 1
   selector:
@@ -21,10 +21,6 @@ spec:
         - name: admission-controller
           image: "{{ .Values.admissionController.image.repository }}:{{ .Values.admissionController.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.admissionController.image.pullPolicy }}
-          {{- if .Values.admissionController.command }}
-          command:
-            {{- toYaml .Values.admissionController.command | nindent 12 }}
-          {{- end }}
           {{- if .Values.admissionController.args }}
           args:
             {{- toYaml .Values.admissionController.args | nindent 12 }}

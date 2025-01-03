@@ -1,14 +1,7 @@
 apiVersion: cert-manager.io/v1
 kind: Issuer
 metadata:
-  name: vpa-ca-issuer
-spec:
-  ca:
-    secretName: vpa-ca-root-secret
----
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
-  name: cluster-selfsigned-issuer
+  name: {{ .Values.selfSignedCert.issuer }}
+  namespace: {{ $.Release.Namespace }}
 spec:
   selfSigned: {}
