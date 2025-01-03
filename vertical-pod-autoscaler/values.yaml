@@ -1,3 +1,12 @@
+selfSignedCert:
+  enabled: true
+  name: vpa-cert-by-certmanager
+  issuer: vpa-self-signer
+  secretName: vpa-tls-certs
+  hosts:
+    - vpa-webhook.kube-system.svc
+    - vpa-webhook.kube-system.svc.cluster.local
+
 admissionController:
   # Requires certs to be generated and published as a secret to the cluster
   # See https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/pkg/admission-controller/gencerts.sh
@@ -5,14 +14,9 @@ admissionController:
     repository: registry.k8s.io/autoscaling/vpa-admission-controller
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "0.13.0"
+    tag: "1.2.1"
 
-  args:
-    # - "--client-ca-file=/etc/tls-certs/ca.crt"
-    # - "--client-ca-file=/etc/tls-certs/ca.crt"
-    # - "--client-ca-file=/etc/tls-certs/ca.crt"
-  command:
-    # - ./admission-controller
+  args: ["--v=4", "--stderrthreshold=info", "--reload-cert"]
 
   volumeMounts:
     - name: tls-certs
@@ -43,8 +47,7 @@ recommender:
   image:
     repository: registry.k8s.io/autoscaling/vpa-recommender
     pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
-    tag: "0.13.0"
+    tag: "1.2.1"
 
   resources:
     limits:
@@ -54,29 +57,18 @@ recommender:
       memory: 800Mi
 
   tlsCertArgs: [ ]
-  #    - "--client-ca-file=/etc/tls-certs/ca.crt"
-  #    - "--tls-cert-file=/etc/tls-certs/tls.crt"
-  #    - "--tls-private-key=/etc/tls-certs/tls.key"
-
-  # it can be default, high or low
   recommendPerformanceLevel: default
 
   volumeMounts: [ ]
-  #    - name: tls-certs
-  #      mountPath: "/etc/tls-certs"
-  #      readOnly: true
 
   volumes: [ ]
-  #    - name: tls-certs
-  #      secret:
-  #        secretName: vpa-tls-certs
 
 updater:
   image:
     repository: registry.k8s.io/autoscaling/vpa-updater
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "0.13.0"
+    tag: "1.2.1"
 
   resources:
     limits:

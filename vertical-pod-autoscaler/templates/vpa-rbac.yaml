@@ -120,7 +120,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: vpa-recommender
-    namespace: kube-system
+    namespace: {{ $.Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -133,10 +133,10 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: vpa-recommender
-    namespace: kube-system
+    namespace: {{ $.Release.Namespace }}
   - kind: ServiceAccount
     name: vpa-updater
-    namespace: kube-system
+    namespace: {{ $.Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -149,7 +149,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: vpa-recommender
-    namespace: kube-system
+    namespace: {{ $.Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -203,13 +203,13 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: vpa-recommender
-    namespace: kube-system
+    namespace: {{ $.Release.Namespace }}
   - kind: ServiceAccount
     name: vpa-admission-controller
-    namespace: kube-system
+    namespace: {{ $.Release.Namespace }}
   - kind: ServiceAccount
     name: vpa-updater
-    namespace: kube-system
+    namespace: {{ $.Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -222,19 +222,19 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: vpa-updater
-    namespace: kube-system
+    namespace: {{ $.Release.Namespace }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: vpa-admission-controller
-  namespace: kube-system
+  namespace: {{ $.Release.Namespace }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: vpa-updater
-  namespace: kube-system
+  namespace: {{ $.Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -299,10 +299,10 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: vpa-admission-controller
-    namespace: kube-system
+    namespace: {{ $.Release.Namespace }}
   - kind: ServiceAccount
     name: vpa-recommender
-    namespace: kube-system
+    namespace: {{ $.Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -329,4 +329,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: vpa-updater
-    namespace: kube-system
+    namespace: {{ $.Release.Namespace }}
