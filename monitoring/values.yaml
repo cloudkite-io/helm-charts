@@ -1,4 +1,8 @@
 kube-prometheus-stack:
+  crds:
+    upgradeJob:
+      enabled: true
+      forceConflicts: true
   grafana:
     enabled: false
   defaultRules:
