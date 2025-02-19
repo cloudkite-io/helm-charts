@@ -50,7 +50,7 @@ kube-prometheus-stack:
           writeRelabelConfigs:
             - sourceLabels:
               - "__name__"
-              regex: "kubernetes_build_info|version_checker_is_latest_version"
+              regex: "kubernetes_build_info|version_checker_is_latest_version|kube_pod_.*|kube_node_.*|x509_.*|velero_backup.*"
               action: "keep"
           queueConfig:
             capacity: 5000
