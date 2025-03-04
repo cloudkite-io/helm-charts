@@ -117,10 +117,12 @@ x509-certificate-exporter:
     create: false
       
 vpaApps:
-  prometheus:
-    kind: StatefulSet
-  kube-state-metrics:
-    kind: Deployment
-  prometheus-node-exporter:
-    kind: DaemonSet
-    minReplicas: 2
+  enabled: true
+  configs:
+    prometheus:
+      kind: StatefulSet
+    kube-state-metrics:
+      kind: Deployment
+    prometheus-node-exporter:
+      kind: DaemonSet
+      minReplicas: 2

@@ -1,4 +1,5 @@
-{{- range $vpaAppName, $vpaAppConfig := .Values.vpaApps }}
+{{- if .Values.vpaApps.enabled }}
+{{- range $vpaAppName, $vpaAppConfig := .Values.vpaApps.configs }}
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
 metadata:
@@ -12,4 +13,5 @@ spec:
     updateMode: {{ $vpaAppConfig.mode | default "Auto" }}
     minReplicas: {{ $vpaAppConfig.minReplicas | default "1" }}
 ---
+{{- end }}
 {{- end }}
