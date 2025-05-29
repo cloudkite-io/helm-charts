@@ -10,8 +10,10 @@ spec:
     kind:       {{ $vpaAppConfig.kind }}
     name:       {{ if eq $vpaAppName "prometheus" }}{{ $vpaAppName }}-{{ template "monitoring.fullname" $ }}-{{ $vpaAppName }}{{ else }}{{ template "monitoring.fullname" $ }}-{{ $vpaAppName }}{{- end }}
   updatePolicy:
-    updateMode: {{ $vpaAppConfig.mode | default "Auto" }}
-    minReplicas: {{ $vpaAppConfig.minReplicas | default "1" }}
+    updateMode: {{ $vpaAppConfig.mode | default "Off" | quote }}
+    {{ if $vpaAppConfig.minReplicas }}
+    minReplicas: {{ $vpaAppConfig.minReplicas }}
+    {{- end }}
 ---
 {{- end }}
 {{- end }}
