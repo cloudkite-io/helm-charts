@@ -125,4 +125,3 @@ vpaApps:
       kind: Deployment
     prometheus-node-exporter:
       kind: DaemonSet
-      minReplicas: 2
