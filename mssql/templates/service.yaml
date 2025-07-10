@@ -1,0 +1,21 @@
+{{- range .Values.databases }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .name }}-svc
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ .name }}
+  {{- if .svcAnnotations }}
+  annotations:
+    {{- toYaml .svcAnnotations | nindent 4 }}
+  {{- end }}
+spec:
+  type: LoadBalancer
+  selector:
+    app: {{ .name }}
+  ports:
+    - port: {{ .port }}
+      targetPort: 1433
+{{- end }}
