@@ -120,7 +120,7 @@ spec:
             runAsNonRoot: true
           resources:
             {{- if .resources }}
-            {{ toYaml .resources | nindent 10 }}
+            {{ toYaml .resources | nindent 12 }}
             {{- else }}
             requests:
               memory: "3Gi"

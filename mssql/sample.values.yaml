@@ -1,3 +1,4 @@
+loadBalancerName: mssql-load-balancer
 databases:
   - name: db-a
     database: db_a
