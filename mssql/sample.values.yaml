@@ -1,16 +1,30 @@
 databases:
-  - name: vero-75
-    database: vero_75
+  - name: db-a
+    database: db_a
     port: 1433
     storage: 50Gi
-    secretName: vero-75-db-secret
+    secretName: db-a-db-secret
     secretKey: sa-password
     edition: Developer
     initSql: |
       CREATE DATABASE another_db;
       GO;
-    svcAnnotations:
-      service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+    resources:
+      requests:
+        cpu: 2
+        memory: 4Gi
+      limits:
+        memory: 4Gi
+  - name: db-b
+    database: db_b
+    port: 1433
+    storage: 50Gi
+    secretName: db-b-db-secret
+    secretKey: sa-password
+    edition: Developer
+    initSql: |
+      CREATE DATABASE another_db;
+      GO;
     resources:
       requests:
         cpu: 2

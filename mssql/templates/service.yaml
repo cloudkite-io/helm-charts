@@ -7,10 +7,10 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   labels:
     app: {{ .name }}
-  {{- if .svcAnnotations }}
   annotations:
-    {{- toYaml .svcAnnotations | nindent 4 }}
-  {{- end }}
+    service.beta.kubernetes.io/aws-load-balancer-internal: "true"
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb"
+    service.beta.kubernetes.io/aws-load-balancer-name: "my-shared-mssql-nlb"
 spec:
   type: LoadBalancer
   selector:
@@ -18,4 +18,5 @@ spec:
   ports:
     - port: {{ .port }}
       targetPort: 1433
+      protocol: TCP
 {{- end }}
