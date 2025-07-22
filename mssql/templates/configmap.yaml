@@ -1,0 +1,13 @@
+{{- range .Values.databases }}
+{{- if .initSql }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .name }}-init-script
+  namespace: {{ $.Release.Namespace }}
+data:
+  init.sql: |
+{{ .initSql | indent 4 }}
+{{- end }}
+{{- end }}

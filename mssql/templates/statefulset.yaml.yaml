@@ -1,0 +1,153 @@
+{{- range .Values.databases }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ .name }}
+spec:
+  serviceName: {{ .name }}-svc
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .name }}
+    spec:
+      initContainers:
+        - name: volume-permissions
+          image: alpine:3.18
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p "/var/opt/mssql"
+              chown "1001:1001" "/var/opt/mssql"
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: data
+              mountPath: /var/opt/mssql
+        {{- if .initSql }}
+        - name: init-db
+          image: mcr.microsoft.com/mssql-tools
+          command: ["/bin/sh","-c"]
+          args:
+            - |
+              sleep 30
+              /opt/mssql-tools/bin/sqlcmd -S {{ .name }}-svc -U sa -P "$SA_PASSWORD" -i /init/init.sql
+          env:
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .secretName }}
+                  key: {{ .secretKey }}
+          volumeMounts:
+            - name: init-script
+              mountPath: /init
+        {{- end }}
+
+      containers:
+        - name: mssql
+          image: gcr.io/cloudkite-public/mssql:2022
+          ports:
+            - containerPort: 1433
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -ec
+              - |
+                sqlcmd -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "SELECT 1"
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -ec
+              - |
+                sqlcmd -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "USE {{ .database }}"
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          startupProbe:
+            exec:
+              command:
+              - /bin/bash
+              - -ec
+              - |
+                sqlcmd -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "USE {{ .database }}"
+            failureThreshold: 10
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: MSSQL_PID
+              value: {{ .edition | default "Developer" }}
+            - name: SQLCMD_ACCEPT_EULA
+              value: "YES"
+            - name: MSSQL_TCP_PORT
+              value: "1433"
+            - name: MSSQL_DATABASE
+              value: {{ .database }}
+            - name: MSSQL_DATABASE_COLLATE
+              value: Latin1_General_CI_AS
+            - name: MSSQL_COLLATION
+              value: Latin1_General_CI_AS
+            - name: MSSQL_DATA_DIR
+              value: /var/opt/mssql
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .secretName }}
+                  key: {{ .secretKey }}
+          securityContext:
+            runAsUser: 1001
+            runAsNonRoot: true
+          resources:
+            {{- if .resources }}
+            {{ toYaml .resources | nindent 12 }}
+            {{- else }}
+            requests:
+              memory: "3Gi"
+              cpu: "2"
+            limits:
+              memory: "4Gi"
+            {{- end }}
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: data
+              mountPath: /var/opt/mssql
+      securityContext:
+        fsGroup: 1001
+      volumes:
+        {{- if .initSql }}
+        - name: init-script
+          configMap:
+            name: {{ .name }}-init-script
+        {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app: {{ .name }}
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .storage | default "20Gi" }}
+{{- end }}

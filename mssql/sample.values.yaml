@@ -1,0 +1,34 @@
+loadBalancerName: mssql-load-balancer
+databases:
+  - name: db-a
+    database: db_a
+    port: 1433
+    storage: 50Gi
+    secretName: db-a-db-secret
+    secretKey: sa-password
+    edition: Developer
+    initSql: |
+      CREATE DATABASE another_db;
+      GO;
+    resources:
+      requests:
+        cpu: 2
+        memory: 4Gi
+      limits:
+        memory: 4Gi
+  - name: db-b
+    database: db_b
+    port: 1433
+    storage: 50Gi
+    secretName: db-b-db-secret
+    secretKey: sa-password
+    edition: Developer
+    initSql: |
+      CREATE DATABASE another_db;
+      GO;
+    resources:
+      requests:
+        cpu: 2
+        memory: 4Gi
+      limits:
+        memory: 4Gi
