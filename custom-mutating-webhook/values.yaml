@@ -2,6 +2,11 @@ replicas: 1
 
 namespace: webhooks
 
+secrets:
+  create: false # Indicates if the secret should be created (can be false if the secret already exists)
+  tls_crt: ""
+  tls_key: ""
+
 tolerations: []
 
 webhook:
