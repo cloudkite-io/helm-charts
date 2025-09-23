@@ -65,9 +65,19 @@ Create the name of the service account to use
 Determine the correct external-secrets API version based on cluster capabilities
 */}}
 {{- define "mssql.externalSecretsApiVersion" -}}
+{{- if and .Capabilities .Capabilities.APIVersions -}}
 {{- if .Capabilities.APIVersions.Has "external-secrets.io/v1" -}}
 external-secrets.io/v1
-{{- else -}}
+{{- else if .Capabilities.APIVersions.Has "external-secrets.io/v1beta1" -}}
 external-secrets.io/v1beta1
+{{- else -}}
+external-secrets.io/v1
+{{- end -}}
+{{- else -}}
+{{- if and .Values .Values.externalSecretsApiVersion -}}
+{{- .Values.externalSecretsApiVersion -}}
+{{- else -}}
+external-secrets.io/v1
+{{- end -}}
 {{- end -}}
 {{- end }}

@@ -7,6 +7,10 @@ databases:
     secretName: db-a-db-secret
     secretKey: sa-password
     edition: Developer
+    externalSecrets:
+      - name: db-secret
+        secretName: kubernetes/stage-eks/db-secret
+        secretStore: aws-secret-manager
     initSql: |
       CREATE DATABASE another_db;
       GO;
