@@ -60,3 +60,14 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Determine the correct external-secrets API version based on cluster capabilities
+*/}}
+{{- define "mssql.externalSecretsApiVersion" -}}
+{{- if .Capabilities.APIVersions.Has "external-secrets.io/v1" -}}
+external-secrets.io/v1
+{{- else -}}
+external-secrets.io/v1beta1
+{{- end -}}
+{{- end }}
