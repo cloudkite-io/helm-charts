@@ -53,7 +53,7 @@ spec:
 
       containers:
         - name: mssql
-          image: gcr.io/cloudkite-public/mssql:2022
+          image: "{{ if and .image .image.repository }}{{ .image.repository }}{{ else }}{{ $.Values.image.repository }}{{ end }}:{{ if and .image .image.tag }}{{ .image.tag }}{{ else }}{{ $.Values.image.tag }}{{ end }}"
           ports:
             - containerPort: 1433
               protocol: TCP
@@ -128,7 +128,7 @@ spec:
             limits:
               memory: "4Gi"
             {{- end }}
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: {{ if and .image .image.pullPolicy }}{{ .image.pullPolicy }}{{ else }}{{ $.Values.image.pullPolicy }}{{ end }}
           volumeMounts:
             - name: data
               mountPath: /var/opt/mssql

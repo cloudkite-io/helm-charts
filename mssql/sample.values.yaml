@@ -1,4 +1,11 @@
 loadBalancerName: mssql-load-balancer
+
+# Global image configuration
+image:
+  repository: gcr.io/cloudkite-public/mssql
+  tag: "2022"
+  pullPolicy: IfNotPresent
+
 databases:
   - name: db-a
     database: db_a
@@ -27,6 +34,10 @@ databases:
     secretName: db-b-db-secret
     secretKey: sa-password
     edition: Developer
+    image:
+      repository: gcr.io/cloudkite-public/mssql
+      tag: "2019"
+      pullPolicy: Always
     initSql: |
       CREATE DATABASE another_db;
       GO;
