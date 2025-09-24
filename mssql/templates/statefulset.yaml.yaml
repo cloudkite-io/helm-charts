@@ -1,4 +1,8 @@
 {{- range .Values.databases }}
+{{- $image := .image | default dict }}
+{{- $repository := $image.repository | default $.Values.image.repository }}
+{{- $tag := $image.tag | default $.Values.image.tag | toString }}
+{{- $pullPolicy := $image.pullPolicy | default $.Values.image.pullPolicy }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -53,7 +57,7 @@ spec:
 
       containers:
         - name: mssql
-          image: gcr.io/cloudkite-public/mssql:2022
+          image: "{{ $repository }}:{{ $tag }}"
           ports:
             - containerPort: 1433
               protocol: TCP
@@ -128,7 +132,7 @@ spec:
             limits:
               memory: "4Gi"
             {{- end }}
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: {{ $pullPolicy }}
           volumeMounts:
             - name: data
               mountPath: /var/opt/mssql
