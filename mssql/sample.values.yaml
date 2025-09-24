@@ -37,7 +37,7 @@ databases:
     image:
       repository: gcr.io/cloudkite-public/mssql
       tag: "2019"
-      pullPolicy: Always
+      pullPolicy: IfNotPresent
     initSql: |
       CREATE DATABASE another_db;
       GO;
