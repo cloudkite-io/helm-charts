@@ -14,6 +14,7 @@ databases:
     secretName: db-a-db-secret
     secretKey: sa-password
     edition: Developer
+    loadBalancerName: mssql-lb # this is used in case the default exceeds the 32 character limit
     externalSecrets:
       - name: db-secret
         secretName: kubernetes/stage-eks/db-secret
@@ -34,6 +35,7 @@ databases:
     secretName: db-b-db-secret
     secretKey: sa-password
     edition: Developer
+    loadBalancerName: staging-lb
     image:
       repository: gcr.io/cloudkite-public/mssql
       tag: "2019"
