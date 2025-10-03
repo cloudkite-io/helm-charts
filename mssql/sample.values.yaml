@@ -28,6 +28,22 @@ databases:
         memory: 4Gi
       limits:
         memory: 4Gi
+    backup:
+      enabled: true
+      schedule: "0 2 * * *" # Daily at 2:00 AM UTC
+      s3Bucket: "your-primary-backup-bucket"
+      s3Region: "us-east-1"
+      image:
+        repository: gcr.io/cloudkite-public/mssql
+        tag: "2022"
+        pullPolicy: IfNotPresent
+      serviceAccount:
+        create: true
+        name: "db-a-backup-sa"
+        # Add your IRSA role ARN annotation here
+        annotations:
+          eks.amazonaws.com/role-arn: "arn:aws:iam::123456789012:role/mssql-backup-role-for-db-a"
+
   - name: db-b
     database: db_b
     port: 1433
@@ -49,3 +65,5 @@ databases:
         memory: 4Gi
       limits:
         memory: 4Gi
+    backup:
+      enabled: false
