@@ -1,0 +1,46 @@
+{{- range .Values.databases }}
+{{- if .backup.enabled }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .name }}-backup-cronjob
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .name }}-backup
+spec:
+  schedule: {{ .backup.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: {{ .name }}-backup
+        spec:
+          serviceAccountName: {{ .backup.serviceAccount.name | default (printf "%s-backup-sa" .name) }}
+          restartPolicy: OnFailure
+          containers:
+          - name: mssql-backup
+            image: "{{ .backup.image.repository }}:{{ .backup.image.tag }}"
+            imagePullPolicy: {{ .backup.image.pullPolicy }}
+            command: ["/bin/bash", "-c", "/scripts/backup-script.sh"]
+            env:
+              # Mount the database password from the specified secret
+              - name: MSSQL_SA_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .secretName }}
+                    key: {{ .secretKey }}
+            volumeMounts:
+            - name: backup-script-volume
+              mountPath: /scripts
+          volumes:
+          - name: backup-script-volume
+            configMap:
+              name: {{ .name }}-backup-script
+              defaultMode: 0755
+{{- end }}
+{{- end }}
