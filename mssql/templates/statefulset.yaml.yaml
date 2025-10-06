@@ -36,6 +36,21 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /var/opt/mssql
+        - name: setup-certificates
+          image: curlimages/curl:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p /certs
+              curl -o /certs/aws-ca-1.crt https://www.amazontrust.com/repository/AmazonRootCA1.pem
+              curl -o /certs/aws-ca-2.crt https://www.amazontrust.com/repository/AmazonRootCA2.pem
+              curl -o /certs/aws-ca-3.crt https://www.amazontrust.com/repository/AmazonRootCA3.pem
+              curl -o /certs/aws-ca-4.crt https://www.amazontrust.com/repository/AmazonRootCA4.pem
+              chmod 644 /certs/*
+          volumeMounts:
+          - name: mssql-certs
+            mountPath: /certs
         {{- if .initSql }}
         - name: init-db
           image: mcr.microsoft.com/mssql-tools
@@ -136,9 +151,14 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /var/opt/mssql
+            - name: mssql-certs
+              mountPath: /var/opt/mssql/security/ca-certificates
+              readOnly: true
       securityContext:
         fsGroup: 1001
       volumes:
+        - name: mssql-certs
+          emptyDir: {}
         {{- if .initSql }}
         - name: init-script
           configMap:
