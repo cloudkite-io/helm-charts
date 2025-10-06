@@ -47,6 +47,7 @@ spec:
               curl -o /certs/aws-ca-2.crt https://www.amazontrust.com/repository/AmazonRootCA2.pem
               curl -o /certs/aws-ca-3.crt https://www.amazontrust.com/repository/AmazonRootCA3.pem
               curl -o /certs/aws-ca-4.crt https://www.amazontrust.com/repository/AmazonRootCA4.pem
+              curl -o /certs/aws-ca-4.crt https://www.amazontrust.com/repository/SFSRootCAG2.pem
               chmod 644 /certs/*
           volumeMounts:
           - name: mssql-certs
