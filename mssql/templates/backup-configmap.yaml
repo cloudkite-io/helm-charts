@@ -41,7 +41,7 @@ data:
     BACKUP_DATABASE_SQL="
     BACKUP DATABASE [${DB_DATABASE}]
     TO URL = '${S3_URL}'
-    WITH FORMAT, COMPRESSION, STATS = 10, MAXTRANSFERSIZE = 20971520;"
+    WITH FORMAT, COMPRESSION, STATS = 10, MAXTRANSFERSIZE = 5242880;"
 
     # --- Execution ---
     echo "Ensuring S3 credential exists..."
