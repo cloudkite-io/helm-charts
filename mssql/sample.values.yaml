@@ -30,9 +30,29 @@ databases:
         memory: 4Gi
     backup:
       enabled: true
-      schedule: "0 2 * * *" # Daily at 2:00 AM UTC
       s3Bucket: "your-primary-backup-bucket"
       s3Region: "us-east-1"
+
+      # Backup strategy configuration
+      strategy:
+        # Full backup schedule (required as base for differential)
+        full:
+          enabled: true
+          schedule: "0 2 * * 0"  # Weekly on Sunday at 2:00 AM UTC
+          retentionDays: 90       # Keep for 3 months
+
+        # Differential backup schedule (requires full backups)
+        differential:
+          enabled: true
+          schedule: "0 2 * * 1-6"  # Daily Mon-Sat at 2:00 AM UTC
+          retentionDays: 30        # Keep for 1 month
+
+        # Transaction log backup (optional, for point-in-time recovery)
+        log:
+          enabled: false
+          schedule: "*/30 * * * *"  # Every 30 minutes
+          retentionDays: 7          # Keep for 1 week
+
       image:
         repository: gcr.io/cloudkite-public/mssql
         tag: "2022"

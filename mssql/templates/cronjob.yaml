@@ -1,15 +1,21 @@
 {{- range .Values.databases }}
 {{- if .backup.enabled }}
+{{- $db := . }}
+{{- $strategy := .backup.strategy }}
+
+{{- /* Full Backup CronJob */ -}}
+{{- if and $strategy $strategy.full $strategy.full.enabled }}
 ---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ .name }}-backup-cronjob
+  name: {{ .name }}-backup-full
   namespace: {{ $.Release.Namespace }}
   labels:
     app.kubernetes.io/name: {{ .name }}-backup
+    backup-type: full
 spec:
-  schedule: {{ .backup.schedule | quote }}
+  schedule: {{ $strategy.full.schedule | quote }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
   failedJobsHistoryLimit: 1
@@ -19,16 +25,16 @@ spec:
         metadata:
           labels:
             app.kubernetes.io/name: {{ .name }}-backup
+            backup-type: full
         spec:
           serviceAccountName: {{ .backup.serviceAccount.name | default (printf "%s-backup-sa" .name) }}
           restartPolicy: OnFailure
           containers:
-          - name: mssql-backup
+          - name: mssql-backup-full
             image: "{{ .backup.image.repository }}:{{ .backup.image.tag }}"
             imagePullPolicy: {{ .backup.image.pullPolicy }}
-            command: ["/bin/bash", "-c", "/scripts/backup-script.sh"]
+            command: ["/bin/bash", "-c", "/scripts/backup-full.sh"]
             env:
-              # Mount the database password from the specified secret
               - name: MSSQL_SA_PASSWORD
                 valueFrom:
                   secretKeyRef:
@@ -45,12 +51,128 @@ spec:
                     name: {{ .secretName }}
                     key: AWS_SECRET_ACCESS_KEY
             volumeMounts:
-            - name: backup-script-volume
+            - name: backup-scripts-volume
               mountPath: /scripts
           volumes:
-          - name: backup-script-volume
+          - name: backup-scripts-volume
             configMap:
-              name: {{ .name }}-backup-script
+              name: {{ .name }}-backup-scripts
               defaultMode: 0755
+{{- end }}
+
+{{- /* Differential Backup CronJob */ -}}
+{{- if and $strategy $strategy.differential $strategy.differential.enabled }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .name }}-backup-differential
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .name }}-backup
+    backup-type: differential
+spec:
+  schedule: {{ $strategy.differential.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: {{ .name }}-backup
+            backup-type: differential
+        spec:
+          serviceAccountName: {{ .backup.serviceAccount.name | default (printf "%s-backup-sa" .name) }}
+          restartPolicy: OnFailure
+          containers:
+          - name: mssql-backup-differential
+            image: "{{ .backup.image.repository }}:{{ .backup.image.tag }}"
+            imagePullPolicy: {{ .backup.image.pullPolicy }}
+            command: ["/bin/bash", "-c", "/scripts/backup-differential.sh"]
+            env:
+              - name: MSSQL_SA_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .secretName }}
+                    key: {{ .secretKey }}
+              - name: AWS_ACCESS_KEY_ID
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .secretName }}
+                    key: AWS_ACCESS_KEY_ID
+              - name: AWS_SECRET_ACCESS_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .secretName }}
+                    key: AWS_SECRET_ACCESS_KEY
+            volumeMounts:
+            - name: backup-scripts-volume
+              mountPath: /scripts
+          volumes:
+          - name: backup-scripts-volume
+            configMap:
+              name: {{ .name }}-backup-scripts
+              defaultMode: 0755
+{{- end }}
+
+{{- /* Transaction Log Backup CronJob */ -}}
+{{- if and $strategy $strategy.log $strategy.log.enabled }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .name }}-backup-log
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .name }}-backup
+    backup-type: log
+spec:
+  schedule: {{ $strategy.log.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: {{ .name }}-backup
+            backup-type: log
+        spec:
+          serviceAccountName: {{ .backup.serviceAccount.name | default (printf "%s-backup-sa" .name) }}
+          restartPolicy: OnFailure
+          containers:
+          - name: mssql-backup-log
+            image: "{{ .backup.image.repository }}:{{ .backup.image.tag }}"
+            imagePullPolicy: {{ .backup.image.pullPolicy }}
+            command: ["/bin/bash", "-c", "/scripts/backup-log.sh"]
+            env:
+              - name: MSSQL_SA_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .secretName }}
+                    key: {{ .secretKey }}
+              - name: AWS_ACCESS_KEY_ID
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .secretName }}
+                    key: AWS_ACCESS_KEY_ID
+              - name: AWS_SECRET_ACCESS_KEY
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .secretName }}
+                    key: AWS_SECRET_ACCESS_KEY
+            volumeMounts:
+            - name: backup-scripts-volume
+              mountPath: /scripts
+          volumes:
+          - name: backup-scripts-volume
+            configMap:
+              name: {{ .name }}-backup-scripts
+              defaultMode: 0755
+{{- end }}
+
 {{- end }}
 {{- end }}
