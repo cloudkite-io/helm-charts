@@ -1,5 +1,4 @@
 loadBalancerName: mssql-load-balancer
-
 # Global image configuration
 image:
   repository: gcr.io/cloudkite-public/mssql
