@@ -33,31 +33,26 @@ spec:
           - name: mssql-backup-full
             image: "{{ .backup.image.repository }}:{{ .backup.image.tag }}"
             imagePullPolicy: {{ .backup.image.pullPolicy }}
-            command: ["/bin/bash", "-c", "/scripts/backup-full.sh"]
+            command: ["/bin/bash", "-c"]
+            args:
+              - |
+                set -eo pipefail
+                source /opt/mssql/scripts/aws-credentials.sh
+                /opt/mssql/scripts/backup-full.sh
             env:
               - name: MSSQL_SA_PASSWORD
                 valueFrom:
                   secretKeyRef:
                     name: {{ .secretName }}
                     key: {{ .secretKey }}
-              - name: AWS_ACCESS_KEY_ID
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ .secretName }}
-                    key: AWS_ACCESS_KEY_ID
-              - name: AWS_SECRET_ACCESS_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ .secretName }}
-                    key: AWS_SECRET_ACCESS_KEY
-            volumeMounts:
-            - name: backup-scripts-volume
-              mountPath: /scripts
-          volumes:
-          - name: backup-scripts-volume
-            configMap:
-              name: {{ .name }}-backup-scripts
-              defaultMode: 0755
+              - name: DB_SERVER
+                value: "{{ .name }}-svc"
+              - name: DB_DATABASE
+                value: "{{ .database }}"
+              - name: S3_BUCKET
+                value: "{{ .backup.s3Bucket }}"
+              - name: S3_REGION
+                value: "{{ .backup.s3Region }}"
 {{- end }}
 
 {{- /* Differential Backup CronJob */ -}}
@@ -90,31 +85,26 @@ spec:
           - name: mssql-backup-differential
             image: "{{ .backup.image.repository }}:{{ .backup.image.tag }}"
             imagePullPolicy: {{ .backup.image.pullPolicy }}
-            command: ["/bin/bash", "-c", "/scripts/backup-differential.sh"]
+            command: ["/bin/bash", "-c"]
+            args:
+              - |
+                set -eo pipefail
+                source /opt/mssql/scripts/aws-credentials.sh
+                /opt/mssql/scripts/backup-differential.sh
             env:
               - name: MSSQL_SA_PASSWORD
                 valueFrom:
                   secretKeyRef:
                     name: {{ .secretName }}
                     key: {{ .secretKey }}
-              - name: AWS_ACCESS_KEY_ID
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ .secretName }}
-                    key: AWS_ACCESS_KEY_ID
-              - name: AWS_SECRET_ACCESS_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ .secretName }}
-                    key: AWS_SECRET_ACCESS_KEY
-            volumeMounts:
-            - name: backup-scripts-volume
-              mountPath: /scripts
-          volumes:
-          - name: backup-scripts-volume
-            configMap:
-              name: {{ .name }}-backup-scripts
-              defaultMode: 0755
+              - name: DB_SERVER
+                value: "{{ .name }}-svc"
+              - name: DB_DATABASE
+                value: "{{ .database }}"
+              - name: S3_BUCKET
+                value: "{{ .backup.s3Bucket }}"
+              - name: S3_REGION
+                value: "{{ .backup.s3Region }}"
 {{- end }}
 
 {{- /* Transaction Log Backup CronJob */ -}}
@@ -147,31 +137,26 @@ spec:
           - name: mssql-backup-log
             image: "{{ .backup.image.repository }}:{{ .backup.image.tag }}"
             imagePullPolicy: {{ .backup.image.pullPolicy }}
-            command: ["/bin/bash", "-c", "/scripts/backup-log.sh"]
+            command: ["/bin/bash", "-c"]
+            args:
+              - |
+                set -eo pipefail
+                source /opt/mssql/scripts/aws-credentials.sh
+                /opt/mssql/scripts/backup-log.sh
             env:
               - name: MSSQL_SA_PASSWORD
                 valueFrom:
                   secretKeyRef:
                     name: {{ .secretName }}
                     key: {{ .secretKey }}
-              - name: AWS_ACCESS_KEY_ID
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ .secretName }}
-                    key: AWS_ACCESS_KEY_ID
-              - name: AWS_SECRET_ACCESS_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: {{ .secretName }}
-                    key: AWS_SECRET_ACCESS_KEY
-            volumeMounts:
-            - name: backup-scripts-volume
-              mountPath: /scripts
-          volumes:
-          - name: backup-scripts-volume
-            configMap:
-              name: {{ .name }}-backup-scripts
-              defaultMode: 0755
+              - name: DB_SERVER
+                value: "{{ .name }}-svc"
+              - name: DB_DATABASE
+                value: "{{ .database }}"
+              - name: S3_BUCKET
+                value: "{{ .backup.s3Bucket }}"
+              - name: S3_REGION
+                value: "{{ .backup.s3Region }}"
 {{- end }}
 
 {{- end }}

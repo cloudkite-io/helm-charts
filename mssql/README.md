@@ -7,6 +7,8 @@ The image that we are using(`gcr.io/cloudkite-public/mssql:2022`) is a from `reg
 
 This chart supports a sophisticated multi-tier backup strategy for MSSQL databases, combining Full, Differential, and Transaction Log backups. All backups are stored directly to AWS S3 using SQL Server's native S3 backup functionality.
 
+**Note:** Backup scripts are built into the custom Docker image.
+
 ### Understanding MSSQL Backup Types
 
 #### 1. Full Backup
@@ -50,19 +52,62 @@ A **Differential Backup** captures only the data that has changed since the last
 A **Transaction Log Backup** captures all database transactions since the last log backup.
 
 **Characteristics:**
-- Enables point-in-time recovery (restore to a specific moment)
-- Only works with databases in FULL or BULK_LOGGED recovery model
+- Enables point-in-time recovery (restore to a specific moment, e.g., "5 minutes before the incident")
+- Only works with databases in FULL or BULK_LOGGED recovery model (see below)
 - Very small and fast (only captures transaction log records)
 - Sequential - must be applied in order during restore
 - Uses T-SQL command: `BACKUP LOG [db] WITH COMPRESSION`
 
 **When to use:**
-- For critical databases requiring minimal data loss (low RPO)
+- For critical databases requiring minimal data loss (RPO < 1 hour)
+- When you need the ability to restore to an exact moment in time (e.g., right before a bad deployment or accidental data deletion)
 - Every 15-30 minutes for high-availability scenarios
-- When you need the ability to restore to a specific point in time
-- To keep the transaction log size manageable
 
-**Note:** Not included in default configuration. Enable only if your database is in FULL recovery model and you need point-in-time recovery.
+**Understanding Recovery Models:**
+
+SQL Server databases operate in one of three recovery models that determine how transaction logs are managed:
+
+1. **SIMPLE Recovery Model** (Default for new databases)
+   - Transaction logs are automatically truncated after each checkpoint
+   - **You CANNOT take transaction log backups** (the backup command will fail)
+   - Can only restore to the point of the last full or differential backup
+   - Use when: Development, staging, or databases where some data loss is acceptable
+   - **Our recommendation:** Use Full + Differential backups only (disable log backups)
+
+2. **FULL Recovery Model** (Recommended for production)
+   - Transaction logs are preserved until you back them up
+   - Allows point-in-time recovery to any moment between backups
+   - **You MUST take regular transaction log backups** or the log file will grow indefinitely and fill up disk space
+   - Use when: Production databases where minimal data loss is critical
+   - **Our recommendation:** Enable Full + Differential + Transaction Log backups
+
+3. **BULK_LOGGED Recovery Model** (Advanced use case)
+   - Similar to FULL but optimized for bulk operations
+   - Allows transaction log backups like FULL model
+
+**How to check the database's recovery model:**
+```sql
+SELECT name, recovery_model_desc
+FROM sys.databases
+WHERE name = 'the_database_name';
+```
+
+**Why transaction log backups are disabled by default:**
+- Most databases start in SIMPLE recovery model, where log backups don't work
+- Transaction log backups require more complex restore procedures
+- They generate more frequent backup jobs and storage costs
+- Full + Differential backups are sufficient for most use cases (RPO of a few hours is acceptable)
+
+**When you SHOULD enable transaction log backups:**
+- the database is in FULL recovery model (or you're willing to change it)
+- You need to recover to a specific point in time (e.g., "right before that DELETE statement ran")
+- You cannot tolerate losing more than 15-30 minutes of data
+- You have critical production data where every transaction matters
+
+**Important:** If you enable transaction log backups, you must also change the database to FULL recovery model:
+```sql
+ALTER DATABASE [the_database_name] SET RECOVERY FULL;
+```
 
 ### Backup Strategy Patterns
 
@@ -135,21 +180,21 @@ backup:
 Backups are organized in S3 with the following structure:
 
 ```
-s3://your-backup-bucket/
+s3://the-backup-bucket/
   └── backups/
       └── {database_name}/
           ├── full/
-          │   ├── db_a-full-2025-01-20-02-00-00.bak
-          │   ├── db_a-full-2025-01-27-02-00-00.bak
-          │   └── db_a-full-2025-02-03-02-00-00.bak
+          │   ├── db_a-full-2025-01-20-02-00.bak
+          │   ├── db_a-full-2025-01-27-02-00.bak
+          │   └── db_a-full-2025-02-03-02-00.bak
           ├── differential/
-          │   ├── db_a-diff-2025-01-21-02-00-00.bak
-          │   ├── db_a-diff-2025-01-22-02-00-00.bak
-          │   └── db_a-diff-2025-01-26-02-00-00.bak
+          │   ├── db_a-diff-2025-01-21-02-00.bak
+          │   ├── db_a-diff-2025-01-22-02-00.bak
+          │   └── db_a-diff-2025-01-26-02-00.bak
           └── log/
-              ├── db_a-log-2025-01-26-12-00-00.trn
-              ├── db_a-log-2025-01-26-12-15-00.trn
-              └── db_a-log-2025-01-26-12-30-00.trn
+              ├── db_a-log-2025-01-26-12-00.trn
+              ├── db_a-log-2025-01-26-12-15.trn
+              └── db_a-log-2025-01-26-12-30.trn
 ```
 
 ### Restore Process
@@ -163,17 +208,17 @@ s3://your-backup-bucket/
 2. **Restore the full backup:**
    ```sql
    RESTORE DATABASE [db_a]
-   FROM URL = 's3://your-bucket/backups/db_a/full/db_a-full-2025-01-20-02-00-00.bak'
+   FROM URL = 's3://deverus-mssql-backups-bucket/backups/db_a/full/db_a-full-2025-01-20-02-00.bak'
    WITH NORECOVERY,
-   CREDENTIAL = 's3://your-bucket.s3.us-east-1.amazonaws.com';
+   CREDENTIAL = 's3://deverus-mssql-backups-bucket.s3.us-east-1.amazonaws.com';
    ```
 
 3. **Restore the differential backup:**
    ```sql
    RESTORE DATABASE [db_a]
-   FROM URL = 's3://your-bucket/backups/db_a/differential/db_a-diff-2025-01-26-02-00-00.bak'
+   FROM URL = 's3://deverus-mssql-backups-bucket/backups/db_a/differential/db_a-diff-2025-01-26-02-00.bak'
    WITH RECOVERY,
-   CREDENTIAL = 's3://your-bucket.s3.us-east-1.amazonaws.com';
+   CREDENTIAL = 's3://deverus-mssql-backups-bucket.s3.us-east-1.amazonaws.com';
    ```
 
 **Note:** You only need the latest differential backup. All previous differential backups can be ignored as each differential is cumulative.
@@ -183,45 +228,45 @@ s3://your-backup-bucket/
 1. **Restore the full backup with NORECOVERY:**
    ```sql
    RESTORE DATABASE [db_a]
-   FROM URL = 's3://your-bucket/backups/db_a/full/db_a-full-2025-01-20-02-00-00.bak'
+   FROM URL = 's3://deverus-mssql-backups-bucket/backups/db_a/full/db_a-full-2025-01-20-02-00.bak'
    WITH NORECOVERY,
-   CREDENTIAL = 's3://your-bucket.s3.us-east-1.amazonaws.com';
+   CREDENTIAL = 's3://deverus-mssql-backups-bucket.s3.us-east-1.amazonaws.com';
    ```
 
 2. **Restore the differential backup with NORECOVERY:**
    ```sql
    RESTORE DATABASE [db_a]
-   FROM URL = 's3://your-bucket/backups/db_a/differential/db_a-diff-2025-01-26-02-00-00.bak'
+   FROM URL = 's3://deverus-mssql-backups-bucket/backups/db_a/differential/db_a-diff-2025-01-26-02-00.bak'
    WITH NORECOVERY,
-   CREDENTIAL = 's3://your-bucket.s3.us-east-1.amazonaws.com';
+   CREDENTIAL = 's3://deverus-mssql-backups-bucket.s3.us-east-1.amazonaws.com';
    ```
 
 3. **Restore transaction log backups in sequence:**
    ```sql
    -- Restore each log backup in chronological order
    RESTORE LOG [db_a]
-   FROM URL = 's3://your-bucket/backups/db_a/log/db_a-log-2025-01-26-12-00-00.trn'
+   FROM URL = 's3://deverus-mssql-backups-bucket/backups/db_a/log/db_a-log-2025-01-26-12-00.trn'
    WITH NORECOVERY,
-   CREDENTIAL = 's3://your-bucket.s3.us-east-1.amazonaws.com';
+   CREDENTIAL = 's3://deverus-mssql-backups-bucket.s3.us-east-1.amazonaws.com';
 
    RESTORE LOG [db_a]
-   FROM URL = 's3://your-bucket/backups/db_a/log/db_a-log-2025-01-26-12-15-00.trn'
+   FROM URL = 's3://deverus-mssql-backups-bucket/backups/db_a/log/db_a-log-2025-01-26-12-15.trn'
    WITH NORECOVERY,
-   CREDENTIAL = 's3://your-bucket.s3.us-east-1.amazonaws.com';
+   CREDENTIAL = 's3://deverus-mssql-backups-bucket.s3.us-east-1.amazonaws.com';
 
    -- Last log restore with RECOVERY to bring database online
    RESTORE LOG [db_a]
-   FROM URL = 's3://your-bucket/backups/db_a/log/db_a-log-2025-01-26-12-30-00.trn'
+   FROM URL = 's3://deverus-mssql-backups-bucket/backups/db_a/log/db_a-log-2025-01-26-12-30.trn'
    WITH RECOVERY,
-   CREDENTIAL = 's3://your-bucket.s3.us-east-1.amazonaws.com';
+   CREDENTIAL = 's3://deverus-mssql-backups-bucket.s3.us-east-1.amazonaws.com';
    ```
 
 4. **Or restore to a specific point in time:**
    ```sql
    RESTORE LOG [db_a]
-   FROM URL = 's3://your-bucket/backups/db_a/log/db_a-log-2025-01-26-12-30-00.trn'
+   FROM URL = 's3://deverus-mssql-backups-bucket/backups/db_a/log/db_a-log-2025-01-26-12-30.trn'
    WITH RECOVERY, STOPAT = '2025-01-26 12:25:00',
-   CREDENTIAL = 's3://your-bucket.s3.us-east-1.amazonaws.com';
+   CREDENTIAL = 's3://deverus-mssql-backups-bucket.s3.us-east-1.amazonaws.com';
    ```
 
 ### Configuration Example
@@ -232,7 +277,7 @@ databases:
     database: db_a
     backup:
       enabled: true
-      s3Bucket: "your-primary-backup-bucket"
+      s3Bucket: "the-primary-backup-bucket"
       s3Region: "us-east-1"
 
       # Backup strategy configuration
@@ -283,8 +328,8 @@ The service account's IAM role needs the following S3 permissions:
         "s3:ListBucket"
       ],
       "Resource": [
-        "arn:aws:s3:::your-backup-bucket",
-        "arn:aws:s3:::your-backup-bucket/*"
+        "arn:aws:s3:::the-backup-bucket",
+        "arn:aws:s3:::the-backup-bucket/*"
       ]
     }
   ]
