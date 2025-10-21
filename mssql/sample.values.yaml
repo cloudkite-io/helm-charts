@@ -55,7 +55,7 @@ databases:
 
       image:
         repository: gcr.io/cloudkite-public/mssql
-        tag: "2022"
+        tag: "v0.3.3"
         pullPolicy: IfNotPresent
       serviceAccount:
         create: true
