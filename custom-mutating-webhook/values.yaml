@@ -9,6 +9,8 @@ secrets:
 
 tolerations: []
 
+# certsExistingSecretName: test
+
 webhook:
   rules:
     - operations: [""]
@@ -17,6 +19,10 @@ webhook:
       resources: [""]
       scope: "*"
   timeoutSeconds: 5
+  # annotations:
+  #   cert-manager.io/inject-ca-from: "webhooks/example"
+  # podAnnotations:
+  #   reloader.stakater.com/auto: "true"
 
 env:
   PATCH_DICT: ""
