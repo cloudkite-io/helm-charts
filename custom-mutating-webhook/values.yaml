@@ -23,6 +23,7 @@ webhook:
   #   cert-manager.io/inject-ca-from: "webhooks/example"
   # podAnnotations:
   #   reloader.stakater.com/auto: "true"
+  containerImage: "gcr.io/cloudkite-public/custom-mutating-webhook:multi-patch"
 
 env:
   PATCH_DICT: ""
