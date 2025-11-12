@@ -2,8 +2,6 @@
 # - Default: Auto-generates as {db-name}-lb (max 32 chars, truncated if needed)
 # - Per-database override: Set loadBalancerName on individual databases
 #   Final LB name will be: {db-name}-{loadBalancerName}
-# - Global override (optional): Uncomment to set default suffix for all databases
-#   loadBalancerName: mssql-load-balancer
 
 # Global image configuration
 image:
