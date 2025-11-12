@@ -1,7 +1,7 @@
 # Global load balancer name suffix (optional, for backward compatibility)
 # If set, LB names will be: {db-name}-{loadBalancerName}
 # If not set, LB names will auto-generate as: {db-name}-lb (max 32 chars)
-# Per-database loadBalancerName overrides this global setting
+# Per-database loadBalancerName overrides this global setting (also concatenated with db name)
 loadBalancerName: mssql-load-balancer
 
 # Global image configuration
@@ -18,9 +18,10 @@ databases:
     secretName: db-a-db-secret
     secretKey: sa-password
     edition: Developer
-    # Explicit load balancer name override (optional)
+    # Explicit load balancer name suffix override (optional)
     # Overrides global loadBalancerName for this specific database
-    # Used for backward compatibility or custom naming requirements
+    # Final LB name will be: {db-name}-{loadBalancerName}
+    # Example: db-a + mssql-lb = db-a-mssql-lb
     loadBalancerName: mssql-lb
     externalSecrets:
       - name: db-secret
@@ -78,7 +79,8 @@ databases:
     secretName: db-b-db-secret
     secretKey: sa-password
     edition: Developer
-    # Explicit load balancer name override (optional)
+    # Explicit load balancer name suffix override (optional)
+    # Final LB name: db-b-staging-lb
     loadBalancerName: staging-lb
     image:
       repository: gcr.io/cloudkite-public/mssql
