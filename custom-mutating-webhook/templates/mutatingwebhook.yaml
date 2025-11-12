@@ -32,3 +32,4 @@ webhooks:
       namespace: {{ .Values.namespace }}
       name: {{ include "name" . }}
       path: /mutate/
+      port: {{ default 443 .Values.webhook.containerPort }}

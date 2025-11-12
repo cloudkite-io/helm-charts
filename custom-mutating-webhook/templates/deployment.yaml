@@ -24,8 +24,7 @@ spec:
           command:
             {{- toYaml .Values.webhook.containerCommand | nindent 12 }}
           {{- end }}
-          arg:
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {{ default 443 .Values.webhook.containerPort }}
           envFrom:
