@@ -1,4 +1,8 @@
-loadBalancerName: mssql-load-balancer
+# Load Balancer Naming:
+# - Default: Auto-generates as {db-name}-lb (max 32 chars, truncated if needed)
+# - Per-database override: Set loadBalancerName on individual databases
+#   Final LB name will be: {db-name}-{loadBalancerName}
+
 # Global image configuration
 image:
   repository: gcr.io/cloudkite-public/mssql
@@ -13,7 +17,10 @@ databases:
     secretName: db-a-db-secret
     secretKey: sa-password
     edition: Developer
-    loadBalancerName: mssql-lb # this is used in case the default exceeds the 32 character limit
+    # Optional: Override the auto-generated LB name
+    # Without this, LB name would be: db-a-lb
+    # With this override, LB name will be: db-a-mssql-lb
+    loadBalancerName: mssql-lb
     externalSecrets:
       - name: db-secret
         secretName: kubernetes/stage-eks/db-secret
@@ -70,6 +77,9 @@ databases:
     secretName: db-b-db-secret
     secretKey: sa-password
     edition: Developer
+    # Optional: Override the auto-generated LB name
+    # Without this, LB name would be: db-b-lb
+    # With this override, LB name will be: db-b-staging-lb
     loadBalancerName: staging-lb
     image:
       repository: gcr.io/cloudkite-public/mssql

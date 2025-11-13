@@ -81,3 +81,29 @@ external-secrets.io/v1
 {{- end -}}
 {{- end -}}
 {{- end }}
+
+{{/*
+Generate load balancer name with backward compatibility and 32-char AWS limit
+Priority:
+1. Per-database loadBalancerName (concatenated with db name for backward compatibility)
+2. Global loadBalancerName (concatenated with db name for backward compatibility)
+3. Auto-generated from db name with -lb suffix (max 32 chars)
+
+Usage: {{ include "mssql.loadBalancerName" (dict "db" . "root" $) }}
+*/}}
+{{- define "mssql.loadBalancerName" -}}
+{{- $db := .db -}}
+{{- $root := .root -}}
+{{- if $db.loadBalancerName -}}
+  {{/* Per-database override - concatenate with db name for backward compatibility */}}
+  {{- printf "%s-%s" $db.name $db.loadBalancerName -}}
+{{- else if $root.Values.loadBalancerName -}}
+  {{/* Global default - concatenate with db name for backward compatibility */}}
+  {{- printf "%s-%s" $db.name $root.Values.loadBalancerName -}}
+{{- else -}}
+  {{/* No override - auto-generate with 32-char limit */}}
+  {{- $maxLen := 29 -}}
+  {{- $truncated := $db.name | trunc $maxLen | trimSuffix "-" -}}
+  {{- printf "%s-lb" $truncated -}}
+{{- end -}}
+{{- end }}

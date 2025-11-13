@@ -9,7 +9,7 @@ metadata:
     app: {{ .name }}
   annotations:
     service.beta.kubernetes.io/aws-load-balancer-attributes: deletion_protection.enabled=true
-    service.beta.kubernetes.io/aws-load-balancer-name: {{ .name }}-{{ .loadBalancerName | default $.loadBalancerName | default "mssql-load-balancer" }}
+    service.beta.kubernetes.io/aws-load-balancer-name: {{ include "mssql.loadBalancerName" (dict "db" . "root" $) }}
     service.beta.kubernetes.io/aws-load-balancer-scheme: internal
     service.beta.kubernetes.io/aws-load-balancer-type: nlb-ip
 spec:
