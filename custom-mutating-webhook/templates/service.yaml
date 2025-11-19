@@ -9,5 +9,5 @@ spec:
   selector:
     {{- include "selectorLabels" . | nindent 4 }}
   ports:
-  - port: 443
-    targetPort: 443
+    - port: {{ default 443 .Values.webhook.containerPort }}
+      targetPort: {{ default 443 .Values.webhook.containerPort }}
