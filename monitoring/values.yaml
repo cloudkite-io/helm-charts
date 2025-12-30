@@ -125,3 +125,11 @@ vpaApps:
       kind: Deployment
     prometheus-node-exporter:
       kind: DaemonSet
+
+# Enable additional monitoring components and refer to official docs for valid values.
+loki:
+  enabled: false
+prometheus-blackbox-exporter:
+  enabled: false
+k8s-monitoring:
+  enabled: false
