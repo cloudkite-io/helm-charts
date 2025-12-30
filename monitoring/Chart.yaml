@@ -2,16 +2,26 @@ apiVersion: v2
 name: monitoring
 description: Helm chart for Prometheus
 type: application
-version: 0.5.0
+version: 0.6.0
 dependencies:
 - name: kube-prometheus-stack
-  version: 80.4.2
-  appVersion: v0.73.2
+  version: 80.9.0
+  appVersion: v0.87.1
   repository: https://prometheus-community.github.io/helm-charts
 - name: version-checker
   version: v0.10.0
-  appVersion: v0.8.2
+  appVersion: v0.10.0
   repository: https://charts.jetstack.io
 - name: x509-certificate-exporter
   version: 3.19.1
   repository: https://charts.enix.io
+- name: loki
+  version: 6.49.0
+  repository: https://grafana.github.io/helm-charts
+- name: prometheus-blackbox-exporter
+  version: 11.6.1
+  repository: https://prometheus-community.github.io/helm-charts
+- name: k8s-monitoring
+  version: 3.7.0
+  repository: https://grafana.github.io/helm-charts
+  condition: k8s-monitoring.enabled
