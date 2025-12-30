@@ -6,11 +6,9 @@ version: 0.6.0
 dependencies:
 - name: kube-prometheus-stack
   version: 80.9.0
-  appVersion: v0.87.1
   repository: https://prometheus-community.github.io/helm-charts
 - name: version-checker
   version: v0.10.0
-  appVersion: v0.10.0
   repository: https://charts.jetstack.io
 - name: x509-certificate-exporter
   version: 3.19.1
