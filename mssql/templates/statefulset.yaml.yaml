@@ -77,6 +77,7 @@ spec:
           ports:
             - containerPort: 1433
               protocol: TCP
+          {{- $livenessProbe := .livenessProbe | default dict }}
           livenessProbe:
             exec:
               command:
@@ -84,11 +85,12 @@ spec:
               - -ec
               - |
                 sqlcmd -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "SELECT 1"
-            failureThreshold: 3
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
+            failureThreshold: {{ $livenessProbe.failureThreshold | default 3 }}
+            initialDelaySeconds: {{ $livenessProbe.initialDelaySeconds | default 60 }}
+            periodSeconds: {{ $livenessProbe.periodSeconds | default 30 }}
+            successThreshold: {{ $livenessProbe.successThreshold | default 1 }}
+            timeoutSeconds: {{ $livenessProbe.timeoutSeconds | default 5 }}
+          {{- $readinessProbe := .readinessProbe | default dict }}
           readinessProbe:
             exec:
               command:
@@ -96,11 +98,12 @@ spec:
               - -ec
               - |
                 sqlcmd -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "USE {{ .database }}"
-            failureThreshold: 3
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
+            failureThreshold: {{ $readinessProbe.failureThreshold | default 3 }}
+            initialDelaySeconds: {{ $readinessProbe.initialDelaySeconds | default 30 }}
+            periodSeconds: {{ $readinessProbe.periodSeconds | default 10 }}
+            successThreshold: {{ $readinessProbe.successThreshold | default 1 }}
+            timeoutSeconds: {{ $readinessProbe.timeoutSeconds | default 5 }}
+          {{- $startupProbe := .startupProbe | default dict }}
           startupProbe:
             exec:
               command:
@@ -108,11 +111,11 @@ spec:
               - -ec
               - |
                 sqlcmd -C -S localhost -U sa -P "$MSSQL_SA_PASSWORD" -Q "USE {{ .database }}"
-            failureThreshold: 10
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
+            failureThreshold: {{ $startupProbe.failureThreshold | default 30 }}
+            initialDelaySeconds: {{ $startupProbe.initialDelaySeconds | default 10 }}
+            periodSeconds: {{ $startupProbe.periodSeconds | default 10 }}
+            successThreshold: {{ $startupProbe.successThreshold | default 1 }}
+            timeoutSeconds: {{ $startupProbe.timeoutSeconds | default 5 }}
           env:
             - name: ACCEPT_EULA
               value: "Y"
