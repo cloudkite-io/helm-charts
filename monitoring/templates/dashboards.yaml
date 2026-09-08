@@ -1,0 +1,23 @@
+{{- if .Values.dashboards.enabled }}
+{{- $root := . }}
+{{- range $path, $bytes := .Files.Glob "dashboards/*.json" }}
+{{- $name := base $path | trimSuffix ".json" }}
+{{- if or (empty $root.Values.dashboards.include) (has $name $root.Values.dashboards.include) }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "monitoring.fullname" $root }}-dashboard-{{ $name }}
+  namespace: {{ $root.Release.Namespace }}
+  labels:
+    {{- toYaml $root.Values.dashboards.labels | nindent 4 }}
+  {{- with $root.Values.dashboards.folder }}
+  annotations:
+    grafana_folder: {{ . | quote }}
+  {{- end }}
+data:
+  {{ base $path }}: |-
+{{ $bytes | toString | indent 4 }}
+{{- end }}
+{{- end }}
+{{- end }}

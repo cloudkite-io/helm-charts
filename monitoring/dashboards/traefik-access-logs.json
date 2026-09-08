@@ -1,0 +1,964 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Traefik access log analysis. The Status Class variable narrows headline stats, top tables, and the access log panel; 5xx Hotspots and breakdown panels stay scoped to their fixed semantics.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": 0,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "panels": [],
+      "title": "Overview",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Total HTTP requests Traefik served in the selected range, narrowed by the Status Class variable.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "blue", "value": 0 }] },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 0, "y": 1 },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Total Requests",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(count_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` [$__range]))",
+          "instant": true,
+          "legendFormat": "Total",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Per-second request rate over the auto-step interval, narrowed by the Status Class variable.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }] },
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 3, "y": 1 },
+      "id": 3,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Request Rate",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(rate({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` [$__interval]))",
+          "instant": true,
+          "legendFormat": "req/s",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Fraction of responses with a 5xx DownstreamStatus. This stat ignores the Status Class variable — it always reports 5xx ÷ all so the error signal is preserved.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "max": 1,
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": 0 },
+              { "color": "yellow", "value": 0.01 },
+              { "color": "red", "value": 0.05 }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 6, "y": 1 },
+      "id": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.0",
+      "title": "5xx Error Rate",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(count_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `5..` [$__range])) / sum(count_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" [$__range]))",
+          "instant": true,
+          "legendFormat": "Error Rate",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Mean Duration (ms) over the range, narrowed by Status Class. Skewed by timeouts — pair with P95/P99.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": 0 },
+              { "color": "yellow", "value": 500 },
+              { "color": "red", "value": 2000 }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 9, "y": 1 },
+      "id": 5,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Avg Duration",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "avg(avg_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` | unwrap Duration [$__range])) / 1000000",
+          "instant": true,
+          "legendFormat": "Avg",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "50th percentile (median) Duration. Half of all selected requests finished faster than this.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": 0 },
+              { "color": "yellow", "value": 200 },
+              { "color": "red", "value": 1000 }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 12, "y": 1 },
+      "id": 14,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.0",
+      "title": "P50 Duration",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "avg(quantile_over_time(0.50, {namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` | unwrap Duration [$__range])) / 1000000",
+          "instant": true,
+          "legendFormat": "P50",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "95th percentile Duration. The slow-tail signal — large values point at a saturated upstream rather than overall traffic.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": 0 },
+              { "color": "yellow", "value": 800 },
+              { "color": "red", "value": 3000 }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 15, "y": 1 },
+      "id": 15,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.0",
+      "title": "P95 Duration",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "avg(quantile_over_time(0.95, {namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` | unwrap Duration [$__range])) / 1000000",
+          "instant": true,
+          "legendFormat": "P95",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "99th percentile Duration. Worst 1% of requests took longer than this. Spikes call out specific slow paths or backend stalls.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": 0 },
+              { "color": "yellow", "value": 1000 },
+              { "color": "red", "value": 5000 }
+            ]
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 18, "y": 1 },
+      "id": 6,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.0",
+      "title": "P99 Duration",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "avg(quantile_over_time(0.99, {namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` | unwrap Duration [$__range])) / 1000000",
+          "instant": true,
+          "legendFormat": "P99",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Distinct ClientHost (source IP) count. Includes proxies, NAT egress IPs, and probes — not a unique-user metric.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "purple", "value": 0 }] },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 4, "w": 3, "x": 21, "y": 1 },
+      "id": 7,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Unique Clients",
+      "type": "stat",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "count(sum by(ClientHost) (count_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` [$__range])))",
+          "instant": true,
+          "legendFormat": "Clients",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": true,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "id": 8,
+      "panels": [
+        {
+          "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+          "gridPos": { "h": 7, "w": 24, "x": 0, "y": 6 },
+          "id": 9,
+          "options": {
+            "code": { "language": "plaintext", "showLineNumbers": false, "showMiniMap": false },
+            "content": "### Stat definitions\n\n| Stat | Meaning |\n| --- | --- |\n| **Total Requests** | Count of access log lines with a `DownstreamStatus`, narrowed by Status Class. |\n| **Request Rate** | `req/s` averaged over auto-step. |\n| **5xx Error Rate** | Always `5xx ÷ total`, regardless of Status Class. Yellow ≥ 1%, red ≥ 5%. Mixes upstream 5xx with Traefik-internal 5xx (e.g. 503 with `OriginStatus=0` when no backend is available). |\n| **Avg / P50 / P95 / P99 Duration** | Aggregations of Traefik's `Duration` field (ms). P50 is median; P95/P99 surface the slow tail. |\n| **Unique Clients** | Distinct `ClientHost` (source IP) count. Includes proxies/NAT/probes — not a unique-user metric. |\n\n### Status class quick reference\n\n- **2xx** — success.\n- **3xx** — redirect (often expected; e.g. auth flows).\n- **4xx** — client error. Almost always a caller-side issue.\n- **5xx** — server error. Triage in the **5xx Hotspots** row. A 503 with `OriginStatus=0` and missing `ServiceName` means Traefik couldn't reach a ready backend at all (no Endpoints, NetworkPolicy block, DNS failure, etc.)."
+          },
+          "pluginVersion": "12.2.0",
+          "title": "What these numbers mean",
+          "type": "text"
+        }
+      ],
+      "title": "Definitions",
+      "type": "row"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 6 },
+      "id": 10,
+      "panels": [],
+      "title": "Traffic",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Per-second request rate split by status class. This panel ignores the Status Class variable — its purpose is the breakdown.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }] },
+          "unit": "reqps"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "2xx" }, "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "3xx" }, "properties": [{ "id": "color", "value": { "fixedColor": "blue", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "4xx" }, "properties": [{ "id": "color", "value": { "fixedColor": "yellow", "mode": "fixed" } }] },
+          { "matcher": { "id": "byName", "options": "5xx" }, "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 7 },
+      "id": 11,
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "hideZeros": false, "mode": "multi", "sort": "none" }
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Request Rate by Status Class",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(rate({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `2..` [$__interval]))",
+          "legendFormat": "2xx",
+          "refId": "A"
+        },
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(rate({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `3..` [$__interval]))",
+          "legendFormat": "3xx",
+          "refId": "B"
+        },
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(rate({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `4..` [$__interval]))",
+          "legendFormat": "4xx",
+          "refId": "C"
+        },
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "sum(rate({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `5..` [$__interval]))",
+          "legendFormat": "5xx",
+          "refId": "D"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Share of responses by status class across the full range. Ignores the Status Class variable.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "hideFrom": { "legend": false, "tooltip": false, "viz": false } },
+          "mappings": [],
+          "unit": "short"
+        },
+        "overrides": [
+          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "2xx" }, { "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }] },
+          { "matcher": { "id": "byFrameRefID", "options": "B" }, "properties": [{ "id": "displayName", "value": "3xx" }, { "id": "color", "value": { "fixedColor": "blue", "mode": "fixed" } }] },
+          { "matcher": { "id": "byFrameRefID", "options": "C" }, "properties": [{ "id": "displayName", "value": "4xx" }, { "id": "color", "value": { "fixedColor": "yellow", "mode": "fixed" } }] },
+          { "matcher": { "id": "byFrameRefID", "options": "D" }, "properties": [{ "id": "displayName", "value": "5xx" }, { "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 7 },
+      "id": 12,
+      "options": {
+        "displayLabels": ["percent"],
+        "legend": { "displayMode": "table", "placement": "right", "showLegend": true, "values": ["value", "percent"] },
+        "pieType": "pie",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "sort": "desc",
+        "tooltip": { "hideZeros": false, "mode": "single", "sort": "none" }
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Status Code Distribution",
+      "type": "piechart",
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `2..` [$__range]))", "instant": true, "legendFormat": "2xx", "refId": "A" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `3..` [$__range]))", "instant": true, "legendFormat": "3xx", "refId": "B" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `4..` [$__range]))", "instant": true, "legendFormat": "4xx", "refId": "C" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "sum(count_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `5..` [$__range]))", "instant": true, "legendFormat": "5xx", "refId": "D" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 },
+      "id": 50,
+      "panels": [],
+      "title": "5xx Hotspots",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Top 10 backend services returning 5xx in the selected range. ServiceName has its `@kubernetesgateway` suffix trimmed for readability. Ignores the Status Class variable — always 5xx.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "continuous-RdYlGr" },
+          "custom": { "align": "auto", "cellOptions": { "type": "auto" }, "footer": { "reducers": [] }, "inspect": false },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 1 }] },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "svc" },
+            "properties": [
+              { "id": "displayName", "value": "Service" },
+              { "id": "custom.width", "value": 600 }
+            ]
+          },
+          {
+            "matcher": { "id": "byName", "options": "Value" },
+            "properties": [
+              { "id": "displayName", "value": "5xx Count" },
+              { "id": "custom.cellOptions", "value": { "mode": "lcd", "type": "gauge" } }
+            ]
+          }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "id": 51,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": [{ "desc": true, "displayName": "5xx Count" }]
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Top 10 Services with 5xx",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "editorMode": "code",
+          "expr": "topk(10, sum by(svc) (count_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus =~ `5..` | ServiceName != \"\" | label_format svc=`{{ trimSuffix \"@kubernetesgateway\" .ServiceName }}` [$__range])))",
+          "format": "table",
+          "instant": true,
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true } } }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Top 10 (Router, Path) returning 5xx. Path has query parameters stripped so /foo?bar=1 and /foo?bar=2 collapse to /foo.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "continuous-RdYlGr" },
+          "custom": { "align": "auto", "cellOptions": { "type": "auto" }, "footer": { "reducers": [] }, "inspect": false },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }, { "color": "red", "value": 1 }] },
+          "unit": "short"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "RouterName" }, "properties": [{ "id": "displayName", "value": "Router" }, { "id": "custom.width", "value": 320 }] },
+          { "matcher": { "id": "byName", "options": "pathClean" }, "properties": [{ "id": "displayName", "value": "Path" }, { "id": "custom.width", "value": 360 }] },
+          { "matcher": { "id": "byName", "options": "Value" }, "properties": [{ "id": "displayName", "value": "5xx Count" }, { "id": "custom.cellOptions", "value": { "mode": "lcd", "type": "gauge" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "id": 52,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": [{ "desc": true, "displayName": "5xx Count" }]
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Top 10 Paths with 5xx",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "editorMode": "code",
+          "expr": "topk(10, sum by(RouterName, pathClean) (count_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus =~ `5..` | RequestPath != \"\" | label_format pathClean=`{{ regexReplaceAll \"\\\\?.*\" .RequestPath \"\" }}` [$__range])))",
+          "format": "table",
+          "instant": true,
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true } } }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 24 },
+      "id": 20,
+      "panels": [],
+      "title": "Routes & Services",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Top 10 Traefik Routers (HTTPRoute attachments) by request count, narrowed by Status Class. Aggregating by RouterName instead of RequestPath keeps cardinality bounded.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "align": "auto", "cellOptions": { "type": "auto" }, "footer": { "reducers": [] }, "inspect": false },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }] },
+          "unit": "short"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "RouterName" }, "properties": [{ "id": "displayName", "value": "Router" }, { "id": "custom.width", "value": 600 }] },
+          { "matcher": { "id": "byName", "options": "Value" }, "properties": [{ "id": "displayName", "value": "Requests" }, { "id": "custom.cellOptions", "value": { "mode": "lcd", "type": "gauge" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 25 },
+      "id": 21,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": [{ "desc": true, "displayName": "Requests" }]
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Top 10 Routers",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "editorMode": "code",
+          "expr": "topk(10, sum by(RouterName) (count_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` | RouterName != \"\" [$__range])))",
+          "format": "table",
+          "instant": true,
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true } } }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Top 10 backend services by request count, narrowed by Status Class. ServiceName has the `@kubernetesgateway` suffix trimmed.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": { "align": "auto", "cellOptions": { "type": "auto" }, "footer": { "reducers": [] }, "inspect": false },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }] },
+          "unit": "short"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "svc" }, "properties": [{ "id": "displayName", "value": "Service" }, { "id": "custom.width", "value": 600 }] },
+          { "matcher": { "id": "byName", "options": "Value" }, "properties": [{ "id": "displayName", "value": "Requests" }, { "id": "custom.cellOptions", "value": { "mode": "lcd", "type": "gauge" } }] }
+        ]
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 25 },
+      "id": 22,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": [{ "desc": true, "displayName": "Requests" }]
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Top 10 Backend Services",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "editorMode": "code",
+          "expr": "topk(10, sum by(svc) (count_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` | ServiceName != \"\" | label_format svc=`{{ trimSuffix \"@kubernetesgateway\" .ServiceName }}` [$__range])))",
+          "format": "table",
+          "instant": true,
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true } } }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 33 },
+      "id": 30,
+      "panels": [],
+      "title": "Latency",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Aggregate latency over time, narrowed by Status Class. p99 is the most useful tail-latency signal.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }] },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 34 },
+      "id": 31,
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "hideZeros": false, "mode": "multi", "sort": "none" }
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Request Duration Percentiles",
+      "type": "timeseries",
+      "targets": [
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "avg(avg_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` | unwrap Duration [$__interval])) / 1000000", "legendFormat": "avg", "refId": "A" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "avg(quantile_over_time(0.50, {namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` | unwrap Duration [$__interval])) / 1000000", "legendFormat": "p50", "refId": "B" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "avg(quantile_over_time(0.95, {namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` | unwrap Duration [$__interval])) / 1000000", "legendFormat": "p95", "refId": "C" },
+        { "datasource": { "type": "loki", "uid": "${DS_LOKI}" }, "expr": "avg(quantile_over_time(0.99, {namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` | unwrap Duration [$__interval])) / 1000000", "legendFormat": "p99", "refId": "D" }
+      ]
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Average Duration per backend service over time, narrowed by Status Class. ServiceName has the `@kubernetesgateway` suffix trimmed. A flat-then-spiking line for one service typically points to that upstream's saturation, GC pause, or dependency stall.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 5,
+            "gradientMode": "none",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": 0 }] },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 34 },
+      "id": 32,
+      "options": {
+        "legend": { "calcs": ["mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "hideZeros": false, "mode": "multi", "sort": "none" }
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Avg Duration by Service",
+      "type": "timeseries",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "expr": "avg by(svc) (avg_over_time({namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` | ServiceName != \"\" | label_format svc=`{{ trimSuffix \"@kubernetesgateway\" .ServiceName }}` | unwrap Duration [$__interval])) / 1000000",
+          "legendFormat": "{{svc}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 42 },
+      "id": 60,
+      "panels": [],
+      "title": "Path Latency",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Top 20 (service, path) pairs by P95 Duration, narrowed by Status Class and Service. ServiceName has `@kubernetesgateway` trimmed; path has query params stripped. Use this to find the specific endpoints driving tail latency.",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "custom": { "align": "auto", "cellOptions": { "type": "auto" }, "footer": { "reducers": [] }, "inspect": false },
+          "mappings": [],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "transparent", "value": 0 }, { "color": "yellow", "value": 500 }, { "color": "red", "value": 2000 }] },
+          "unit": "ms"
+        },
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "svc" }, "properties": [{ "id": "displayName", "value": "Service" }, { "id": "custom.width", "value": 360 }] },
+          { "matcher": { "id": "byName", "options": "pathClean" }, "properties": [{ "id": "displayName", "value": "Path" }, { "id": "custom.width", "value": 520 }] },
+          { "matcher": { "id": "byName", "options": "Value" }, "properties": [{ "id": "displayName", "value": "P95 (ms)" }, { "id": "custom.cellOptions", "value": { "mode": "lcd", "type": "gauge" } }] }
+        ]
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 43 },
+      "id": 61,
+      "options": {
+        "cellHeight": "sm",
+        "showHeader": true,
+        "sortBy": [{ "desc": true, "displayName": "P95 (ms)" }]
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Top 20 (Service, Path) by P95 Latency",
+      "type": "table",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "editorMode": "code",
+          "expr": "topk(20, quantile_over_time(0.95, {namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` | ServiceName != \"\" | ServiceName =~ `$service` | RequestPath != \"\" | label_format svc=`{{ trimSuffix \"@kubernetesgateway\" .ServiceName }}`, pathClean=`{{ regexReplaceAll \"\\\\?.*\" .RequestPath \"\" }}` | unwrap Duration [$__range]) by(svc, pathClean)) / 1000000",
+          "format": "table",
+          "instant": true,
+          "queryType": "instant",
+          "refId": "A"
+        }
+      ],
+      "transformations": [
+        { "id": "organize", "options": { "excludeByName": { "Time": true, "__name__": true } } }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 53 },
+      "id": 40,
+      "panels": [],
+      "title": "Access Logs",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+      "description": "Filtered access log stream. Each line is reformatted as `[status] METHOD host+path → service dur=Xns trace=...` so the route, service, and outcome are visible at a glance. Click a line to expand the full JSON.",
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 16, "w": 24, "x": 0, "y": 54 },
+      "id": 41,
+      "options": {
+        "dedupStrategy": "none",
+        "enableInfiniteScrolling": true,
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "pluginVersion": "12.2.0",
+      "title": "Traefik Access Logs",
+      "type": "logs",
+      "targets": [
+        {
+          "datasource": { "type": "loki", "uid": "${DS_LOKI}" },
+          "direction": "backward",
+          "editorMode": "code",
+          "expr": "{namespace=\"traefik-system\", container=\"traefik\"} | json | RouterName !~ `httproute-$nsHide-.*` | DownstreamStatus != \"\" | DownstreamStatus =~ `$status` | ServiceName =~ `$service` | line_format `[{{.DownstreamStatus}}] {{.RequestMethod}} {{.RequestHost}}{{.RequestPath}} → {{.ServiceName}} dur={{.Duration}}ns trace={{.TraceId}}`",
+          "legendFormat": "",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "preload": false,
+  "refresh": "",
+  "schemaVersion": 42,
+  "tags": ["traefik", "gateway", "access-logs"],
+  "templating": {
+    "list": [
+      {
+        "current": { "text": "Loki", "value": "P8E80F9AEF21F6940" },
+        "includeAll": false,
+        "label": "Loki",
+        "name": "DS_LOKI",
+        "options": [],
+        "query": "loki",
+        "refresh": 1,
+        "type": "datasource"
+      },
+      {
+        "name": "status",
+        "label": "Status Class",
+        "description": "Status class regex applied to most panels (excluding the dedicated breakdowns and 5xx Hotspots).",
+        "type": "custom",
+        "query": "All : .. , 2xx : 2.. , 3xx : 3.. , 4xx : 4.. , 5xx : 5..",
+        "current": { "selected": true, "text": "All", "value": ".." },
+        "options": [
+          { "selected": true, "text": "All", "value": ".." },
+          { "selected": false, "text": "2xx", "value": "2.." },
+          { "selected": false, "text": "3xx", "value": "3.." },
+          { "selected": false, "text": "4xx", "value": "4.." },
+          { "selected": false, "text": "5xx", "value": "5.." }
+        ],
+        "includeAll": false,
+        "multi": false,
+        "refresh": 0
+      },
+      {
+        "name": "service",
+        "label": "Service",
+        "description": "ServiceName regex applied to the Access Logs and P95 Latency panels. Default `.*` matches every line (including Traefik-internal 503s where ServiceName is empty); override with e.g. `.*grafana.*` to scope to a single backend. NOTE: the regex is fully anchored — `.*standingdata` matches nothing, use `.*standingdata.*`.",
+        "type": "textbox",
+        "query": ".*",
+        "current": { "text": ".*", "value": ".*" },
+        "options": [{ "selected": true, "text": ".*", "value": ".*" }]
+      },
+      {
+        "name": "nsHide",
+        "label": "Internal namespaces",
+        "description": "Filter applied to RouterName on every panel. Default hides infra/operator traffic (monitoring, argocd) so the dashboard reflects application traffic. Switch to \"Show all\" to include them.",
+        "type": "custom",
+        "query": "Hide monitoring & argocd : (monitoring|argocd) , Show all : __NEVER_MATCHES__",
+        "current": { "selected": true, "text": "Hide monitoring & argocd", "value": "(monitoring|argocd)" },
+        "options": [
+          { "selected": true, "text": "Hide monitoring & argocd", "value": "(monitoring|argocd)" },
+          { "selected": false, "text": "Show all", "value": "__NEVER_MATCHES__" }
+        ],
+        "includeAll": false,
+        "multi": false,
+        "refresh": 0
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Traefik Access Logs",
+  "uid": "traefik-access-logs",
+  "version": 18
+}
