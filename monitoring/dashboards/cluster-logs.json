@@ -52,7 +52,7 @@
   "weekStart": "",
   "title": "Cluster Logs",
   "uid": "cluster-logs",
-  "description": "Log volume, error-log volume and a searchable stream for this cluster. Requires Loki. Ships only when the monitoring chart is told a log backend exists (dashboards.backends.logs, which defaults to loki.enabled).",
+  "description": "Log volume, error volume and a searchable log stream for this cluster.",
   "version": 1,
   "templating": {
     "list": [
@@ -74,7 +74,7 @@
       {
         "name": "nsHide",
         "label": "Internal namespaces",
-        "description": "Filter applied to every namespace selector. Default hides infra/operator traffic (monitoring, argocd, kube-system) so the dashboard reflects application workloads. Switch to \"Show all\" to include them.",
+        "description": "Hides platform namespaces so the view reflects application workloads. Switch to Show all to include them.",
         "type": "custom",
         "query": "Hide internal ns : (monitoring|argocd|kube-system) , Show all : __NEVER_MATCHES__",
         "current": {
@@ -128,7 +128,7 @@
         "skipUrlSync": false,
         "sort": 1,
         "type": "query",
-        "description": "Namespaces Loki has log streams for."
+        "description": "Namespaces with log streams."
       },
       {
         "current": {
@@ -160,7 +160,7 @@
         "skipUrlSync": false,
         "sort": 1,
         "type": "query",
-        "description": "Pods Loki has log streams for, within the selected namespaces."
+        "description": "Pods with log streams, within the selected namespaces."
       },
       {
         "current": {
@@ -287,7 +287,7 @@
       ],
       "title": "Log Volume by Namespace",
       "type": "timeseries",
-      "description": "Log lines per interval, by namespace. A sudden climb usually means a component started erroring in a loop; a drop to zero means a shipper stopped, not that the app went quiet."
+      "description": "Log lines per interval, by namespace."
     },
     {
       "datasource": {
@@ -378,7 +378,7 @@
       ],
       "title": "Error Logs by Namespace",
       "type": "timeseries",
-      "description": "Lines matching error/exception/fail/fatal, case-insensitive, by namespace. A blunt filter - it catches log lines that merely mention the word - but it is the fastest way to see which namespace started producing errors and when."
+      "description": "Log lines matching error, exception, fail or fatal, by namespace."
     },
     {
       "datasource": {
@@ -415,7 +415,7 @@
       ],
       "title": "Log Stream",
       "type": "logs",
-      "description": "Raw log stream for the selected namespaces and pods, narrowed by the Log Search box."
+      "description": "Log lines for the selected namespaces and pods."
     }
   ]
 }

@@ -53,7 +53,7 @@
   "weekStart": "",
   "title": "Cluster Traces",
   "uid": "cluster-traces",
-  "description": "Request rate, latency and error rate per service, derived from OpenTelemetry span metrics. Requires a standalone Tempo (tempo-distributed) with its metrics-generator enabled and the span-metrics processor remote-writing traces_spanmetrics_* into Prometheus, plus a Tempo datasource for the Service variable. Ships only when dashboards.backends.traces is set to true - this chart does not deploy Tempo, so it cannot infer that.",
+  "description": "Request rate, latency and error rate per service, from OpenTelemetry traces.",
   "version": 1,
   "templating": {
     "list": [
@@ -132,7 +132,7 @@
       },
       "id": 20,
       "panels": [],
-      "title": "Traces (OpenTelemetry)",
+      "title": "Traces",
       "type": "row"
     },
     {
@@ -224,7 +224,7 @@
       ],
       "title": "Trace Request Rate by OTel Status (OK/ERROR/UNSET)",
       "type": "timeseries",
-      "description": "Span rate by service and OpenTelemetry status code. ERROR is the signal; UNSET simply means the instrumentation did not set a status and is not a failure."
+      "description": "Span rate by service and status. UNSET means the service did not set a status, not that it failed."
     },
     {
       "datasource": {
@@ -316,7 +316,7 @@
       ],
       "title": "Trace Latency p95 by Service",
       "type": "timeseries",
-      "description": "95th-percentile span duration per service, from Tempo's span-metrics generator."
+      "description": "95th percentile span duration per service."
     },
     {
       "datasource": {
@@ -410,7 +410,7 @@
           "refId": "A"
         }
       ],
-      "description": "Error rate for inbound requests the service handled (SPAN_KIND_SERVER only). Excludes failures of outbound/internal dependency calls \u2014 see \"Dependency Error Rate by Service\" for those.",
+      "description": "Share of inbound requests to each service that failed.",
       "title": "Server Error Rate by Service",
       "type": "timeseries"
     },
@@ -504,7 +504,7 @@
       ],
       "title": "Operation Latency p95 (by span name)",
       "type": "timeseries",
-      "description": "95th-percentile duration per span name, so a slow service can be narrowed to the specific operation causing it."
+      "description": "95th percentile duration per operation, for finding the slow call inside a service."
     },
     {
       "datasource": {
@@ -646,7 +646,7 @@
           "refId": "C"
         }
       ],
-      "description": "HTTP response code rate per service. Requires OTel collector spanmetrics processor to include http.response.status_code (or http.status_code) as a dimension. Empty if dimension is not exported.",
+      "description": "HTTP responses per second, by service and status class.",
       "title": "HTTP Response Code Rate by Service (2xx / 4xx / 5xx)",
       "type": "timeseries"
     },
@@ -742,7 +742,7 @@
           "refId": "A"
         }
       ],
-      "description": "Error rate of OUTBOUND/INTERNAL dependency calls a service makes (SPAN_KIND_CLIENT and SPAN_KIND_INTERNAL) \u2014 e.g. failed Azure AD token acquisition, Microsoft Graph, downstream HTTP, DB. A high value here does NOT mean the service is returning errors to its callers (see \"Server Error Rate by Service\"); it means one of its dependencies is failing.",
+      "description": "Share of each service's outbound calls that failed. Points at a failing dependency rather than the service itself.",
       "title": "Dependency Error Rate by Service (client/internal spans)",
       "type": "timeseries"
     }

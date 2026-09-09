@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "HTTP request volume, error rate and latency for Traefik, built entirely on Traefik's own Prometheus metrics. This is the ingress dashboard that works on every cluster; 'Traefik Access Logs' adds per-request detail but needs Loki.",
+  "description": "HTTP traffic, errors and latency at the ingress.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -39,7 +39,7 @@
     {
       "id": 1,
       "type": "row",
-      "title": "Traffic & Errors",
+      "title": "Overview",
       "collapsed": false,
       "gridPos": {
         "h": 1,
@@ -53,7 +53,7 @@
       "id": 2,
       "type": "stat",
       "title": "Request Rate",
-      "description": "Requests per second across every Traefik backend service, from Traefik's own Prometheus metrics. Needs no log backend, so it works on every cluster.",
+      "description": "Requests per second across all backend services.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -116,7 +116,7 @@
       "id": 3,
       "type": "stat",
       "title": "Requests (range)",
-      "description": "Total requests attempted over the selected time range, whatever the outcome.",
+      "description": "Total requests received over the selected time range.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -179,7 +179,7 @@
       "id": 4,
       "type": "stat",
       "title": "5xx Error Rate",
-      "description": "Share of requests answered 5xx. Orange at 1%, red at 5% - the same thresholds the '5XX Error Spike' alert uses.",
+      "description": "Share of requests returning a server error. Orange from 1%, red from 5%.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -249,7 +249,7 @@
       "id": 5,
       "type": "stat",
       "title": "4xx Rate (excl. 404)",
-      "description": "Share of requests rejected 4xx, excluding 404. 404s are excluded because on a public endpoint they are dominated by scanners and drown out real client errors.",
+      "description": "Share of requests rejected as client errors. 404s are excluded, as they are mostly scanner traffic.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -319,7 +319,7 @@
       "id": 6,
       "type": "stat",
       "title": "P95 Latency",
-      "description": "95th-percentile request duration across all services.",
+      "description": "95th percentile request duration.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -382,7 +382,7 @@
       "id": 7,
       "type": "stat",
       "title": "Backend Services",
-      "description": "Distinct Traefik backend services currently reporting request metrics.",
+      "description": "Backend services currently serving requests.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -457,13 +457,13 @@
       "id": 11,
       "type": "timeseries",
       "title": "Request Rate by Status Class",
-      "description": "Request rate split by status class. Stacked, so the total height is overall RPS and each band is its contribution.",
+      "description": "Request rate split by response status. Total height is overall throughput.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 12,
         "x": 0,
         "y": 6
@@ -630,13 +630,13 @@
       "id": 12,
       "type": "timeseries",
       "title": "Request Volume vs 30m Baseline",
-      "description": "5-minute request rate divided by the 30-minute rate. 1.0 means traffic is steady; a sustained value above ~2 is a surge, below ~0.5 a drop-off. This is the RPS-anomaly signal - a raw RPS line cannot tell a busy hour from an incident.",
+      "description": "Request rate over the last 5 minutes against the last 30. 1.0 is steady traffic.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 12,
         "x": 12,
         "y": 6
@@ -720,7 +720,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 14
+        "y": 16
       },
       "panels": []
     },
@@ -728,7 +728,7 @@
       "id": 21,
       "type": "timeseries",
       "title": "5xx Rate by Service",
-      "description": "Which backend is producing server errors. Empty is the healthy state.",
+      "description": "Server errors per second, by backend service.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -737,7 +737,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 15
+        "y": 17
       },
       "targets": [
         {
@@ -755,11 +755,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -791,7 +788,8 @@
                 "value": null
               }
             ]
-          }
+          },
+          "noValue": "No server errors"
         },
         "overrides": []
       }
@@ -800,7 +798,7 @@
       "id": 22,
       "type": "timeseries",
       "title": "4xx Rate by Service (excl. 404)",
-      "description": "Client-error rate by backend, 404s excluded. A step change usually means a client or auth change, not a server fault.",
+      "description": "Client errors per second by backend service, excluding 404s.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -809,7 +807,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 15
+        "y": 17
       },
       "targets": [
         {
@@ -827,11 +825,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -863,7 +858,8 @@
                 "value": null
               }
             ]
-          }
+          },
+          "noValue": "No client errors"
         },
         "overrides": []
       }
@@ -872,7 +868,7 @@
       "id": 23,
       "type": "table",
       "title": "Errors by Service and Code (range total)",
-      "description": "Every 4xx/5xx response over the range, by backend and exact status code. The fastest way to answer 'what is actually failing'.",
+      "description": "Every 4xx and 5xx response over the range, by service and status code.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -881,7 +877,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 23
+        "y": 25
       },
       "targets": [
         {
@@ -956,7 +952,8 @@
             "cellOptions": {
               "type": "auto"
             }
-          }
+          },
+          "noValue": "No errors"
         },
         "overrides": [
           {
@@ -1010,7 +1007,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 33
       },
       "panels": []
     },
@@ -1018,16 +1015,16 @@
       "id": 31,
       "type": "timeseries",
       "title": "Request Duration Percentiles",
-      "description": "Latency distribution over time. Percentiles belong on a time axis: a single P95 number for a 6-hour window hides whether the tail was flat or spiking.",
+      "description": "Request latency distribution over time.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 12,
         "x": 0,
-        "y": 32
+        "y": 34
       },
       "targets": [
         {
@@ -1126,7 +1123,7 @@
       "id": 32,
       "type": "timeseries",
       "title": "P95 Latency by Service",
-      "description": "P95 per backend, to attribute a latency regression to one service.",
+      "description": "95th percentile latency per backend service.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1135,7 +1132,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 32
+        "y": 34
       },
       "targets": [
         {
@@ -1153,11 +1150,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -1197,13 +1191,13 @@
     {
       "id": 40,
       "type": "row",
-      "title": "Ingress Health",
+      "title": "Ingress health",
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 44
       },
       "panels": []
     },
@@ -1211,7 +1205,7 @@
       "id": 41,
       "type": "timeseries",
       "title": "Open Connections",
-      "description": "Concurrent connections per entrypoint. Rising while RPS is flat means requests are piling up - a saturation signal ahead of latency.",
+      "description": "Concurrent connections per entrypoint. Rising while request rate is flat means requests are queueing.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1220,7 +1214,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 41
+        "y": 45
       },
       "targets": [
         {
@@ -1238,11 +1232,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -1283,7 +1274,7 @@
       "id": 42,
       "type": "timeseries",
       "title": "Response Throughput by Service",
-      "description": "Bytes returned per second by backend.",
+      "description": "Bytes returned per second, by backend service.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1292,7 +1283,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 41
+        "y": 45
       },
       "targets": [
         {
@@ -1310,11 +1301,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -1355,16 +1343,16 @@
       "id": 43,
       "type": "timeseries",
       "title": "Time Since Last Successful Config Reload",
-      "description": "Traefik v3 exposes `traefik_config_last_reload_success` as a unix timestamp gauge, not a failure counter. This plots how stale that timestamp is. It climbs steadily while nothing changes; it should drop to zero on every successful reload. A sawtooth that stops resetting while routes are being changed means Traefik is serving stale config.",
+      "description": "Time since Traefik last loaded its configuration successfully. Resets on each successful reload.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 8,
         "x": 16,
-        "y": 41
+        "y": 45
       },
       "targets": [
         {
@@ -1448,7 +1436,7 @@
       {
         "name": "service",
         "label": "Service",
-        "description": "Traefik backend service (the `service` label on traefik_service_requests_total).",
+        "description": "Backend service.",
         "type": "query",
         "datasource": {
           "type": "prometheus",
@@ -1482,7 +1470,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Traefik \u2014 Ingress Overview (Prometheus)",
+  "title": "Traefik Ingress Overview",
   "uid": "traefik-overview",
   "version": 1,
   "weekStart": ""

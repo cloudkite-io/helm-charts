@@ -2,7 +2,7 @@
   "annotations": {
     "list": []
   },
-  "description": "Azure billing (subscription-wide, from azure-cost-exporter) and in-cluster costs (from OpenCost)",
+  "description": "Cloud billing and in-cluster cost allocation.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -35,7 +35,7 @@
       },
       "id": 100,
       "panels": [],
-      "title": "Azure billing \u2014 environment resource groups (month-to-date, USD)",
+      "title": "Cloud billing (month to date)",
       "type": "row"
     },
     {
@@ -43,7 +43,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Actual Azure cost for this environment's resource groups (unify-<env> + AKS node RG), month to date, from the Cost Management API.",
+      "description": "Total cloud spend so far this month.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -102,7 +102,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Naive projection: MTD spend scaled to the full month.",
+      "description": "Month-to-date spend extrapolated to the full month.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -161,7 +161,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Month-to-date cost per resource group, largest first.",
+      "description": "Month-to-date spend per resource group.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -225,7 +225,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Month-to-date cost per Azure service, largest first.",
+      "description": "Month-to-date spend per cloud service.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -289,7 +289,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Spend per calendar day, stacked by resource group. The exporter carries the day in a `dateISO` label rather than on the time axis, so this is a bar chart over that label - as a timeseries it drew one flat line per day, which showed no trend at all.",
+      "description": "Spend per calendar day, by resource group.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -319,7 +319,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 15
       },
       "id": 24,
       "options": {
@@ -395,7 +395,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Spend per calendar day, stacked by Azure service. Same `dateISO`-label handling as the panel above.",
+      "description": "Spend per calendar day, by cloud service.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -425,7 +425,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 15
+        "y": 22
       },
       "id": 25,
       "options": {
@@ -501,7 +501,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Every billed item in the environment resource groups, month to date. Resource = last segment of the ARM ID; Service from the ServiceName dimension. Label names verified against the live scrape.",
+      "description": "Every billed resource this month, ranked by cost.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -563,7 +563,7 @@
         "h": 12,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 31
       },
       "id": 20,
       "options": {
@@ -623,11 +623,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 36
+        "y": 43
       },
       "id": 200,
       "panels": [],
-      "title": "This cluster \u2014 OpenCost (allocation run-rate)",
+      "title": "In-cluster cost allocation",
       "type": "row"
     },
     {
@@ -635,7 +635,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Sum of node hourly costs (Azure retail pricing).",
+      "description": "Hourly cost of the cluster's nodes.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -659,7 +659,7 @@
         "h": 5,
         "w": 6,
         "x": 0,
-        "y": 37
+        "y": 44
       },
       "id": 7,
       "options": {
@@ -694,7 +694,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Share of allocated CPU+RAM cost per namespace (monthly run-rate). Unallocated node headroom is not included.",
+      "description": "Share of cluster cost per namespace, at the current run rate.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -716,7 +716,7 @@
         "h": 10,
         "w": 8,
         "x": 6,
-        "y": 37
+        "y": 44
       },
       "id": 9,
       "options": {
@@ -764,7 +764,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Allocated CPU+RAM cost per namespace over time (monthly run-rate).",
+      "description": "Cluster cost per namespace over time, at the current run rate.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -819,7 +819,7 @@
         "h": 10,
         "w": 10,
         "x": 14,
-        "y": 37
+        "y": 44
       },
       "id": 10,
       "options": {
@@ -857,7 +857,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Node hourly cost x 730h.",
+      "description": "Node cost projected over a month at the current rate.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -881,7 +881,7 @@
         "h": 5,
         "w": 6,
         "x": 0,
-        "y": 42
+        "y": 54
       },
       "id": 8,
       "options": {
@@ -916,7 +916,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Per-pod allocation run-rate: (CPU cores x node CPU $/h + GiB RAM x node RAM $/h) x 730h.",
+      "description": "Workloads ranked by monthly cost at the current run rate.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -966,7 +966,7 @@
         "h": 10,
         "w": 14,
         "x": 0,
-        "y": 47
+        "y": 59
       },
       "id": 21,
       "options": {
@@ -1023,7 +1023,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Node cost by VM SKU (hourly x 730).",
+      "description": "Monthly node cost by instance type.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1046,7 +1046,7 @@
         "h": 10,
         "w": 6,
         "x": 14,
-        "y": 47
+        "y": 59
       },
       "id": 22,
       "options": {
@@ -1081,7 +1081,7 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "Persistent volume hourly cost x 730h.",
+      "description": "Monthly cost of persistent volumes.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1105,7 +1105,7 @@
         "h": 10,
         "w": 4,
         "x": 20,
-        "y": 47
+        "y": 59
       },
       "id": 23,
       "options": {
@@ -1144,7 +1144,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 57
+        "y": 69
       },
       "panels": []
     },
@@ -1152,7 +1152,7 @@
       "id": 27,
       "type": "stat",
       "title": "Spend last 24h",
-      "description": "Cloud spend over the trailing 24 hours, taken as the change in the month-to-date total.",
+      "description": "Cloud spend over the last 24 hours.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1161,7 +1161,7 @@
         "h": 5,
         "w": 6,
         "x": 0,
-        "y": 58
+        "y": 70
       },
       "targets": [
         {
@@ -1215,7 +1215,7 @@
       "id": 28,
       "type": "stat",
       "title": "vs 7-day average",
-      "description": "Last 24h of spend against the trailing 7-day daily average. 1.0 is normal, orange from 1.25, red from 1.5.",
+      "description": "Last 24 hours of spend against the 7-day daily average. Orange from 1.25, red from 1.5.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1224,7 +1224,7 @@
         "h": 5,
         "w": 6,
         "x": 6,
-        "y": 58
+        "y": 70
       },
       "targets": [
         {
@@ -1285,7 +1285,7 @@
       "id": 29,
       "type": "timeseries",
       "title": "Daily spend rate vs 7-day average",
-      "description": "The same ratio over time, so a spike is visible as an event rather than a single number. An absolute spend threshold cannot separate steady growth from a spike; this ratio can.\n\nCaveat: the month-to-date total resets on the 1st, so the ratio reads low for the first week of each month.",
+      "description": "Spend ratio over time. 1.0 is normal. Resets at the start of each month.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1294,7 +1294,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 58
+        "y": 70
       },
       "targets": [
         {
@@ -1462,7 +1462,7 @@
   },
   "timepicker": {},
   "timezone": "utc",
-  "title": "Cost / Billing",
+  "title": "Cost and Billing",
   "uid": "cost-billing",
   "version": 1,
   "weekStart": ""

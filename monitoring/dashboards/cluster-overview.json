@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Cluster health from Prometheus only - no Loki or Tempo dependency, so it renders on every cluster. Logs and traces live in the 'Cluster Logs & Traces' dashboard, which ships only where those backends are deployed.",
+  "description": "Cluster health: nodes, workloads and resource usage.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -48,7 +48,7 @@
       },
       "id": 1,
       "panels": [],
-      "title": "Cluster Overview",
+      "title": "Overview",
       "type": "row"
     },
     {
@@ -117,7 +117,7 @@
       ],
       "title": "Cluster CPU Usage",
       "type": "stat",
-      "description": "Cluster-wide CPU utilisation. Orange from 80%, red from 90%."
+      "description": "CPU used across the cluster. Orange from 80%, red from 90%."
     },
     {
       "datasource": {
@@ -185,7 +185,7 @@
       ],
       "title": "Cluster Memory Usage",
       "type": "stat",
-      "description": "Cluster-wide memory utilisation. Orange from 80%, red from 90%."
+      "description": "Memory used across the cluster. Orange from 80%, red from 90%."
     },
     {
       "datasource": {
@@ -246,7 +246,7 @@
       ],
       "title": "Nodes",
       "type": "stat",
-      "description": "Nodes registered in the cluster. Node *health* (Ready / pressure conditions) is on the Baseline dashboard - this is a count only."
+      "description": "Nodes in the cluster."
     },
     {
       "datasource": {
@@ -371,7 +371,7 @@
       ],
       "title": "Failed Pods",
       "type": "stat",
-      "description": "Pods in the Failed phase. Anything above zero needs a look."
+      "description": "Pods in the Failed phase."
     },
     {
       "collapsed": false,
@@ -383,7 +383,7 @@
       },
       "id": 10,
       "panels": [],
-      "title": "Resource Metrics by Namespace",
+      "title": "Resource usage",
       "type": "row"
     },
     {
@@ -449,12 +449,9 @@
       "id": 11,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "right",
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
@@ -485,7 +482,7 @@
       ],
       "title": "CPU Usage & Limits per Container (top 20)",
       "type": "timeseries",
-      "description": "CPU used per container against its limit, for the 20 heaviest. A container tracking its own limit line is about to be throttled."
+      "description": "CPU used per container against its limit, for the 20 heaviest."
     },
     {
       "datasource": {
@@ -550,12 +547,9 @@
       "id": 12,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "right",
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
@@ -586,7 +580,7 @@
       ],
       "title": "Memory Usage & Limits per Container (top 20)",
       "type": "timeseries",
-      "description": "Memory working set per container against its limit, for the 20 heaviest. A container tracking its limit line is about to be OOM-killed - see the Baseline dashboard for the kills themselves."
+      "description": "Memory used per container against its limit, for the 20 heaviest. Reaching the limit causes an OOM kill."
     },
     {
       "datasource": {
@@ -651,12 +645,9 @@
       "id": 13,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "right",
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
           "showLegend": true
         },
         "tooltip": {
@@ -687,7 +678,7 @@
       ],
       "title": "Network I/O per Pod (top 20)",
       "type": "timeseries",
-      "description": "Network bytes received and transmitted per pod, for the 20 busiest."
+      "description": "Network bytes sent and received per pod, for the 20 busiest."
     },
     {
       "datasource": {
@@ -838,7 +829,7 @@
         }
       ],
       "type": "table",
-      "description": "Container restart counts. Restarts without an obvious deploy usually mean OOM kills or failing probes."
+      "description": "Container restart counts by pod."
     },
     {
       "collapsed": false,
@@ -850,7 +841,7 @@
       },
       "id": 40,
       "panels": [],
-      "title": "Application Health",
+      "title": "Workload health",
       "type": "row"
     },
     {
@@ -977,7 +968,7 @@
         }
       ],
       "type": "table",
-      "description": "Deployments whose ready replica count is below the requested count."
+      "description": "Deployments with fewer ready replicas than requested."
     },
     {
       "datasource": {
@@ -1047,7 +1038,7 @@
       ],
       "title": "Memory Usage vs Limits by Namespace",
       "type": "bargauge",
-      "description": "Memory used against memory limit, aggregated per namespace."
+      "description": "Memory used against memory limit, per namespace."
     },
     {
       "collapsed": false,
@@ -1059,7 +1050,7 @@
       },
       "id": 50,
       "panels": [],
-      "title": "Pod-Level Details",
+      "title": "Pod detail",
       "type": "row"
     },
     {
@@ -1249,7 +1240,7 @@
         }
       ],
       "type": "table",
-      "description": "Per-pod CPU and memory usage."
+      "description": "CPU and memory usage per pod."
     },
     {
       "datasource": {
@@ -1489,7 +1480,8 @@
                 "value": null
               }
             ]
-          }
+          },
+          "noValue": "No failed or pending pods"
         },
         "overrides": [
           {
@@ -1567,7 +1559,7 @@
         }
       ],
       "type": "table",
-      "description": "Pods stuck in Failed or Pending. Pending usually means unschedulable - no node with enough room, or an unbound PVC."
+      "description": "Pods in Failed or Pending. Pending usually means no node has room, or a volume is unbound."
     }
   ],
   "refresh": "30s",
@@ -1599,7 +1591,7 @@
       {
         "name": "nsHide",
         "label": "Internal namespaces",
-        "description": "Filter applied to every namespace selector. Default hides infra/operator traffic (monitoring, argocd, kube-system) so the dashboard reflects application workloads. Switch to \"Show all\" to include them.",
+        "description": "Hides platform namespaces so the view reflects application workloads. Switch to Show all to include them.",
         "type": "custom",
         "query": "Hide internal ns : (monitoring|argocd|kube-system) , Show all : __NEVER_MATCHES__",
         "current": {

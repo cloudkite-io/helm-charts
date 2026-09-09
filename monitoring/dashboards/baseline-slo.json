@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "The baseline we monitor for every client, one section per item: infrastructure (node health, OOM kills, volume utilisation and saturation, HTTP 5xx/4xx/RPS), database load and disk, application HTTP requests, reliability (backup success and tooling errors), security (certificate expiry) and cost. Prometheus only - no Loki or Tempo dependency, so it renders on every cluster. Sections whose exporter is absent will be empty; each says which exporter it needs.",
+  "description": "Baseline health checks for this cluster: infrastructure, database, application, reliability, security and cost.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -39,7 +39,7 @@
     {
       "id": 1,
       "type": "row",
-      "title": "Baseline Health",
+      "title": "Overview",
       "collapsed": false,
       "gridPos": {
         "h": 1,
@@ -53,14 +53,14 @@
       "id": 2,
       "type": "stat",
       "title": "Nodes Not Ready",
-      "description": "Nodes whose Ready condition is not true. Anything above zero is an incident.",
+      "description": "Nodes not reporting Ready.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
+        "w": 6,
         "x": 0,
         "y": 1
       },
@@ -118,15 +118,15 @@
       "id": 3,
       "type": "stat",
       "title": "OOM Kills (24h)",
-      "description": "Containers killed for exceeding their memory limit in the last 24 hours, counted from cAdvisor's `container_oom_events_total` counter.",
+      "description": "Containers killed for exceeding their memory limit in the last 24 hours.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
-        "x": 3,
+        "w": 6,
+        "x": 6,
         "y": 1
       },
       "targets": [
@@ -187,15 +187,15 @@
       "id": 4,
       "type": "stat",
       "title": "Volumes >85% Full",
-      "description": "PersistentVolumeClaims past 85% utilisation. These fill up silently and take an application down with them.",
+      "description": "Persistent volume claims more than 85% used.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
-        "x": 6,
+        "w": 6,
+        "x": 12,
         "y": 1
       },
       "targets": [
@@ -252,15 +252,15 @@
       "id": 5,
       "type": "stat",
       "title": "HTTP 5xx Rate",
-      "description": "Share of ingress requests answered 5xx.",
+      "description": "Share of ingress requests returning a server error.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
-        "x": 9,
+        "w": 6,
+        "x": 18,
         "y": 1
       },
       "targets": [
@@ -322,16 +322,16 @@
       "id": 6,
       "type": "stat",
       "title": "Backups Failing",
-      "description": "Velero schedules whose most recent backup did not succeed.",
+      "description": "Backup schedules whose most recent run did not succeed.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
-        "x": 12,
-        "y": 1
+        "w": 6,
+        "x": 0,
+        "y": 5
       },
       "targets": [
         {
@@ -387,16 +387,16 @@
       "id": 7,
       "type": "stat",
       "title": "Certs Expiring <30d",
-      "description": "Certificates within 30 days of expiry, from x509-certificate-exporter.",
+      "description": "Certificates expiring within 30 days.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
-        "x": 15,
-        "y": 1
+        "w": 6,
+        "x": 6,
+        "y": 5
       },
       "targets": [
         {
@@ -452,16 +452,16 @@
       "id": 8,
       "type": "stat",
       "title": "Pods Not Running",
-      "description": "Pods stuck Failed or Pending.",
+      "description": "Pods stuck in Failed or Pending.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
-        "x": 18,
-        "y": 1
+        "w": 6,
+        "x": 12,
+        "y": 5
       },
       "targets": [
         {
@@ -521,16 +521,16 @@
       "id": 9,
       "type": "stat",
       "title": "Spend (month to date)",
-      "description": "Cloud spend so far this month. Needs azure-cost-exporter.",
+      "description": "Cloud spend so far this month.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
-        "x": 21,
-        "y": 1
+        "w": 6,
+        "x": 18,
+        "y": 5
       },
       "targets": [
         {
@@ -583,13 +583,13 @@
     {
       "id": 10,
       "type": "row",
-      "title": "Infrastructure \u2014 Node Status & Health",
+      "title": "Infrastructure: nodes",
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 5
+        "y": 9
       },
       "panels": []
     },
@@ -597,16 +597,16 @@
       "id": 11,
       "type": "timeseries",
       "title": "Node Ready Status",
-      "description": "1 = Ready, 0 = NotReady, per node. Plotted over time rather than as a count so a node that flapped and recovered is still visible after the fact.",
+      "description": "Ready status per node. 1 is Ready, 0 is NotReady.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
+        "h": 9,
+        "w": 12,
         "x": 0,
-        "y": 6
+        "y": 10
       },
       "targets": [
         {
@@ -624,10 +624,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "min"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -670,16 +668,16 @@
       "id": 12,
       "type": "table",
       "title": "Node Conditions",
-      "description": "Nodes currently reporting a pressure or network condition. An empty table is the healthy state.",
+      "description": "Nodes reporting memory, disk, PID or network pressure.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 6
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 10
       },
       "targets": [
         {
@@ -751,7 +749,8 @@
             "cellOptions": {
               "type": "auto"
             }
-          }
+          },
+          "noValue": "No node pressure conditions"
         },
         "overrides": []
       }
@@ -759,17 +758,17 @@
     {
       "id": 13,
       "type": "timeseries",
-      "title": "Node CPU & Memory Utilisation",
-      "description": "Per-node CPU and memory utilisation. Both are 0-1 fractions of the same node, so they share one axis honestly - this is not a dual-axis chart.",
+      "title": "Node CPU Utilisation",
+      "description": "CPU used per node, as a share of that node's cores.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 6
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 19
       },
       "targets": [
         {
@@ -782,8 +781,67 @@
           "range": true,
           "instant": false,
           "refId": "A",
-          "legendFormat": "cpu \u2014 {{instance}}"
+          "legendFormat": "{{instance}}"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
         },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "unit": "percentunit",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "axisPlacement": "auto",
+            "pointSize": 5
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "min": 0,
+          "max": 1
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 16,
+      "type": "timeseries",
+      "title": "Node Memory Utilisation",
+      "description": "Memory used per node, as a share of total memory.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 19
+      },
+      "targets": [
         {
           "datasource": {
             "type": "prometheus",
@@ -793,17 +851,14 @@
           "expr": "1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)",
           "range": true,
           "instant": false,
-          "refId": "B",
-          "legendFormat": "mem \u2014 {{instance}}"
+          "refId": "A",
+          "legendFormat": "{{instance}}"
         }
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -846,16 +901,16 @@
       "id": 14,
       "type": "timeseries",
       "title": "Container OOM Kill Events",
-      "description": "Each bar is an OOM kill, attributed to a pod, from cAdvisor's `container_oom_events_total` counter. OOM kills are the most common cause of unexplained restarts and nothing else on the cluster reports them.",
+      "description": "Containers killed for exceeding their memory limit, by pod.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 12,
         "x": 0,
-        "y": 14
+        "y": 28
       },
       "targets": [
         {
@@ -913,7 +968,9 @@
                 "value": null
               }
             ]
-          }
+          },
+          "noValue": "No OOM kills",
+          "decimals": 0
         },
         "overrides": []
       }
@@ -922,16 +979,16 @@
       "id": 15,
       "type": "table",
       "title": "Containers in a Bad State Now",
-      "description": "Containers whose last termination was an OOM kill, and containers currently in CrashLoopBackOff. These are kube-state-metrics gauges describing the present state - the panel to their left counts events over time.",
+      "description": "Containers whose last exit was an OOM kill, and containers currently in CrashLoopBackOff.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 12,
         "x": 12,
-        "y": 14
+        "y": 28
       },
       "targets": [
         {
@@ -975,7 +1032,15 @@
               "endpoint": true,
               "service": true,
               "uid": true,
-              "Value": true
+              "Value": true,
+              "Value #A": true,
+              "Value #B": true
+            },
+            "indexByName": {
+              "namespace": 0,
+              "pod": 1,
+              "container": 2,
+              "reason": 3
             },
             "renameByName": {
               "namespace": "Namespace",
@@ -1017,7 +1082,8 @@
             "cellOptions": {
               "type": "auto"
             }
-          }
+          },
+          "noValue": "No OOM kills or crash loops"
         },
         "overrides": [
           {
@@ -1070,13 +1136,13 @@
     {
       "id": 20,
       "type": "row",
-      "title": "Infrastructure \u2014 Volume Utilisation & Saturation",
+      "title": "Infrastructure: storage",
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 22
+        "y": 37
       },
       "panels": []
     },
@@ -1084,7 +1150,7 @@
       "id": 21,
       "type": "bargauge",
       "title": "Volume Utilisation %",
-      "description": "Current fill level of every PVC. Orange at 75%, red at 85% - matching the 'PersistentVolume Usage' alert.",
+      "description": "Current usage of each persistent volume claim. Orange from 75%, red from 85%.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1093,7 +1159,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 23
+        "y": 38
       },
       "targets": [
         {
@@ -1157,7 +1223,7 @@
       "id": 22,
       "type": "timeseries",
       "title": "Volume Utilisation over time",
-      "description": "Fill level over time. The slope is what matters: a volume at 60% and climbing 5%/day needs action sooner than one that has sat at 80% for a month. A bargauge cannot show this.",
+      "description": "Volume usage over time. The slope shows which volumes are filling, and how fast.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1166,7 +1232,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 23
+        "y": 38
       },
       "targets": [
         {
@@ -1184,11 +1250,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -1238,7 +1301,7 @@
       "id": 23,
       "type": "timeseries",
       "title": "Node Disk Saturation (I/O time)",
-      "description": "Fraction of wall-clock time the device spent servicing I/O. This is the actual saturation signal: at 1.0 the disk is busy 100% of the time and every further request queues. IOPS and throughput below tell you what is driving it.",
+      "description": "Share of time each disk spent busy with I/O. Sustained values near 100% mean requests are queueing.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1247,7 +1310,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 23
+        "y": 38
       },
       "targets": [
         {
@@ -1265,11 +1328,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -1318,7 +1378,7 @@
       "id": 24,
       "type": "timeseries",
       "title": "Node Disk IOPS",
-      "description": "Completed read and write operations per second, per device.",
+      "description": "Disk read and write operations per second.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1327,7 +1387,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 31
+        "y": 46
       },
       "targets": [
         {
@@ -1357,11 +1417,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -1402,7 +1459,7 @@
       "id": 25,
       "type": "timeseries",
       "title": "Node Disk Throughput",
-      "description": "Bytes read and written per second, per device.",
+      "description": "Disk bytes read and written per second.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1411,7 +1468,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 31
+        "y": 46
       },
       "targets": [
         {
@@ -1441,11 +1498,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -1485,13 +1539,13 @@
     {
       "id": 30,
       "type": "row",
-      "title": "Application \u2014 HTTP Requests, Errors & Volume",
+      "title": "Application: HTTP traffic",
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 39
+        "y": 54
       },
       "panels": []
     },
@@ -1499,16 +1553,16 @@
       "id": 31,
       "type": "timeseries",
       "title": "Request Rate by Status Class",
-      "description": "Total request volume, split by outcome.",
+      "description": "Ingress request rate, split by response status.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 12,
         "x": 0,
-        "y": 40
+        "y": 55
       },
       "targets": [
         {
@@ -1672,16 +1726,16 @@
       "id": 32,
       "type": "timeseries",
       "title": "5xx Error Rate & 4xx Rate",
-      "description": "Error rates as a share of all traffic. Both are fractions on one axis. 404 is excluded from the 4xx line because scanner noise otherwise buries real client errors.",
+      "description": "Error rates as a share of all ingress traffic. 404s are excluded from the 4xx line.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 12,
         "x": 12,
-        "y": 40
+        "y": 55
       },
       "targets": [
         {
@@ -1796,7 +1850,7 @@
       "id": 33,
       "type": "timeseries",
       "title": "Request Volume vs 30m Baseline (anomaly)",
-      "description": "5-minute request rate over the 30-minute rate. 1.0 is steady state. This is the RPS-anomaly signal - it flags a surge or a traffic collapse regardless of the cluster's absolute volume, which a raw RPS threshold cannot do.",
+      "description": "Request rate over the last 5 minutes against the last 30. 1.0 is steady traffic.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1805,7 +1859,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 48
+        "y": 65
       },
       "targets": [
         {
@@ -1881,7 +1935,7 @@
       "id": 34,
       "type": "timeseries",
       "title": "4xx Spikes by Service",
-      "description": "Client errors per 5 minutes, attributed to a backend. Same expression as the '4XX spike' alert, so what you see here is what pages.",
+      "description": "Client errors per 5 minutes by backend service, excluding 404s.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -1890,7 +1944,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 48
+        "y": 65
       },
       "targets": [
         {
@@ -1908,11 +1962,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -1956,13 +2007,13 @@
     {
       "id": 40,
       "type": "row",
-      "title": "Database \u2014 Load & Disk",
+      "title": "Database",
       "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 56
+        "y": 73
       },
       "panels": [
         {
@@ -2157,16 +2208,16 @@
         {
           "id": 43,
           "type": "text",
-          "title": "Database coverage",
+          "title": "About this section",
           "gridPos": {
-            "h": 5,
+            "h": 3,
             "w": 24,
             "x": 0,
             "y": 65
           },
           "options": {
             "mode": "markdown",
-            "content": "These panels read `azure_sql_database_*`, published by **azure-metrics-scraper**. On a cluster without it they will be empty \u2014 this row is collapsed by default for that reason, and it is the one section of this dashboard that is cloud-specific. For Postgres or MySQL, point the equivalent exporter at Prometheus and swap the metric names; the panel shapes (load %, disk %, connection failures) stay the same.\n\nDeeper Azure SQL detail lives in the **Azure SQL \u2014 Health & Saturation** dashboard."
+            "content": "These panels need an Azure SQL metrics exporter and stay empty without one.\n\nFull database detail is on the **Azure SQL Health** dashboard."
           }
         }
       ]
@@ -2174,13 +2225,13 @@
     {
       "id": 50,
       "type": "row",
-      "title": "Reliability \u2014 Backups & Deployed Tooling",
+      "title": "Reliability: backups and platform components",
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 57
+        "y": 74
       },
       "panels": []
     },
@@ -2188,7 +2239,7 @@
       "id": 51,
       "type": "table",
       "title": "Backup Status by Schedule",
-      "description": "Most recent outcome per Velero schedule, and how many hours ago the last success was. A schedule that reports success but whose last success is days old is still a failure - the status alone will not tell you.",
+      "description": "Result of the most recent backup per schedule, and how long since the last success.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -2197,7 +2248,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 58
+        "y": 75
       },
       "targets": [
         {
@@ -2393,16 +2444,16 @@
       "id": 52,
       "type": "timeseries",
       "title": "Backup Attempts vs Failures",
-      "description": "Backup runs over time, split by outcome. Partial failures are called out separately because they are silently useless: the backup exists but is incomplete.",
+      "description": "Backup runs over time by outcome. Partial failures finish, but the backup is incomplete.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
       "gridPos": {
-        "h": 8,
+        "h": 9,
         "w": 12,
         "x": 12,
-        "y": 58
+        "y": 75
       },
       "targets": [
         {
@@ -2488,7 +2539,7 @@
       "id": 53,
       "type": "table",
       "title": "Errors on Deployed Tooling",
-      "description": "Infrastructure components we deploy that are not running: crash loops, image pull failures and config errors, scoped to the infra namespaces. Empty is the healthy state.",
+      "description": "Infrastructure components not running: crash loops, image pull failures and config errors.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -2497,7 +2548,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 66
+        "y": 84
       },
       "targets": [
         {
@@ -2561,7 +2612,8 @@
             "cellOptions": {
               "type": "auto"
             }
-          }
+          },
+          "noValue": "All components running"
         },
         "overrides": []
       }
@@ -2570,7 +2622,7 @@
       "id": 54,
       "type": "timeseries",
       "title": "Restarts of Deployed Tooling",
-      "description": "Restart events for the tooling we operate. A component restarting quietly on a schedule is the failure mode that never gets noticed.",
+      "description": "Restart events for infrastructure components.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -2579,7 +2631,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 66
+        "y": 84
       },
       "targets": [
         {
@@ -2597,10 +2649,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "sum"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -2644,13 +2694,13 @@
     {
       "id": 60,
       "type": "row",
-      "title": "Security \u2014 Certificate Expiration",
+      "title": "Security: certificates",
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 74
+        "y": 92
       },
       "panels": []
     },
@@ -2658,7 +2708,7 @@
       "id": 61,
       "type": "timeseries",
       "title": "Days Until Certificate Expiry",
-      "description": "Remaining validity of every certificate x509-certificate-exporter can see. The lines slope down at one day per day; a renewal shows as a jump back up. A line that fails to jump before it reaches zero is a cert-manager renewal that did not happen.",
+      "description": "Remaining validity of each certificate. A renewal shows as a step back up.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -2667,7 +2717,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 75
+        "y": 93
       },
       "targets": [
         {
@@ -2685,11 +2735,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -2738,7 +2785,7 @@
       "id": 62,
       "type": "table",
       "title": "Certificates Expiring Soonest",
-      "description": "Every certificate ranked by how soon it expires. Orange under 30 days, red under 7.",
+      "description": "Certificates ranked by expiry. Orange under 30 days, red under 7.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -2747,7 +2794,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 75
+        "y": 93
       },
       "targets": [
         {
@@ -2863,13 +2910,13 @@
     {
       "id": 70,
       "type": "row",
-      "title": "Cost \u2014 Daily Spend & Spikes",
+      "title": "Cost",
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 83
+        "y": 101
       },
       "panels": []
     },
@@ -2877,7 +2924,7 @@
       "id": 71,
       "type": "barchart",
       "title": "Daily Cloud Spend",
-      "description": "Spend per calendar day. The exporter puts the date in a `dateISO` label rather than on the time axis, so this is a bar chart over that label, not a time series. Needs azure-cost-exporter.",
+      "description": "Cloud spend per calendar day.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -2886,7 +2933,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 84
+        "y": 102
       },
       "targets": [
         {
@@ -2975,7 +3022,7 @@
       "id": 72,
       "type": "timeseries",
       "title": "Spend Rate vs 7-Day Average (spike detection)",
-      "description": "Spend over the last 24h divided by the trailing 7-day daily average, both derived from the month-to-date total (a real time series, unlike the per-day label metric). 1.0 is normal; above ~1.25 something changed - a new node pool, a runaway job, an egress spike. An absolute spend threshold cannot tell growth from a spike, this ratio can.\n\nCaveat: the month-to-date counter resets on the 1st, so this reads low for the first week of each month.",
+      "description": "Spend over the last 24 hours against the 7-day daily average. 1.0 is normal. Resets at the start of each month.",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
@@ -2984,7 +3031,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 84
+        "y": 102
       },
       "targets": [
         {
@@ -3080,7 +3127,7 @@
       {
         "name": "namespace",
         "label": "Namespace",
-        "description": "Scopes the workload panels (OOM, volumes, restarts). Node, HTTP, backup, certificate and cost panels are cluster-wide and ignore it.",
+        "description": "Limits the workload panels. Node, HTTP, backup, certificate and cost panels are cluster-wide.",
         "type": "query",
         "datasource": {
           "type": "prometheus",
@@ -3109,7 +3156,7 @@
       {
         "name": "infraNamespace",
         "label": "Infra Namespaces",
-        "description": "Namespaces holding tooling we deploy and are responsible for. Drives the 'Errors on Deployed Tooling' panels. Set a sensible default per cluster, e.g. monitoring, argocd, cert-manager, velero, traefik-system, external-secrets.",
+        "description": "Namespaces holding the platform components covered by the Reliability section.",
         "type": "query",
         "datasource": {
           "type": "prometheus",
@@ -3155,7 +3202,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Baseline \u2014 What We Monitor",
+  "title": "Baseline Monitoring",
   "uid": "baseline-slo",
   "version": 1,
   "weekStart": ""

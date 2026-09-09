@@ -15,7 +15,7 @@
       }
     ]
   },
-  "description": "Traefik access log analysis. The Status Class variable narrows headline stats, top tables, and the access log panel; 5xx Hotspots and breakdown panels stay scoped to their fixed semantics.",
+  "description": "Per-request detail from Traefik access logs. Use the filters above to narrow by status, service or namespace.",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -47,7 +47,7 @@
       },
       "id": 1,
       "panels": [],
-      "title": "Access & Volume",
+      "title": "Overview",
       "type": "row"
     },
     {
@@ -55,7 +55,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Every request Traefik accepted in the selected time range, whatever the outcome - including 4xx rejections and status 0 (client hung up before a response). This is the 'how many attempts were made' number and it deliberately ignores the Status Class filter.",
+      "description": "All requests received in the range, whatever the outcome. Not affected by the Status Class filter.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -120,7 +120,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Distinct client IPs (ClientHost) that made at least one request in the range, whatever the outcome. Behind a proxy or NAT this counts source addresses, not people - treat it as a floor on distinct users. Ignores the Status Class filter.",
+      "description": "Distinct client IP addresses. Behind NAT or a proxy this counts addresses, not people.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -184,7 +184,7 @@
       "id": 70,
       "type": "stat",
       "title": "Refused (401/403)",
-      "description": "Requests rejected as unauthenticated (401) or forbidden (403). A rising count is either a broken client or someone probing. Ignores the Status Class filter.",
+      "description": "Requests rejected as unauthenticated or forbidden.",
       "datasource": {
         "type": "loki",
         "uid": "${DS_LOKI}"
@@ -249,7 +249,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Per-second request rate over the auto-step interval, narrowed by the Status Class variable.",
+      "description": "Requests per second, narrowed by the Status Class filter.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -314,7 +314,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Fraction of responses with a 5xx DownstreamStatus. This stat ignores the Status Class variable \u2014 it always reports 5xx \u00f7 all so the error signal is preserved.",
+      "description": "Share of requests returning a server error. Orange from 1%, red from 5%.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -388,7 +388,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "95th-percentile request duration across the range. Avg / P50 / P99 are plotted over time in the Latency row rather than flattened to a tile.",
+      "description": "95th percentile request duration. Other percentiles are plotted in the Latency row.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -465,7 +465,7 @@
       "id": 71,
       "type": "timeseries",
       "title": "Unique Clients over time",
-      "description": "Distinct client IPs seen per interval. A step change here separates 'more traffic from the same users' from 'more users' - the request-rate panel alone cannot.",
+      "description": "Distinct client IP addresses per interval.",
       "datasource": {
         "type": "loki",
         "uid": "${DS_LOKI}"
@@ -526,7 +526,7 @@
       "id": 73,
       "type": "timeseries",
       "title": "Refused Attempts by Router (401/403/404)",
-      "description": "Rejected requests per interval, split by router. Distinguishes a single misconfigured client from a broad scan across routes.",
+      "description": "Rejected requests per interval, by router.",
       "datasource": {
         "type": "loki",
         "uid": "${DS_LOKI}"
@@ -552,10 +552,8 @@
       ],
       "options": {
         "legend": {
-          "calcs": [
-            "sum"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -578,7 +576,8 @@
               "mode": "normal"
             },
             "showPoints": "never"
-          }
+          },
+          "noValue": "No rejected requests"
         },
         "overrides": []
       }
@@ -587,7 +586,7 @@
       "id": 72,
       "type": "table",
       "title": "Top 20 Clients by Requests",
-      "description": "Client IPs ranked by request count over the range, with how many of those were refused. A client whose refused count approaches its total is worth a look.",
+      "description": "Client IPs by request count, with how many of those were rejected.",
       "datasource": {
         "type": "loki",
         "uid": "${DS_LOKI}"
@@ -734,7 +733,7 @@
             "uid": "-- Grafana --"
           },
           "gridPos": {
-            "h": 16,
+            "h": 11,
             "w": 24,
             "x": 0,
             "y": 6
@@ -746,14 +745,14 @@
               "showLineNumbers": false,
               "showMiniMap": false
             },
-            "content": "### Access & Volume\n\n| Stat | Meaning |\n| --- | --- |\n| **Requests Attempted** | Every access log line in the range, whatever the outcome \u2014 2xx, 4xx rejections and status 0 alike. Deliberately ignores the Status Class filter, because \"how many attempts were made\" must not move when you change the filter. |\n| **Unique Clients** | Distinct `ClientHost` (source IP) that made at least one request. Behind NAT, a corporate proxy or a CDN this counts source addresses, not people \u2014 read it as a **floor** on distinct users, never an exact user count. Also ignores Status Class. |\n| **Refused (401/403)** | Requests rejected as unauthenticated or forbidden. Ignores Status Class. |\n| **Request Rate** | `req/s` averaged over auto-step, narrowed by Status Class. |\n| **5xx Error Rate** | Always `5xx \u00f7 total`, regardless of Status Class. Orange \u2265 1%, red \u2265 5%. Mixes upstream 5xx with Traefik-internal 5xx (e.g. 503 with `OriginStatus=0` when no backend is available). |\n| **P95 Duration** | 95th percentile of Traefik's `Duration` field (ms). Avg / P50 / P99 are plotted over time in the **Latency** row rather than flattened into tiles. |\n\n### Status class quick reference\n\n- **2xx** \u2014 success.\n- **3xx** \u2014 redirect (often expected; e.g. auth flows).\n- **4xx** \u2014 client error. Almost always a caller-side issue.\n- **5xx** \u2014 server error. Triage in the **5xx Hotspots** row. A 503 with `OriginStatus=0` and missing `ServiceName` means Traefik couldn't reach a ready backend at all (no Endpoints, NetworkPolicy block, DNS failure, etc.).\n- **0** \u2014 no response was written: the client disconnected mid-request, or the connection was a long-lived upgrade (WebSocket) that was torn down. Counted in **Requests Attempted** and shown in the traffic breakdowns so the distribution accounts for every request.\n\n### Gotcha: LogQL regexes are fully anchored\n\n`DownstreamStatus =~ `..`` matches a **two**-character value, so it never matches a\nthree-digit status code. Every regex in this dashboard \u2014 Status Class and the Service\ntextbox alike \u2014 must match the whole value: use `.+` for \"anything\", and\n`.*standingdata.*` rather than `.*standingdata`."
+            "content": "| Stat | Meaning |\n| --- | --- |\n| **Requests Attempted** | Every request received, whatever the outcome. Not affected by the Status Class filter. |\n| **Unique Clients** | Distinct client IP addresses. Behind NAT, a proxy or a CDN this counts addresses rather than people, so read it as a lower bound. |\n| **Refused** | Requests rejected as unauthenticated (401) or forbidden (403). |\n| **Request Rate** | Requests per second, narrowed by the Status Class filter. |\n| **5xx Error Rate** | Server errors as a share of all requests. Orange from 1%, red from 5%. |\n| **P95 Duration** | 95th percentile request duration. Other percentiles are in the Latency row. |\n\n**Status classes.** 2xx succeeded. 3xx redirected. 4xx is a client error. 5xx is a server\nerror, triaged in the 5xx Hotspots row. Status 0 means no response was sent: the client\ndisconnected, or a long-lived connection such as a WebSocket was closed.\n\n**Filters are whole-value matches.** Use `.*name.*` rather than `.*name` in the Service box."
           },
           "pluginVersion": "12.2.0",
           "title": "What these numbers mean",
           "type": "text"
         }
       ],
-      "title": "Definitions",
+      "title": "What these numbers mean",
       "type": "row"
     },
     {
@@ -774,7 +773,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Per-second request rate split by status class. This panel ignores the Status Class variable \u2014 its purpose is the breakdown.",
+      "description": "Request rate split by response status.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -904,7 +903,7 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 11,
         "w": 12,
         "x": 0,
         "y": 16
@@ -984,7 +983,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Share of requests by status class over the range. Includes status 0 - Traefik's code for a client that disconnected before a response was written - so the slices account for every request.",
+      "description": "Share of requests by status class. Status 0 means the client disconnected before a response was sent.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1095,7 +1094,7 @@
         ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 11,
         "w": 12,
         "x": 12,
         "y": 16
@@ -1192,11 +1191,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 27
       },
       "id": 50,
       "panels": [],
-      "title": "5xx Hotspots",
+      "title": "Server error hotspots",
       "type": "row"
     },
     {
@@ -1204,7 +1203,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Top 10 backend services returning 5xx in the selected range. ServiceName has its `@kubernetesgateway` suffix trimmed for readability. Ignores the Status Class variable \u2014 always 5xx.",
+      "description": "Backend services returning the most server errors.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1234,7 +1233,8 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "short",
+          "noValue": "No server errors"
         },
         "overrides": [
           {
@@ -1278,7 +1278,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 25
+        "y": 28
       },
       "id": 51,
       "options": {
@@ -1325,7 +1325,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Top 10 (Router, Path) returning 5xx. Path has query parameters stripped so /foo?bar=1 and /foo?bar=2 collapse to /foo.",
+      "description": "Request paths returning the most server errors, with query strings removed.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1355,7 +1355,8 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "short",
+          "noValue": "No server errors"
         },
         "overrides": [
           {
@@ -1415,7 +1416,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 25
+        "y": 28
       },
       "id": 52,
       "options": {
@@ -1463,11 +1464,11 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 33
+        "y": 36
       },
       "id": 20,
       "panels": [],
-      "title": "Routes & Services",
+      "title": "Routes and services",
       "type": "row"
     },
     {
@@ -1475,7 +1476,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Top 10 Traefik Routers (HTTPRoute attachments) by request count, narrowed by Status Class. Aggregating by RouterName instead of RequestPath keeps cardinality bounded.",
+      "description": "Busiest Traefik routers.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1545,7 +1546,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 34
+        "y": 37
       },
       "id": 21,
       "options": {
@@ -1592,7 +1593,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Top 10 backend services by request count, narrowed by Status Class. ServiceName has the `@kubernetesgateway` suffix trimmed.",
+      "description": "Busiest backend services.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1662,7 +1663,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 34
+        "y": 37
       },
       "id": 22,
       "options": {
@@ -1710,7 +1711,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 42
+        "y": 45
       },
       "id": 30,
       "panels": [],
@@ -1722,7 +1723,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Aggregate latency over time, narrowed by Status Class. p99 is the most useful tail-latency signal.",
+      "description": "Request latency distribution over time.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1776,10 +1777,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 10,
         "w": 12,
         "x": 0,
-        "y": 43
+        "y": 46
       },
       "id": 31,
       "options": {
@@ -1845,7 +1846,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Average Duration per backend service over time, narrowed by Status Class. ServiceName has the `@kubernetesgateway` suffix trimmed. A flat-then-spiking line for one service typically points to that upstream's saturation, GC pause, or dependency stall.",
+      "description": "Mean request duration per backend service.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1902,16 +1903,13 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 43
+        "y": 46
       },
       "id": 32,
       "options": {
         "legend": {
-          "calcs": [
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
+          "calcs": [],
+          "displayMode": "list",
           "placement": "bottom",
           "showLegend": true
         },
@@ -1942,7 +1940,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 51
+        "y": 56
       },
       "id": 60,
       "panels": [],
@@ -1954,7 +1952,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Top 20 (service, path) pairs by P95 Duration, narrowed by Status Class and Service. ServiceName has `@kubernetesgateway` trimmed; path has query params stripped. Use this to find the specific endpoints driving tail latency.",
+      "description": "Slowest service and path combinations, at the 95th percentile.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2048,7 +2046,7 @@
         "h": 10,
         "w": 24,
         "x": 0,
-        "y": 52
+        "y": 57
       },
       "id": 61,
       "options": {
@@ -2096,7 +2094,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 62
+        "y": 67
       },
       "id": 40,
       "panels": [],
@@ -2108,7 +2106,7 @@
         "type": "loki",
         "uid": "${DS_LOKI}"
       },
-      "description": "Filtered access log stream. Each line is reformatted as `[status] METHOD host+path \u2192 service dur=Xns trace=...` so the route, service, and outcome are visible at a glance. Click a line to expand the full JSON.",
+      "description": "Individual requests, filtered by the controls above.",
       "fieldConfig": {
         "defaults": {},
         "overrides": []
@@ -2117,7 +2115,7 @@
         "h": 16,
         "w": 24,
         "x": 0,
-        "y": 63
+        "y": 68
       },
       "id": 41,
       "options": {
@@ -2178,7 +2176,7 @@
       {
         "name": "status",
         "label": "Status Class",
-        "description": "Status class applied to most panels (excluding the dedicated breakdowns and 5xx Hotspots). Regexes here are fully anchored by LogQL, so `All` is `.+` rather than `..`. `Aborted (0)` is Traefik's code for a connection the client dropped before a response was written.",
+        "description": "Narrows most panels to one status class. The 5xx Hotspots row and the status breakdowns always show all traffic.",
         "type": "custom",
         "query": "All : .+ , 2xx : 2.. , 3xx : 3.. , 4xx : 4.. , 5xx : 5.. , Aborted (0) : 0",
         "current": {
@@ -2225,7 +2223,7 @@
       {
         "name": "service",
         "label": "Service",
-        "description": "ServiceName regex applied to the Access Logs and P95 Latency panels. Default `.*` matches every line (including Traefik-internal 503s where ServiceName is empty); override with e.g. `.*grafana.*` to scope to a single backend. NOTE: the regex is fully anchored \u2014 `.*standingdata` matches nothing, use `.*standingdata.*`.",
+        "description": "Narrows the access log and latency panels to one backend service. Matches the whole value, so use .*name.* rather than .*name.",
         "type": "textbox",
         "query": ".*",
         "current": {
@@ -2243,7 +2241,7 @@
       {
         "name": "nsHide",
         "label": "Internal namespaces",
-        "description": "Filter applied to RouterName on every panel. Default hides infra/operator traffic (monitoring, argocd) so the dashboard reflects application traffic. Switch to \"Show all\" to include them.",
+        "description": "Hides platform routes so the view reflects application traffic. Switch to Show all to include them.",
         "type": "custom",
         "query": "Hide monitoring & argocd : (monitoring|argocd) , Show all : __NEVER_MATCHES__",
         "current": {
