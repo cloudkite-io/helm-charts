@@ -7,7 +7,22 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
   "id": null,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": true,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": true,
+      "tags": [
+        "cloudkite"
+      ],
+      "targetBlank": false,
+      "title": "Cloudkite dashboards",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
   "liveNow": false,
   "panels": [
     {
@@ -274,23 +289,29 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "One bar per calendar day from the Cost Management API (Daily granularity, current month; independent of the dashboard time range).",
+      "description": "Spend per calendar day, stacked by resource group. The exporter carries the day in a `dateISO` label rather than on the time axis, so this is a bar chart over that label - as a timeseries it drew one flat line per day, which showed no trend at all.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
-          "custom": {
-            "drawStyle": "bars",
-            "fillOpacity": 85,
-            "lineWidth": 1,
-            "barAlignment": 0,
-            "showPoints": "never",
-            "stacking": {
-              "mode": "normal"
-            }
+          "unit": "currencyUSD",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
           },
-          "unit": "currencyUSD"
+          "custom": {
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "gradientMode": "none",
+            "axisPlacement": "auto"
+          }
         },
         "overrides": []
       },
@@ -302,12 +323,18 @@
       },
       "id": 24,
       "options": {
+        "xField": "dateISO\\resourceGroup",
+        "orientation": "auto",
+        "showValue": "never",
+        "stacking": "normal",
+        "barWidth": 0.85,
+        "groupWidth": 0.7,
+        "xTickLabelRotation": -45,
         "legend": {
-          "calcs": [
-            "sum"
-          ],
-          "displayMode": "table",
-          "placement": "right"
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
         },
         "tooltip": {
           "mode": "multi",
@@ -320,11 +347,12 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
+          "editorMode": "code",
           "expr": "sum by (resourceGroup, dateISO) (azurerm_costs_by_resourceGroup_daily{resourceGroup=~\"$resource_group\"})",
-          "format": "table",
+          "range": false,
           "instant": true,
-          "legendFormat": "",
-          "refId": "A"
+          "refId": "A",
+          "format": "table"
         }
       ],
       "title": "Daily spend by resource group",
@@ -334,37 +362,32 @@
           "options": {
             "excludeByName": {
               "Time": true
-            },
-            "indexByName": {},
-            "renameByName": {}
-          }
-        },
-        {
-          "id": "convertFieldType",
-          "options": {
-            "conversions": [
-              {
-                "targetField": "dateISO",
-                "destinationType": "time"
-              }
-            ],
-            "fields": {}
-          }
-        },
-        {
-          "id": "partitionByValues",
-          "options": {
-            "fields": [
-              "resourceGroup"
-            ],
-            "keepFields": false,
-            "naming": {
-              "asLabels": true
             }
+          }
+        },
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "rowField": "dateISO",
+            "columnField": "resourceGroup",
+            "valueField": "Value",
+            "emptyValue": "zero"
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "dateISO\\resourceGroup"
+              }
+            ]
           }
         }
       ],
-      "type": "timeseries",
+      "type": "barchart",
       "timeFrom": "35d"
     },
     {
@@ -372,23 +395,29 @@
         "type": "prometheus",
         "uid": "${DS_PROMETHEUS}"
       },
-      "description": "One bar per calendar day per Azure service (Daily granularity, current month).",
+      "description": "Spend per calendar day, stacked by Azure service. Same `dateISO`-label handling as the panel above.",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "palette-classic"
           },
-          "custom": {
-            "drawStyle": "bars",
-            "fillOpacity": 85,
-            "lineWidth": 1,
-            "barAlignment": 0,
-            "showPoints": "never",
-            "stacking": {
-              "mode": "normal"
-            }
+          "unit": "currencyUSD",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
           },
-          "unit": "currencyUSD"
+          "custom": {
+            "fillOpacity": 80,
+            "lineWidth": 1,
+            "gradientMode": "none",
+            "axisPlacement": "auto"
+          }
         },
         "overrides": []
       },
@@ -400,12 +429,18 @@
       },
       "id": 25,
       "options": {
+        "xField": "dateISO\\serviceName",
+        "orientation": "auto",
+        "showValue": "never",
+        "stacking": "normal",
+        "barWidth": 0.85,
+        "groupWidth": 0.7,
+        "xTickLabelRotation": -45,
         "legend": {
-          "calcs": [
-            "sum"
-          ],
-          "displayMode": "table",
-          "placement": "right"
+          "showLegend": true,
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
         },
         "tooltip": {
           "mode": "multi",
@@ -418,11 +453,12 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
+          "editorMode": "code",
           "expr": "sum by (serviceName, dateISO) (azurerm_costs_by_service_daily{serviceName=~\"$service\"})",
-          "format": "table",
+          "range": false,
           "instant": true,
-          "legendFormat": "",
-          "refId": "A"
+          "refId": "A",
+          "format": "table"
         }
       ],
       "title": "Daily spend by service",
@@ -432,37 +468,32 @@
           "options": {
             "excludeByName": {
               "Time": true
-            },
-            "indexByName": {},
-            "renameByName": {}
-          }
-        },
-        {
-          "id": "convertFieldType",
-          "options": {
-            "conversions": [
-              {
-                "targetField": "dateISO",
-                "destinationType": "time"
-              }
-            ],
-            "fields": {}
-          }
-        },
-        {
-          "id": "partitionByValues",
-          "options": {
-            "fields": [
-              "serviceName"
-            ],
-            "keepFields": false,
-            "naming": {
-              "asLabels": true
             }
+          }
+        },
+        {
+          "id": "groupingToMatrix",
+          "options": {
+            "rowField": "dateISO",
+            "columnField": "serviceName",
+            "valueField": "Value",
+            "emptyValue": "zero"
+          }
+        },
+        {
+          "id": "sortBy",
+          "options": {
+            "fields": {},
+            "sort": [
+              {
+                "desc": false,
+                "field": "dateISO\\serviceName"
+              }
+            ]
           }
         }
       ],
-      "type": "timeseries",
+      "type": "barchart",
       "timeFrom": "35d"
     },
     {
@@ -1103,11 +1134,242 @@
       ],
       "title": "PV monthly cost",
       "type": "stat"
+    },
+    {
+      "id": 26,
+      "type": "row",
+      "title": "Cost spikes",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 57
+      },
+      "panels": []
+    },
+    {
+      "id": 27,
+      "type": "stat",
+      "title": "Spend last 24h",
+      "description": "Cloud spend over the trailing 24 hours, taken as the change in the month-to-date total.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 58
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) offset 1d",
+          "range": true,
+          "instant": false,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          },
+          "unit": "currencyUSD",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 28,
+      "type": "stat",
+      "title": "vs 7-day average",
+      "description": "Last 24h of spend against the trailing 7-day daily average. 1.0 is normal, orange from 1.25, red from 1.5.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 58
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "(sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) offset 1d) / clamp_min((sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) offset 7d) / 7, 0.01)",
+          "range": true,
+          "instant": false,
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "textMode": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "unit": "percentunit",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1.25
+              },
+              {
+                "color": "red",
+                "value": 1.5
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 29,
+      "type": "timeseries",
+      "title": "Daily spend rate vs 7-day average",
+      "description": "The same ratio over time, so a spike is visible as an event rather than a single number. An absolute spend threshold cannot separate steady growth from a spike; this ratio can.\n\nCaveat: the month-to-date total resets on the 1st, so the ratio reads low for the first week of each month.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 58
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "(sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) offset 1d) / clamp_min((sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) offset 7d) / 7, 0.01)",
+          "range": true,
+          "instant": false,
+          "refId": "A",
+          "legendFormat": "24h spend / 7-day average"
+        }
+      ],
+      "options": {
+        "legend": {
+          "calcs": [
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "blue"
+          },
+          "unit": "percentunit",
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "axisPlacement": "auto",
+            "pointSize": 5,
+            "thresholdsStyle": {
+              "mode": "dashed"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 1.25
+              },
+              {
+                "color": "red",
+                "value": 1.5
+              }
+            ]
+          },
+          "decimals": 2
+        },
+        "overrides": []
+      }
     }
   ],
   "refresh": "5m",
   "schemaVersion": 39,
   "tags": [
+    "cloudkite",
     "cost",
     "billing"
   ],

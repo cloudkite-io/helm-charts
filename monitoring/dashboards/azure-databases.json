@@ -1,82 +1,158 @@
 {
-  "annotations": { "list": [] },
+  "annotations": {
+    "list": []
+  },
   "description": "Azure SQL health & saturation. Sourced from azure-metrics-scraper (Promitor).",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "links": [],
+  "links": [
+    {
+      "asDropdown": true,
+      "icon": "external link",
+      "includeVars": false,
+      "keepTime": true,
+      "tags": [
+        "cloudkite"
+      ],
+      "targetBlank": false,
+      "title": "Cloudkite dashboards",
+      "tooltip": "",
+      "type": "dashboards",
+      "url": ""
+    }
+  ],
   "liveNow": false,
   "panels": [
     {
       "collapsed": false,
-      "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
       "id": 1,
       "panels": [],
-      "title": "Azure SQL — Headline",
+      "title": "Azure SQL \u2014 Headline",
       "type": "row"
     },
     {
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "thresholds"},
+          "color": {
+            "mode": "thresholds"
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green", "value": null},
-              {"color": "yellow", "value": 70},
-              {"color": "red", "value": 85}
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
             ]
           },
           "unit": "percent"
         },
         "overrides": []
       },
-      "gridPos": {"h": 5, "w": 6, "x": 0, "y": 1},
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
       "id": 2,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
         "justifyMode": "auto",
         "orientation": "auto",
-        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto"
       },
       "targets": [
         {
-          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
           "expr": "max by (database) (azure_sql_database_cpu_percent_used{database=~\"$database\"})",
           "legendFormat": "{{database}}",
           "refId": "A"
         }
       ],
       "title": "CPU Consumption (max %)",
-      "type": "stat"
+      "type": "stat",
+      "description": "Peak CPU utilisation per database over the range. Sustained high CPU is the usual precursor to query timeouts."
     },
     {
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "thresholds"},
+          "color": {
+            "mode": "thresholds"
+          },
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green", "value": null},
-              {"color": "yellow", "value": 70},
-              {"color": "red", "value": 85}
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
             ]
           },
           "unit": "percent"
         }
       },
-      "gridPos": {"h": 5, "w": 6, "x": 6, "y": 1},
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
       "id": 3,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
-        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto"
       },
       "targets": [
@@ -87,30 +163,56 @@
         }
       ],
       "title": "Sessions (max %)",
-      "type": "stat"
+      "type": "stat",
+      "description": "Peak session utilisation as a percentage of the tier's session limit. At 100% new connections are refused."
     },
     {
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "thresholds"},
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green", "value": null},
-              {"color": "yellow", "value": 70},
-              {"color": "red", "value": 85}
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 85
+              }
             ]
           },
           "unit": "percent"
         }
       },
-      "gridPos": {"h": 5, "w": 6, "x": 12, "y": 1},
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 1
+      },
       "id": 4,
       "options": {
         "colorMode": "value",
         "graphMode": "area",
-        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto"
       },
       "targets": [
@@ -121,29 +223,52 @@
         }
       ],
       "title": "Storage Used (max %)",
-      "type": "stat"
+      "type": "stat",
+      "description": "Peak storage utilisation. Azure SQL stops accepting writes when a database hits its size limit."
     },
     {
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "thresholds"},
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {"color": "green", "value": null},
-              {"color": "red", "value": 1}
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
             ]
           },
           "unit": "short"
         }
       },
-      "gridPos": {"h": 5, "w": 6, "x": 18, "y": 1},
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 1
+      },
       "id": 5,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
-        "reduceOptions": {"calcs": ["sum"], "fields": "", "values": false},
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
         "textMode": "auto"
       },
       "targets": [
@@ -154,13 +279,19 @@
         }
       ],
       "title": "Connection Failures (last 1h)",
-      "type": "stat"
+      "type": "stat",
+      "description": "Connections the database refused in the last hour."
     },
     {
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "drawStyle": "line",
             "fillOpacity": 10,
@@ -169,17 +300,44 @@
             "pointSize": 5,
             "showPoints": "never",
             "spanNulls": false,
-            "stacking": {"group": "A", "mode": "none"}
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            }
           },
-          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
           "unit": "percent"
         }
       },
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 6},
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 6
+      },
       "id": 10,
       "options": {
-        "legend": {"calcs": ["mean", "max"], "displayMode": "table", "placement": "right", "showLegend": true},
-        "tooltip": {"mode": "multi", "sort": "desc"}
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -189,13 +347,19 @@
         }
       ],
       "title": "CPU Consumption % (timeseries)",
-      "type": "timeseries"
+      "type": "timeseries",
+      "description": "CPU utilisation over time. The shape matters more than the peak - a flat 70% is a sizing problem, a 5-minute spike to 100% is a query problem."
     },
     {
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "drawStyle": "line",
             "fillOpacity": 10,
@@ -205,15 +369,39 @@
             "showPoints": "never",
             "spanNulls": false
           },
-          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
           "unit": "percent"
         }
       },
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 6},
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 6
+      },
       "id": 11,
       "options": {
-        "legend": {"calcs": ["mean", "max"], "displayMode": "table", "placement": "right", "showLegend": true},
-        "tooltip": {"mode": "multi", "sort": "desc"}
+        "legend": {
+          "calcs": [
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -233,29 +421,61 @@
         }
       ],
       "title": "CPU / Sessions / Storage %",
-      "type": "timeseries"
+      "type": "timeseries",
+      "description": "CPU, sessions and storage together. All three are percentages of the same database, so one axis is correct here."
     },
     {
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "drawStyle": "bars",
             "fillOpacity": 80,
             "lineWidth": 1,
             "showPoints": "never",
-            "stacking": {"group": "A", "mode": "normal"}
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            }
           },
-          "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}]},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          },
           "unit": "short"
         }
       },
-      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 14},
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 14
+      },
       "id": 12,
       "options": {
-        "legend": {"calcs": ["sum"], "displayMode": "table", "placement": "right", "showLegend": true},
-        "tooltip": {"mode": "multi", "sort": "desc"}
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -265,29 +485,61 @@
         }
       ],
       "title": "Connection Failures (count per 5m)",
-      "type": "timeseries"
+      "type": "timeseries",
+      "description": "Refused connections per 5 minutes. Matches the 'SQL Connection Failures' alert."
     },
     {
-      "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "color": {"mode": "palette-classic"},
+          "color": {
+            "mode": "palette-classic"
+          },
           "custom": {
             "drawStyle": "bars",
             "fillOpacity": 80,
             "lineWidth": 1,
             "showPoints": "never",
-            "stacking": {"group": "A", "mode": "normal"}
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            }
           },
-          "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}]},
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              }
+            ]
+          },
           "unit": "short"
         }
       },
-      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 14},
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 14
+      },
       "id": 13,
       "options": {
-        "legend": {"calcs": ["sum"], "displayMode": "table", "placement": "right", "showLegend": true},
-        "tooltip": {"mode": "multi", "sort": "desc"}
+        "legend": {
+          "calcs": [
+            "sum"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -297,13 +549,19 @@
         }
       ],
       "title": "Deadlocks (count per 10m)",
-      "type": "timeseries"
+      "type": "timeseries",
+      "description": "Deadlocks per 10 minutes. A rising rate means contention between concurrent transactions."
     }
   ],
   "refresh": "30s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["azure", "sql", "database"],
+  "tags": [
+    "cloudkite",
+    "azure",
+    "sql",
+    "database"
+  ],
   "templating": {
     "list": [
       {
@@ -321,8 +579,19 @@
         "type": "datasource"
       },
       {
-        "current": {"selected": true, "text": ["All"], "value": ["$__all"]},
-        "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
         "definition": "label_values(azure_sql_database_cpu_percent_used, database)",
         "hide": 0,
         "includeAll": true,
@@ -330,7 +599,10 @@
         "multi": true,
         "name": "database",
         "options": [],
-        "query": {"query": "label_values(azure_sql_database_cpu_percent_used, database)", "refId": "StandardVariableQuery"},
+        "query": {
+          "query": "label_values(azure_sql_database_cpu_percent_used, database)",
+          "refId": "StandardVariableQuery"
+        },
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
@@ -339,10 +611,13 @@
       }
     ]
   },
-  "time": {"from": "now-1h", "to": "now"},
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
   "timepicker": {},
   "timezone": "",
-  "title": "Azure SQL — Health & Saturation",
+  "title": "Azure SQL \u2014 Health & Saturation",
   "uid": "azure-databases",
   "version": 1,
   "weekStart": ""
