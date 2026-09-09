@@ -53,7 +53,7 @@
   "weekStart": "",
   "title": "Cluster Traces",
   "uid": "cluster-traces",
-  "description": "Request rate, latency and error rate per service, derived from OpenTelemetry span metrics. Requires Tempo with its span-metrics generator writing traces_spanmetrics_* into Prometheus, plus a Tempo datasource for the Service variable. Ships only when the monitoring chart is told a trace backend exists (dashboards.backends.traces, which defaults to k8s-monitoring.enabled).",
+  "description": "Request rate, latency and error rate per service, derived from OpenTelemetry span metrics. Requires a standalone Tempo (tempo-distributed) with its metrics-generator enabled and the span-metrics processor remote-writing traces_spanmetrics_* into Prometheus, plus a Tempo datasource for the Service variable. Ships only when dashboards.backends.traces is set to true - this chart does not deploy Tempo, so it cannot infer that.",
   "version": 1,
   "templating": {
     "list": [

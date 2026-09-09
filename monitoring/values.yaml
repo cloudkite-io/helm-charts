@@ -48,9 +48,32 @@ kube-prometheus-stack:
           headers:
             X-Scope-OrgID: CLIENT_NAME
           writeRelabelConfigs:
+            # Metrics shipped to central Mimir. This list is what the dashboards in
+            # dashboards/ query, so anything removed here goes blank in the central
+            # per-tenant Grafana (it stays visible in this cluster's own Prometheus).
+            #
+            # Grouped by which baseline item needs it. Each group is scoped to the
+            # specific metrics the panels use rather than a wildcard, because
+            # remote-write volume is billed:
+            #   kube_namespace_labels          namespace template variable
+            #   kube_deployment_*              deployment health
+            #   container_oom_events_total     container OOM events
+            #   container_{cpu,memory,network}_*  per-container resource usage
+            #   kubelet_volume_stats_*         volume utilisation %
+            #   node_{cpu,memory,disk,filesystem}_*  node health, volume saturation
+            #   traefik_*                      HTTP 5xx / 4xx / RPS
+            #   x509_*                         certificate expiry
+            #   velero_backup*                 backup success/failure
             - sourceLabels:
               - "__name__"
-              regex: "kubernetes_build_info|version_checker_is_latest_version|kube_pod_.*|kube_node_.*|x509_.*|velero_backup.*"
+              regex: "kubernetes_build_info|version_checker_is_latest_version\
+                |kube_pod_.*|kube_node_.*|kube_namespace_labels|kube_deployment_spec_replicas|kube_deployment_status_.*\
+                |container_oom_events_total|container_cpu_usage_seconds_total|container_memory_working_set_bytes\
+                |container_network_(receive|transmit)_bytes_total\
+                |kubelet_volume_stats_.*\
+                |node_cpu_seconds_total|node_memory_Mem(Available|Total)_bytes|node_disk_.*|node_filesystem_.*\
+                |traefik_service_.*|traefik_entrypoint_.*|traefik_config_.*\
+                |x509_.*|velero_backup.*"
               action: "keep"
           queueConfig:
             capacity: 5000
@@ -127,16 +150,45 @@ loki:
   enabled: false
 prometheus-blackbox-exporter:
   enabled: false
-k8s-monitoring:
-  enabled: false
 
 # Grafana dashboards shipped by this chart as ConfigMaps, picked up by the Grafana
 # sidecar (consumers must enable kube-prometheus-stack.grafana.sidecar.dashboards).
 # Off by default so existing consumers are unaffected by upgrading this chart.
+#
+# Most dashboards here are Prometheus-only and render on any cluster. The ones that
+# need a log or trace backend are gated by `requires` below, so a cluster without
+# Loki or Tempo never gets a dashboard of empty panels:
+#
+#   baseline-slo          Prometheus   the client-facing baseline; ships everywhere
+#   cluster-overview      Prometheus   nodes, workloads, resource usage
+#   traefik-overview      Prometheus   ingress RPS / 5xx / 4xx / latency
+#   azure-databases       Prometheus   needs azure-metrics-scraper
+#   cost-overview         Prometheus   needs azure-cost-exporter and/or opencost
+#   traefik-access-logs   Loki         per-request access-log detail
+#   cluster-logs          Loki         log volume, error logs, log stream
+#   cluster-traces        Tempo        OpenTelemetry span metrics (standalone Tempo)
 dashboards:
   enabled: false
-  # Dashboard names (filename without .json) to ship. Empty list = all of dashboards/.
+  # Dashboard names (filename without .json) to ship. Empty list = all of dashboards/,
+  # minus any whose backend requirement below is unmet.
   include: []
+  # Which observability backends this cluster has.
+  #   logs   - defaults to loki.enabled, since Loki can be a subchart here. Set it
+  #            explicitly when Loki is deployed elsewhere (e.g. a central Loki).
+  #   traces - no default. Tempo is always deployed as its own release, so this
+  #            chart has nothing to infer from; set it to true on clusters running
+  #            Tempo with its metrics-generator enabled (span-metrics processor
+  #            remote-writing traces_spanmetrics_* into Prometheus).
+  #   backends:
+  #     logs: true
+  #     traces: true
+  backends: {}
+  # Dashboard name -> the backend it needs. Anything not listed is Prometheus-only and
+  # always ships. Extend this if you add a dashboard with its own backend dependency.
+  requires:
+    traefik-access-logs: logs
+    cluster-logs: logs
+    cluster-traces: traces
   labels:
     grafana_dashboard: "1"
   # Sets the grafana_folder annotation; requires sidecar folderAnnotation.
