@@ -1629,6 +1629,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
+        "allValue": ".*",
         "definition": "label_values(kube_namespace_labels, namespace)",
         "hide": 0,
         "includeAll": true,
@@ -1660,6 +1661,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
+        "allValue": ".*",
         "definition": "label_values(kube_pod_info{namespace=~\"$namespace\",namespace!~\"$nsHide\"}, pod)",
         "hide": 0,
         "includeAll": true,
@@ -1691,6 +1693,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
+        "allValue": ".*",
         "definition": "label_values(kube_pod_container_info{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\"}, container)",
         "hide": 0,
         "includeAll": true,

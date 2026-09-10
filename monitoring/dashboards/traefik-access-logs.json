@@ -2161,10 +2161,7 @@
   "templating": {
     "list": [
       {
-        "current": {
-          "text": "Loki",
-          "value": "P8E80F9AEF21F6940"
-        },
+        "current": {},
         "includeAll": false,
         "label": "Loki",
         "name": "DS_LOKI",

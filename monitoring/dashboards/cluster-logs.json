@@ -112,6 +112,7 @@
           "type": "loki",
           "uid": "${DS_LOKI}"
         },
+        "allValue": ".*",
         "definition": "label_values(namespace)",
         "hide": 0,
         "includeAll": true,
@@ -120,8 +121,10 @@
         "name": "namespace",
         "options": [],
         "query": {
-          "query": "label_values(namespace)",
-          "refId": "StandardVariableQuery"
+          "label": "namespace",
+          "refId": "LokiVariableQueryEditor-VariableQuery",
+          "stream": "",
+          "type": 1
         },
         "refresh": 2,
         "regex": "",
@@ -144,7 +147,8 @@
           "type": "loki",
           "uid": "${DS_LOKI}"
         },
-        "definition": "label_values({namespace=~\"$namespace\"}, pod)",
+        "allValue": ".*",
+        "definition": "label_values({job=~\".+\", namespace=~\"$namespace\",namespace!~\"$nsHide\"}, pod)",
         "hide": 0,
         "includeAll": true,
         "label": "Pod",
@@ -152,8 +156,10 @@
         "name": "pod",
         "options": [],
         "query": {
-          "query": "label_values({namespace=~\"$namespace\"}, pod)",
-          "refId": "StandardVariableQuery"
+          "label": "pod",
+          "refId": "LokiVariableQueryEditor-VariableQuery",
+          "stream": "{job=~\".+\", namespace=~\"$namespace\",namespace!~\"$nsHide\"}",
+          "type": 1
         },
         "refresh": 2,
         "regex": "",
