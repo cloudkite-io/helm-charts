@@ -31,6 +31,12 @@ kube-prometheus-stack:
 
   prometheus:
     prometheusSpec:
+      # Only ServiceMonitors labelled `release: <this release>` are scraped. This is
+      # the kube-prometheus-stack default, set explicitly because ServiceMonitors from
+      # other releases (Traefik, Velero) must carry that label to be picked up - see
+      # README.md. Set to false, together with `serviceMonitorSelector: {}`, to scrape
+      # every ServiceMonitor in the cluster regardless of label.
+      serviceMonitorSelectorNilUsesHelmValues: true
       resources:
         requests:
           memory: 1Gi
