@@ -1,8 +1,76 @@
 kube-prometheus-stack:
   grafana:
     enabled: false
+  # Node health alerting comes from upstream instead of being hand-written. The groups
+  # enabled below cover disk filling up, inode and file-descriptor exhaustion, clock
+  # skew, conntrack saturation, CPU/memory/IO saturation, NIC errors and flapping, and
+  # NotReady/Unreachable nodes.
+  #
+  # Everything else is off on purpose:
+  #   - the control-plane groups (kubeControllerManager, kubeProxy, kubeScheduler*) fire
+  #     permanently on managed clusters, where those components are not scrapeable
+  #   - the workload groups (kubernetesApps, kubernetesStorage) would duplicate the
+  #     alerts the `prometheus-rules` chart already ships
+  # Alerts only reach a receiver on clusters that enable Alertmanager; where it stays
+  # disabled they are visible in Prometheus and Grafana only.
   defaultRules:
-    create: false
+    create: true
+    rules:
+      node: true                   # node.rules recording rules
+      nodeExporterAlerting: true   # the Node* alert set
+      nodeExporterRecording: true  # instance:node_* recording rules
+      network: true                # NodeNetworkInterfaceFlapping
+      kubernetesSystem: true       # KubeNodeNotReady, KubeNodeUnreachable, KubeletDown
+      alertmanager: false
+      configReloaders: false
+      etcd: false
+      general: false
+      k8sContainerCpuUsageSecondsTotal: false
+      k8sContainerMemoryCache: false
+      k8sContainerMemoryRss: false
+      k8sContainerMemorySwap: false
+      k8sContainerMemoryWorkingSetBytes: false
+      k8sContainerResource: false
+      k8sPodOwner: false
+      kubeApiserverAvailability: false
+      kubeApiserverBurnrate: false
+      kubeApiserverHistogram: false
+      kubeApiserverSlos: false
+      kubeControllerManager: false
+      kubelet: false
+      kubeProxy: false
+      kubePrometheusGeneral: false
+      kubePrometheusNodeRecording: false
+      kubernetesApps: false
+      kubernetesResources: false
+      kubernetesStorage: false
+      kubeSchedulerAlerting: false
+      kubeSchedulerRecording: false
+      kubeStateMetrics: false
+      prometheus: false
+      prometheusOperator: false
+      windows: false
+
+  # The kubelet's /metrics/resource endpoint is the only node-level source on clusters
+  # that cannot run node-exporter (GKE Autopilot, EKS Fargate). Scraping it stays off by
+  # default: it is an extra scrape on every node, and clusters with node-exporter gain
+  # nothing from it. The path is corrected here regardless, because the chart still
+  # defaults to the pre-1.18 /metrics/resource/v1alpha1 name, which is a permanently
+  # failing target on every supported Kubernetes version. README.md has the opt-in.
+  kubelet:
+    serviceMonitor:
+      resourcePath: /metrics/resource
+
+  # node-exporter ships its ServiceMonitor with no relabelings, so every node_* series
+  # is identified only by `instance`, an IP:port. Copy the node name onto the series so
+  # dashboards and alerts can name the node instead of repeating IPs at the reader.
+  prometheus-node-exporter:
+    prometheus:
+      monitor:
+        relabelings:
+          - action: replace
+            sourceLabels: [__meta_kubernetes_pod_node_name]
+            targetLabel: node
   alertmanager:
     enabled: false
     config:
@@ -37,6 +105,14 @@ kube-prometheus-stack:
       # README.md. Set to false, together with `serviceMonitorSelector: {}`, to scrape
       # every ServiceMonitor in the cluster regardless of label.
       serviceMonitorSelectorNilUsesHelmValues: true
+      # How long the startup probe waits for WAL replay, which returns 503 until it
+      # completes. The operator's fallback is 900s; a Prometheus whose replay takes
+      # longer gets killed mid-replay, leaving the WAL un-checkpointed so the next
+      # replay is just as long, and it never starts again. Raise this per cluster if a
+      # replay legitimately needs longer than 30 minutes.
+      maximumStartupDurationSeconds: 1800
+      # Enough for a small cluster only. Anything scraping node-exporter and cAdvisor
+      # across more than a handful of nodes needs more, set per cluster.
       resources:
         requests:
           memory: 1Gi
@@ -67,6 +143,18 @@ kube-prometheus-stack:
             #   container_{cpu,memory,network}_*  per-container resource usage
             #   kubelet_volume_stats_*         volume utilisation %
             #   node_{cpu,memory,disk,filesystem}_*  node health, volume saturation
+            #   node_load*, node_pressure_*    node saturation (load per core, PSI stall)
+            #   node_boot_time_seconds         unexpected reboots, spot evictions
+            #   node_vmstat_pgmajfault         memory pressure before OOM
+            #   node_timex_*                   clock skew, which breaks TLS and auth
+            #   node_nf_conntrack_entries*     conntrack exhaustion on ingress nodes
+            #   node_filefd_*                  file descriptor exhaustion
+            #   kubelet_running_pods           pod density against the per-node cap
+            #   up                             any scrape target down, one series per target
+            #   node_cpu_usage_seconds_total, node_memory_working_set_bytes
+            #                                  kubelet /metrics/resource, the CPU and
+            #                                  memory fallback where node-exporter
+            #                                  cannot run
             #   traefik_*                      HTTP 5xx / 4xx / RPS
             #   x509_*                         certificate expiry
             #   velero_backup*                 backup success/failure
@@ -78,6 +166,10 @@ kube-prometheus-stack:
                 |container_network_(receive|transmit)_bytes_total\
                 |kubelet_volume_stats_.*\
                 |node_cpu_seconds_total|node_memory_Mem(Available|Total)_bytes|node_disk_.*|node_filesystem_.*\
+                |node_load(1|5|15)|node_boot_time_seconds|node_vmstat_pgmajfault|node_pressure_.*\
+                |node_timex_(sync_status|offset_seconds)|node_nf_conntrack_entries(_limit)?\
+                |node_filefd_(allocated|maximum)|kubelet_running_pods|up\
+                |node_cpu_usage_seconds_total|node_memory_working_set_bytes\
                 |traefik_service_.*|traefik_entrypoint_.*|traefik_config_.*\
                 |x509_.*|velero_backup.*"
               action: "keep"

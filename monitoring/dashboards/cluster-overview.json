@@ -111,13 +111,13 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+          "expr": "(100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100))\nor\n(100 * sum(rate(node_cpu_usage_seconds_total[5m]))\n   / sum(kube_node_status_capacity{resource=\"cpu\"}))",
           "refId": "A"
         }
       ],
       "title": "Cluster CPU Usage",
       "type": "stat",
-      "description": "CPU used across the cluster. Orange from 80%, red from 90%."
+      "description": "Cluster-wide CPU usage. Where node-exporter cannot run, falls back to the kubelet's /metrics/resource endpoint against node capacity, which is a different denominator to per-CPU idle time."
     },
     {
       "datasource": {
@@ -179,13 +179,13 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "100 * (1 - sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes))",
+          "expr": "(100 * (1 - sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes)))\nor\n(100 * sum(node_memory_working_set_bytes)\n   / sum(kube_node_status_capacity{resource=\"memory\"}))",
           "refId": "A"
         }
       ],
       "title": "Cluster Memory Usage",
       "type": "stat",
-      "description": "Memory used across the cluster. Orange from 80%, red from 90%."
+      "description": "Cluster-wide memory usage. Where node-exporter cannot run, falls back to the kubelet's working set against node capacity. Working set excludes reclaimable page cache, so it usually reads a little lower."
     },
     {
       "datasource": {

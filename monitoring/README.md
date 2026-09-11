@@ -114,8 +114,9 @@ Then:
   check in this order: a values override setting `nodeExporter.enabled: false` or disabling the
   kubelet ServiceMonitor (more common in practice than any provider difference); GKE Autopilot or
   EKS Fargate, which block the node-exporter DaemonSet because it needs `hostNetwork`, `hostPID` and
-  a host root filesystem mount; Windows nodes, which need `prometheus-windows-exporter` (off by
-  default in this chart).
+  a host root filesystem mount, and are a supported setup covered by
+  [Managed nodepools](#managed-nodepools-gke-autopilot-eks-fargate); Windows nodes, which need
+  `prometheus-windows-exporter` (off by default in this chart).
 
 - **A panel is empty in the central Grafana but the metric exists in the cluster's Prometheus**. The
   metric is not in the `keep` list above. Add it there, keeping the scope tight.
@@ -124,3 +125,77 @@ Then:
   the Grafana sidecar (`kube-prometheus-stack.grafana.sidecar.dashboards`), and the log- and
   trace-backed dashboards only ship when `dashboards.backends.logs` / `.traces` is set. See the
   `dashboards` block in `values.yaml`.
+
+## Managed nodepools (GKE Autopilot, EKS Fargate)
+
+These platforms do not permit the `prometheus-node-exporter` DaemonSet, which needs `hostNetwork`,
+`hostPID` and a host root filesystem mount. That is a platform rule, not a configuration problem to
+solve, so the chart treats it as a supported setup rather than a broken one.
+
+What still works, and what does not:
+
+| Signal | On a managed nodepool |
+|---|---|
+| Node CPU and memory utilisation | yes, from the kubelet's `/metrics/resource` endpoint |
+| Node Ready status and conditions, pod density | yes, from kube-state-metrics |
+| Volume utilisation (`kubelet_volume_stats_*`) | yes, from the kubelet |
+| Disk I/O, filesystem fill, load, PSI, conntrack, file descriptors, boot time | no in-cluster source at all |
+
+The dashboards degrade rather than blank out. `Node CPU Utilisation` and `Node Memory Utilisation`
+in `baseline-slo`, and the two cluster-wide equivalents in `cluster-overview`, are written as
+`node-exporter query or kubelet-fallback query`. On a cluster with node-exporter the fallback is
+fully suppressed, because both sides reduce to the same label set. Everything with no fallback lives
+in the collapsed `Infrastructure: nodes (requires node-exporter)` row, which carries a text panel
+explaining why it is empty.
+
+The fallback is not the same measurement as the primary. Working set excludes reclaimable page
+cache, so it is not `MemTotal - MemAvailable`, and capacity-relative CPU is a different denominator
+to per-CPU idle time. Both are close enough to alert and eyeball on, but two clusters can read a few
+points apart for that reason alone.
+
+To enable it on such a cluster:
+
+```yaml
+kube-prometheus-stack:
+  nodeExporter:
+    enabled: false
+  prometheus-node-exporter:
+    enabled: false
+  kubelet:
+    serviceMonitor:
+      # Off by default: it is an extra scrape on every node. The chart already corrects
+      # `resourcePath`, which upstream still defaults to the pre-1.18
+      # /metrics/resource/v1alpha1 name.
+      resource: true
+      # Only needed if this cluster also scrapes cAdvisor. /metrics/resource exposes its
+      # own container_* and pod_* series, so without this any sum() over
+      # container_cpu_usage_seconds_total or container_memory_working_set_bytes counts
+      # each container twice.
+      resourceMetricRelabelings:
+        - action: keep
+          sourceLabels: [__name__]
+          regex: node_(cpu_usage_seconds_total|memory_working_set_bytes)
+  defaultRules:
+    rules:
+      # These groups are node-exporter only. They install and evaluate against nothing
+      # here. None of them use absent(), so they stay silent rather than firing, but
+      # there is no reason to carry them.
+      nodeExporterAlerting: false
+      nodeExporterRecording: false
+```
+
+`node_cpu_usage_seconds_total` and `node_memory_working_set_bytes` are already in the default
+remote-write keep list, so the fallback reaches the central Grafana without a per-cluster override.
+
+The `node` label the panels group by is added by the Prometheus Operator, not by this chart: it
+relabels `__meta_kubernetes_endpoint_address_target_kind` and `__meta_kubernetes_endpoint_address_target_name`
+into `node` for every ServiceMonitor endpoint whose target is a Node, which is what the kubelet
+Service's endpoints are. Confirm on any cluster with:
+
+```promql
+count(count by (node) (node_cpu_usage_seconds_total))
+```
+
+A result of zero when nodes exist means the label is missing and the fallbacks will render empty.
+node-exporter's own endpoints are backed by Pods rather than Nodes, which is why the chart adds a
+`prometheus-node-exporter` relabeling for that case.
