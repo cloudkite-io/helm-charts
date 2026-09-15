@@ -1,0 +1,40 @@
+{{- if .Values.dashboards.enabled }}
+{{- $root := . }}
+{{- /*
+  Resolve which observability backends this cluster actually has, so a dashboard is
+  only shipped where something can populate it. dashboards.backends overrides.
+*/ -}}
+{{- $have := dict "logs" false "traces" false }}
+{{- /* `logs` can be inferred - Loki is a subchart here. `traces` cannot: Tempo is
+       always its own release, so it has to be declared. */ -}}
+{{- if hasKey $root.Values "loki" }}
+  {{- $_ := set $have "logs" ((index $root.Values "loki").enabled | default false) }}
+{{- end }}
+{{- range $key, $val := ($root.Values.dashboards.backends | default dict) }}
+  {{- $_ := set $have $key $val }}
+{{- end }}
+{{- $requires := $root.Values.dashboards.requires | default dict }}
+{{- range $path, $bytes := .Files.Glob "dashboards/*.json" }}
+{{- $name := base $path | trimSuffix ".json" }}
+{{- $selected := or (empty $root.Values.dashboards.include) (has $name $root.Values.dashboards.include) }}
+{{- $needs := get $requires $name }}
+{{- $satisfied := or (not $needs) (get $have $needs) }}
+{{- if and $selected $satisfied }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "monitoring.fullname" $root }}-dashboard-{{ $name }}
+  namespace: {{ $root.Release.Namespace }}
+  labels:
+    {{- toYaml $root.Values.dashboards.labels | nindent 4 }}
+  {{- with $root.Values.dashboards.folder }}
+  annotations:
+    grafana_folder: {{ . | quote }}
+  {{- end }}
+data:
+  {{ base $path }}: |-
+{{ $bytes | toString | indent 4 }}
+{{- end }}
+{{- end }}
+{{- end }}
