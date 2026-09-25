@@ -1,0 +1,107 @@
+{{- /*
+  Karpenter NodePools. One per entry in .Values.nodePools.
+
+  These replace fixed-size AKS node pools for application capacity. The system node pool
+  stays where it is (Terraform, Bicep, az CLI): AKS requires one.
+
+  SCHEDULING CONTRACT:
+    * Karpenter's Azure provider writes kubernetes.azure.com/scalesetpriority itself:
+      "spot" on spot nodes, "regular" on on-demand. Never set it as a label here;
+      express the choice via capacityType (karpenter.sh/capacity-type) instead. That
+      keeps existing `scalesetpriority In [spot]` preferences and
+      `scalesetpriority NotIn [spot]` exclusions working untouched.
+    * kubernetes/nodetype=regular on the on-demand pool is a label workloads may pin
+      with requiredDuringScheduling node affinity. Removing it from values can leave
+      those pods unschedulable.
+    * The spot taint is applied explicitly rather than relied upon, so that workloads
+      which have not opted in can never land on spot.
+*/ -}}
+{{- range $name, $pool := .Values.nodePools }}
+apiVersion: karpenter.sh/v1
+kind: NodePool
+metadata:
+  name: {{ $name }}
+spec:
+  {{- with $pool.weight }}
+  # Higher weight wins when a pod matches more than one NodePool.
+  weight: {{ . }}
+  {{- end }}
+  template:
+    metadata:
+      labels:
+        provisioned-by: karpenter
+        {{- with $pool.labels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      nodeClassRef:
+        group: karpenter.azure.com
+        kind: AKSNodeClass
+        name: {{ $.Values.nodeClass.name }}
+      # NAP rolls nodes onto new node images itself (via drift), so nodes are not
+      # expired on a timer by default.
+      expireAfter: {{ $pool.expireAfter | default "Never" | quote }}
+      {{- with $pool.taints }}
+      taints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      requirements:
+        - key: kubernetes.io/os
+          operator: In
+          values: ["linux"]
+        - key: kubernetes.io/arch
+          operator: In
+          values:
+            {{- toYaml ($pool.arch | default (list "amd64")) | nindent 12 }}
+        - key: karpenter.sh/capacity-type
+          operator: In
+          values:
+            {{- toYaml (required (printf "nodePools.%s.capacityType is required" $name) $pool.capacityType) | nindent 12 }}
+        {{- with $pool.skuFamily }}
+        - key: karpenter.azure.com/sku-family
+          operator: In
+          values:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with $pool.zones }}
+        - key: topology.kubernetes.io/zone
+          operator: In
+          values:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
+        {{- with $pool.minSkuCpu }}
+        # Floor on node size. Every node pays a fixed DaemonSet tax, so the smaller the
+        # node, the bigger that overhead is as a share of it. With a typical dozen
+        # DaemonSets (~400m CPU, ~950Mi per node) that is ~21% of a 2-vCPU node's
+        # allocatable CPU versus ~11% of a 4-vCPU node. Left unbounded, Karpenter picks
+        # 2-vCPU SKUs and you pay ~16% more billed vCPU for the same usable capacity.
+        - key: karpenter.azure.com/sku-cpu
+          operator: Gt
+          values: [{{ . | quote }}]
+        {{- end }}
+        {{- with $pool.maxSkuCpu }}
+        # Caps individual node size so a single spot eviction can't take out a large
+        # slice of the cluster, and keeps bin-packing from picking oversized SKUs.
+        - key: karpenter.azure.com/sku-cpu
+          operator: Lt
+          values: [{{ . | quote }}]
+        {{- end }}
+        {{- with $pool.extraRequirements }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+  # Hard ceiling on everything this pool can provision, summed across all its nodes.
+  # Spot bids can't be capped on NAP, so this is the blast-radius control.
+  limits:
+    cpu: {{ required (printf "nodePools.%s.limits.cpu is required" $name) (dig "limits" "cpu" "" $pool) | quote }}
+    {{- with (dig "limits" "memory" "" $pool) }}
+    memory: {{ . }}
+    {{- end }}
+  disruption:
+    consolidationPolicy: {{ dig "disruption" "consolidationPolicy" "WhenEmptyOrUnderutilized" $pool }}
+    consolidateAfter: {{ dig "disruption" "consolidateAfter" "0s" $pool }}
+    {{- with (dig "disruption" "budgets" "" $pool) }}
+    budgets:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+---
+{{- end }}
