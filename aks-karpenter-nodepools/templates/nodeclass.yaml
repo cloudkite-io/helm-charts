@@ -1,0 +1,29 @@
+{{- /*
+  AKSNodeClass: the Azure-specific half of a Karpenter provisioning decision (OS image,
+  disk, pod density, VM tags). The CRD is installed by AKS when node auto-provisioning is
+  enabled, NOT by this chart. Installing before NAP is on fails with
+  "no matches for kind AKSNodeClass".
+
+  vnetSubnetID is deliberately not set, so Karpenter places nodes in the cluster's own
+  node subnet, the same one the fixed-size node pools use.
+*/ -}}
+apiVersion: karpenter.azure.com/v1beta1
+kind: AKSNodeClass
+metadata:
+  name: {{ .Values.nodeClass.name }}
+  {{- with .Values.nodeClass.description }}
+  annotations:
+    kubernetes.io/description: {{ . | quote }}
+  {{- end }}
+spec:
+  imageFamily: {{ .Values.nodeClass.imageFamily }}
+  {{- with .Values.nodeClass.osDiskSizeGB }}
+  osDiskSizeGB: {{ . }}
+  {{- end }}
+  {{- with .Values.nodeClass.maxPods }}
+  maxPods: {{ . }}
+  {{- end }}
+  {{- with .Values.nodeClass.tags }}
+  tags:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}

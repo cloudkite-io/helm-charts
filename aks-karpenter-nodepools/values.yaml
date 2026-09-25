@@ -1,0 +1,101 @@
+---
+# The AKSNodeClass every NodePool in this release provisions from: the Azure side of a
+# node (OS image, disk, pod density, VM tags). Changing any of these drifts existing
+# nodes, and Karpenter replaces them.
+nodeClass:
+  # -- Name of the AKSNodeClass. Avoid `default` on clusters that keep AKS's default
+  # NodePools: AKS already owns an AKSNodeClass by that name.
+  name: general-purpose
+  # -- Written to the `kubernetes.io/description` annotation. Set to `""` to omit.
+  description: General purpose AKSNodeClass for application workloads
+  # -- Node OS image family: `Ubuntu` (version follows the cluster's Kubernetes
+  # version), `Ubuntu2204`, `Ubuntu2404` or `AzureLinux`.
+  imageFamily: Ubuntu
+  # -- OS disk size in GB (minimum 30). NAP uses an ephemeral OS disk when the chosen
+  # VM size has room for one this big, otherwise a managed disk.
+  osDiskSizeGB: 128
+  # -- (int) Maximum pods per node (10-250).
+  # @default -- AKS default for the cluster's network plugin (250 on Azure CNI Overlay, 30 on Azure CNI node subnet)
+  maxPods:
+  # -- Azure resource tags applied to every VM provisioned through this node class.
+  tags:
+    managed-by: karpenter
+
+# -- NodePools to create, keyed by NodePool name. Every entry accepts the fields shown on
+# `nodePools.spot`. Pools you add do not inherit anything from the defaults below: they
+# need at least `capacityType` and `limits.cpu`. Remove a default pool by setting it to
+# `null` (for example `nodePools.spot: null`).
+# @default -- a tainted `spot` pool and an `on-demand` fallback pool; see the rows below
+nodePools:
+  # Spot is where anything that tolerates spot lands. The taint means only workloads
+  # that opted in can be placed here; nothing is moved onto spot implicitly.
+  spot:
+    # -- Priority when a pod fits more than one NodePool (1-100; higher wins).
+    weight: 50
+    # -- Values for `karpenter.sh/capacity-type`: `spot`, `on-demand`, or both.
+    capacityType: ["spot"]
+    # -- Values for `kubernetes.io/arch`: `amd64`, `arm64`, or both.
+    arch: ["amd64"]
+    # -- VM size families allowed (`karpenter.azure.com/sku-family`), e.g. `D` general
+    # purpose, `F` compute optimized, `E` memory optimized. Empty allows every family.
+    skuFamily: ["D", "F"]
+    # -- Availability zones allowed, as `<region>-<n>` (e.g. `eastus-1`). Empty allows
+    # every zone in the cluster's region. Pin this on single-zone clusters.
+    zones: []
+    # -- Node size floor: vCPU count must be greater than this. `"3"` means 4 vCPU or
+    # more, which keeps the per-node DaemonSet overhead to a small share of each node.
+    minSkuCpu: "3"
+    # -- Node size cap: vCPU count must be less than this. `"17"` means 16 vCPU or
+    # fewer, so one spot eviction can't take out a large slice of the cluster.
+    maxSkuCpu: "17"
+    # -- Extra labels on every node in this pool (`provisioned-by: karpenter` is always
+    # added). Never set `kubernetes.azure.com/scalesetpriority`: the Azure provider
+    # writes it.
+    labels: {}
+    # -- Taints on every node in this pool. The default keeps workloads off spot unless
+    # they tolerate it.
+    taints:
+      - key: kubernetes.azure.com/scalesetpriority
+        value: spot
+        effect: NoSchedule
+    # -- Maximum node lifetime. `Never` leaves node replacement to NAP's image upgrades
+    # and to consolidation.
+    expireAfter: Never
+    # -- Extra NodePool requirements, appended to the ones above. Use for any
+    # `karpenter.azure.com/*` selector the chart has no field for (sku-name,
+    # sku-gpu-manufacturer, sku-storage-premium-capable, ...).
+    extraRequirements: []
+    limits:
+      # -- Required. Total vCPU this pool may provision across all its nodes. Add
+      # `limits.memory` (e.g. `256Gi`) for a memory ceiling as well.
+      cpu: "96"
+    disruption:
+      # -- `WhenEmptyOrUnderutilized` also repacks pods off under-used nodes;
+      # `WhenEmpty` only removes nodes with nothing left on them.
+      consolidationPolicy: WhenEmptyOrUnderutilized
+      # -- How long a node must be empty or under-used before Karpenter acts on it.
+      consolidateAfter: 5m
+      # -- Rate limits on voluntary node replacement, e.g.
+      # `[{nodes: "20%"}, {nodes: "0", schedule: "0 9 * * mon-fri", duration: 8h}]`.
+      # @default -- `[]` (Karpenter's default of 10% of nodes at a time)
+      budgets: []
+
+  # -- Catches every workload that hasn't opted into spot, and spot-tolerant workloads
+  # when spot capacity is unavailable. Same fields as `nodePools.spot`.
+  # `kubernetes/nodetype: regular` is the label CloudKite's `standard-app` chart prefers for
+  # non-spot capacity; keep it if any workload pins it with required node affinity.
+  # @default -- as `spot` but on-demand, weight 10, no taint, `kubernetes/nodetype: regular` label, 32 vCPU limit
+  on-demand:
+    weight: 10
+    capacityType: ["on-demand"]
+    skuFamily: ["D", "F"]
+    zones: []
+    minSkuCpu: "3"
+    maxSkuCpu: "17"
+    labels:
+      kubernetes/nodetype: regular
+    limits:
+      cpu: "32"
+    disruption:
+      consolidationPolicy: WhenEmptyOrUnderutilized
+      consolidateAfter: 5m

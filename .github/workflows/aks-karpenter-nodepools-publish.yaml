@@ -1,0 +1,49 @@
+name: Publish aks-karpenter-nodepools
+
+env:
+  CHART_NAME: aks-karpenter-nodepools
+  GAR_LOCATION: us-central1
+  PROJECT_NAME: cloudkite-public
+  PROJECT_ID: 297731695546
+  REPOSITORY: public-helm-charts
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [aks-karpenter-nodepools/**]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Lint chart
+        run: helm lint $CHART_NAME
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: projects/${{ env.PROJECT_ID }}/locations/global/workloadIdentityPools/github-actions/providers/github-oidc
+          service_account: github-actions@${{ env.PROJECT_NAME }}.iam.gserviceaccount.com
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+      - name: Docker configuration
+        run: gcloud auth configure-docker $GAR_LOCATION-docker.pkg.dev --quiet
+      # Consumers pin exact versions, so a published version must never change underneath
+      # them. Fail rather than silently re-push when Chart.yaml wasn't bumped.
+      - name: Refuse to overwrite a published version
+        run: |
+          version=$(helm show chart $CHART_NAME | awk '/^version:/ {print $2}')
+          if helm show chart oci://$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY/$CHART_NAME --version "$version" >/dev/null 2>&1; then
+            echo "::error file=$CHART_NAME/Chart.yaml::$CHART_NAME $version is already published. Bump version in $CHART_NAME/Chart.yaml."
+            exit 1
+          fi
+      - name: Package chart
+        run: helm package $CHART_NAME
+      - name: Push chart
+        run: helm push $CHART_NAME-*.tgz oci://$GAR_LOCATION-docker.pkg.dev/$PROJECT_NAME/$REPOSITORY

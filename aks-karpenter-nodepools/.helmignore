@@ -1,0 +1,2 @@
+# helm-docs source for README.md; not needed in the packaged chart
+README.md.gotmpl
