@@ -3674,6 +3674,7 @@
             "cert-manager",
             "velero",
             "traefik-system",
+            "traefik-proxy",
             "external-secrets",
             "kube-system"
           ],
@@ -3683,6 +3684,7 @@
             "cert-manager",
             "velero",
             "traefik-system",
+            "traefik-proxy",
             "external-secrets",
             "kube-system"
           ]
