@@ -3540,7 +3540,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) offset 1d) / clamp_min((sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) offset 7d) / 7, 0.01)",
+          "expr": "(sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"} offset 1d)) / clamp_min((sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"} offset 7d)) / 7, 0.01)",
           "range": true,
           "instant": false,
           "refId": "A",
