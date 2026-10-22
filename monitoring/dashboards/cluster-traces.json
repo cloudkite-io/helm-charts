@@ -73,6 +73,39 @@
         "type": "datasource"
       },
       {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "tempo",
+          "uid": "${DS_TEMPO}"
+        },
+        "definition": "label_values(up, cluster)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Cluster",
+        "multi": true,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(up, cluster)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
         "current": {},
         "hide": 0,
         "includeAll": false,
@@ -217,7 +250,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum by (service, status_code) (rate(traces_spanmetrics_calls_total{service=~\"$service\"}[5m]))",
+          "expr": "sum by (service, status_code) (rate(traces_spanmetrics_calls_total{cluster=~\"$cluster\",service=~\"$service\"}[5m]))",
           "legendFormat": "{{service}} ({{status_code}})",
           "refId": "A"
         }
@@ -309,7 +342,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "histogram_quantile(0.95, sum(rate(traces_spanmetrics_latency_bucket{service=~\"$service\"}[5m])) by (le, service))",
+          "expr": "histogram_quantile(0.95, sum by (le, service) (rate(traces_spanmetrics_latency_bucket{cluster=~\"$cluster\",service=~\"$service\"}[5m])))",
           "legendFormat": "{{service}} (p95)",
           "refId": "A"
         }
@@ -405,7 +438,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(rate(traces_spanmetrics_calls_total{service=~\"$service\", span_kind=\"SPAN_KIND_SERVER\", status_code=\"STATUS_CODE_ERROR\"}[5m])) by (service) / sum(rate(traces_spanmetrics_calls_total{service=~\"$service\", span_kind=\"SPAN_KIND_SERVER\"}[5m])) by (service)",
+          "expr": "sum by (service) (rate(traces_spanmetrics_calls_total{cluster=~\"$cluster\",service=~\"$service\",span_kind=\"SPAN_KIND_SERVER\",status_code=\"STATUS_CODE_ERROR\"}[5m])) / sum by (service) (rate(traces_spanmetrics_calls_total{cluster=~\"$cluster\",service=~\"$service\",span_kind=\"SPAN_KIND_SERVER\"}[5m]))",
           "legendFormat": "{{service}}",
           "refId": "A"
         }
@@ -497,7 +530,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "histogram_quantile(0.95, sum(rate(traces_spanmetrics_latency_bucket{service=~\"$service\"}[5m])) by (le, service, span_name))",
+          "expr": "histogram_quantile(0.95, sum by (le, service, span_name) (rate(traces_spanmetrics_latency_bucket{cluster=~\"$cluster\",service=~\"$service\"}[5m])))",
           "legendFormat": "{{service}} - {{span_name}}",
           "refId": "A"
         }
@@ -623,7 +656,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum by (service) (rate(traces_spanmetrics_calls_total{service=~\"$service\", http_response_status_code=~\"5..\"}[5m])) or sum by (service) (rate(traces_spanmetrics_calls_total{service=~\"$service\", http_status_code=~\"5..\"}[5m]))",
+          "expr": "sum by (service) (rate(traces_spanmetrics_calls_total{cluster=~\"$cluster\",http_response_status_code=~\"5..\",service=~\"$service\"}[5m])) or sum by (service) (rate(traces_spanmetrics_calls_total{cluster=~\"$cluster\",http_status_code=~\"5..\",service=~\"$service\"}[5m]))",
           "legendFormat": "{{service}} 5xx",
           "refId": "A"
         },
@@ -632,7 +665,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum by (service) (rate(traces_spanmetrics_calls_total{service=~\"$service\", http_response_status_code=~\"4..\"}[5m])) or sum by (service) (rate(traces_spanmetrics_calls_total{service=~\"$service\", http_status_code=~\"4..\"}[5m]))",
+          "expr": "sum by (service) (rate(traces_spanmetrics_calls_total{cluster=~\"$cluster\",http_response_status_code=~\"4..\",service=~\"$service\"}[5m])) or sum by (service) (rate(traces_spanmetrics_calls_total{cluster=~\"$cluster\",http_status_code=~\"4..\",service=~\"$service\"}[5m]))",
           "legendFormat": "{{service}} 4xx",
           "refId": "B"
         },
@@ -641,7 +674,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum by (service) (rate(traces_spanmetrics_calls_total{service=~\"$service\", http_response_status_code=~\"2..\"}[5m])) or sum by (service) (rate(traces_spanmetrics_calls_total{service=~\"$service\", http_status_code=~\"2..\"}[5m]))",
+          "expr": "sum by (service) (rate(traces_spanmetrics_calls_total{cluster=~\"$cluster\",http_response_status_code=~\"2..\",service=~\"$service\"}[5m])) or sum by (service) (rate(traces_spanmetrics_calls_total{cluster=~\"$cluster\",http_status_code=~\"2..\",service=~\"$service\"}[5m]))",
           "legendFormat": "{{service}} 2xx",
           "refId": "C"
         }
@@ -737,7 +770,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(rate(traces_spanmetrics_calls_total{service=~\"$service\", span_kind=~\"SPAN_KIND_CLIENT|SPAN_KIND_INTERNAL\", status_code=\"STATUS_CODE_ERROR\"}[5m])) by (service) / sum(rate(traces_spanmetrics_calls_total{service=~\"$service\", span_kind=~\"SPAN_KIND_CLIENT|SPAN_KIND_INTERNAL\"}[5m])) by (service)",
+          "expr": "sum by (service) (rate(traces_spanmetrics_calls_total{cluster=~\"$cluster\",service=~\"$service\",span_kind=~\"SPAN_KIND_CLIENT|SPAN_KIND_INTERNAL\",status_code=\"STATUS_CODE_ERROR\"}[5m])) / sum by (service) (rate(traces_spanmetrics_calls_total{cluster=~\"$cluster\",service=~\"$service\",span_kind=~\"SPAN_KIND_CLIENT|SPAN_KIND_INTERNAL\"}[5m]))",
           "legendFormat": "{{service}}",
           "refId": "A"
         }

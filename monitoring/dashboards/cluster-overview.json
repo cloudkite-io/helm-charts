@@ -111,7 +111,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "(100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100))\nor\n(100 * sum(rate(node_cpu_usage_seconds_total[5m]))\n   / sum(kube_node_status_capacity{resource=\"cpu\"}))",
+          "expr": "(100 - (avg(rate(node_cpu_seconds_total{cluster=~\"$cluster\",mode=\"idle\"}[5m])) * 100)) or (100 * sum(rate(node_cpu_usage_seconds_total{cluster=~\"$cluster\"}[5m])) / sum(kube_node_status_capacity{cluster=~\"$cluster\",resource=\"cpu\"}))",
           "refId": "A"
         }
       ],
@@ -179,7 +179,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "(100 * (1 - sum(node_memory_MemAvailable_bytes) / sum(node_memory_MemTotal_bytes)))\nor\n(100 * sum(node_memory_working_set_bytes)\n   / sum(kube_node_status_capacity{resource=\"memory\"}))",
+          "expr": "(100 * (1 - sum(node_memory_MemAvailable_bytes{cluster=~\"$cluster\"}) / sum(node_memory_MemTotal_bytes{cluster=~\"$cluster\"}))) or (100 * sum(node_memory_working_set_bytes{cluster=~\"$cluster\"}) / sum(kube_node_status_capacity{cluster=~\"$cluster\",resource=\"memory\"}))",
           "refId": "A"
         }
       ],
@@ -240,7 +240,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "count(kube_node_info)",
+          "expr": "count(kube_node_info{cluster=~\"$cluster\"})",
           "refId": "A"
         }
       ],
@@ -301,7 +301,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(kube_pod_status_phase{phase=\"Running\"})",
+          "expr": "sum(kube_pod_status_phase{cluster=~\"$cluster\",phase=\"Running\"})",
           "refId": "A"
         }
       ],
@@ -365,7 +365,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(kube_pod_status_phase{phase=\"Failed\"}) or vector(0)",
+          "expr": "sum(kube_pod_status_phase{cluster=~\"$cluster\",phase=\"Failed\"}) or vector(0)",
           "refId": "A"
         }
       ],
@@ -466,7 +466,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "topk(20, sum by (namespace, pod, container) (rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\", container=~\"$container\", container!=\"\", container!=\"POD\", container!~\"linkerd-proxy|istio-proxy|otel-collector|fluent-bit|filebeat|vault-agent|oauth2-proxy\"}[5m])))",
+          "expr": "topk(20, sum by (namespace, pod, container) (rate(container_cpu_usage_seconds_total{cluster=~\"$cluster\",container!=\"\",container!=\"POD\",container!~\"linkerd-proxy|istio-proxy|otel-collector|fluent-bit|filebeat|vault-agent|oauth2-proxy\",container=~\"$container\",namespace!~\"$nsHide\",namespace=~\"$namespace\",pod=~\"$pod\"}[5m])))",
           "legendFormat": "{{namespace}}/{{pod}}/{{container}} (usage)",
           "refId": "A"
         },
@@ -475,7 +475,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum by (namespace, pod, container) (kube_pod_container_resource_limits{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\", container=~\"$container\", resource=\"cpu\"})",
+          "expr": "sum by (namespace, pod, container) (kube_pod_container_resource_limits{cluster=~\"$cluster\",container=~\"$container\",namespace!~\"$nsHide\",namespace=~\"$namespace\",pod=~\"$pod\",resource=\"cpu\"})",
           "legendFormat": "{{namespace}}/{{pod}}/{{container}} (limit)",
           "refId": "B"
         }
@@ -564,7 +564,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "topk(20, sum by (namespace, pod, container) (container_memory_working_set_bytes{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\", container=~\"$container\", container!=\"\", container!=\"POD\", container!~\"linkerd-proxy|istio-proxy|otel-collector|fluent-bit|filebeat|vault-agent|oauth2-proxy\"}))",
+          "expr": "topk(20, sum by (namespace, pod, container) (container_memory_working_set_bytes{cluster=~\"$cluster\",container!=\"\",container!=\"POD\",container!~\"linkerd-proxy|istio-proxy|otel-collector|fluent-bit|filebeat|vault-agent|oauth2-proxy\",container=~\"$container\",namespace!~\"$nsHide\",namespace=~\"$namespace\",pod=~\"$pod\"}))",
           "legendFormat": "{{namespace}}/{{pod}}/{{container}} (usage)",
           "refId": "A"
         },
@@ -573,7 +573,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum by (namespace, pod, container) (kube_pod_container_resource_limits{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\", container=~\"$container\", resource=\"memory\"})",
+          "expr": "sum by (namespace, pod, container) (kube_pod_container_resource_limits{cluster=~\"$cluster\",container=~\"$container\",namespace!~\"$nsHide\",namespace=~\"$namespace\",pod=~\"$pod\",resource=\"memory\"})",
           "legendFormat": "{{namespace}}/{{pod}}/{{container}} (limit)",
           "refId": "B"
         }
@@ -662,7 +662,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "topk(20, sum by (namespace, pod) (rate(container_network_receive_bytes_total{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\"}[5m])))",
+          "expr": "topk(20, sum by (namespace, pod) (rate(container_network_receive_bytes_total{cluster=~\"$cluster\",namespace!~\"$nsHide\",namespace=~\"$namespace\",pod=~\"$pod\"}[5m])))",
           "legendFormat": "{{namespace}}/{{pod}} (rx)",
           "refId": "A"
         },
@@ -671,7 +671,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "topk(20, sum by (namespace, pod) (rate(container_network_transmit_bytes_total{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\"}[5m])))",
+          "expr": "topk(20, sum by (namespace, pod) (rate(container_network_transmit_bytes_total{cluster=~\"$cluster\",namespace!~\"$nsHide\",namespace=~\"$namespace\",pod=~\"$pod\"}[5m])))",
           "legendFormat": "{{namespace}}/{{pod}} (tx)",
           "refId": "B"
         }
@@ -805,7 +805,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(kube_pod_container_status_restarts_total{namespace=~\"$namespace\",namespace!~\"$nsHide\"}) by (namespace, pod)",
+          "expr": "sum by (namespace, pod) (kube_pod_container_status_restarts_total{cluster=~\"$cluster\",namespace!~\"$nsHide\",namespace=~\"$namespace\"})",
           "format": "table",
           "instant": true,
           "refId": "A"
@@ -941,7 +941,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "kube_deployment_status_replicas_ready{namespace=~\"$namespace\",namespace!~\"$nsHide\"} / kube_deployment_spec_replicas{namespace=~\"$namespace\",namespace!~\"$nsHide\"}",
+          "expr": "kube_deployment_status_replicas_ready{cluster=~\"$cluster\",namespace!~\"$nsHide\",namespace=~\"$namespace\"} / kube_deployment_spec_replicas{cluster=~\"$cluster\",namespace!~\"$nsHide\",namespace=~\"$namespace\"}",
           "format": "table",
           "instant": true,
           "refId": "A"
@@ -1031,7 +1031,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "100 * sum(container_memory_working_set_bytes{namespace=~\"$namespace\",namespace!~\"$nsHide\", container!=\"\", container!=\"POD\"}) by (namespace) / sum(kube_pod_container_resource_limits{namespace=~\"$namespace\",namespace!~\"$nsHide\", resource=\"memory\"}) by (namespace)",
+          "expr": "100 * sum by (namespace) (container_memory_working_set_bytes{cluster=~\"$cluster\",container!=\"\",container!=\"POD\",namespace!~\"$nsHide\",namespace=~\"$namespace\"}) / sum by (namespace) (kube_pod_container_resource_limits{cluster=~\"$cluster\",namespace!~\"$nsHide\",namespace=~\"$namespace\",resource=\"memory\"})",
           "legendFormat": "{{namespace}}",
           "refId": "A"
         }
@@ -1196,7 +1196,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\", container!=\"\", container!=\"POD\"}[5m])) by (namespace, pod)",
+          "expr": "sum by (namespace, pod) (rate(container_cpu_usage_seconds_total{cluster=~\"$cluster\",container!=\"\",container!=\"POD\",namespace!~\"$nsHide\",namespace=~\"$namespace\",pod=~\"$pod\"}[5m]))",
           "format": "table",
           "instant": true,
           "refId": "A"
@@ -1206,7 +1206,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(container_memory_working_set_bytes{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\", container!=\"\", container!=\"POD\"}) by (namespace, pod)",
+          "expr": "sum by (namespace, pod) (container_memory_working_set_bytes{cluster=~\"$cluster\",container!=\"\",container!=\"POD\",namespace!~\"$nsHide\",namespace=~\"$namespace\",pod=~\"$pod\"})",
           "format": "table",
           "instant": true,
           "refId": "B"
@@ -1379,7 +1379,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "kube_pod_status_phase{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\"}",
+          "expr": "kube_pod_status_phase{cluster=~\"$cluster\",namespace!~\"$nsHide\",namespace=~\"$namespace\",pod=~\"$pod\"}",
           "format": "table",
           "instant": true,
           "refId": "A"
@@ -1389,7 +1389,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "kube_pod_status_ready{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\", condition=\"true\"}",
+          "expr": "kube_pod_status_ready{cluster=~\"$cluster\",condition=\"true\",namespace!~\"$nsHide\",namespace=~\"$namespace\",pod=~\"$pod\"}",
           "format": "table",
           "instant": true,
           "refId": "B"
@@ -1526,7 +1526,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "kube_pod_status_phase{phase=~\"Failed|Pending\"} == 1",
+          "expr": "kube_pod_status_phase{cluster=~\"$cluster\",phase=~\"Failed|Pending\"} == 1",
           "format": "table",
           "instant": true,
           "refId": "A"
@@ -1589,6 +1589,39 @@
         "type": "datasource"
       },
       {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(up, cluster)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Cluster",
+        "multi": true,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(up, cluster)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
         "name": "nsHide",
         "label": "Internal namespaces",
         "description": "Hides platform namespaces so the view reflects application workloads. Switch to Show all to include them.",
@@ -1630,7 +1663,7 @@
           "uid": "${DS_PROMETHEUS}"
         },
         "allValue": ".*",
-        "definition": "label_values(kube_namespace_labels, namespace)",
+        "definition": "label_values(kube_namespace_labels{cluster=~\"$cluster\"}, namespace)",
         "hide": 0,
         "includeAll": true,
         "label": "Namespace",
@@ -1638,7 +1671,7 @@
         "name": "namespace",
         "options": [],
         "query": {
-          "query": "label_values(kube_namespace_labels, namespace)",
+          "query": "label_values(kube_namespace_labels{cluster=~\"$cluster\"}, namespace)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -1662,7 +1695,7 @@
           "uid": "${DS_PROMETHEUS}"
         },
         "allValue": ".*",
-        "definition": "label_values(kube_pod_info{namespace=~\"$namespace\",namespace!~\"$nsHide\"}, pod)",
+        "definition": "label_values(kube_pod_info{namespace=~\"$namespace\",namespace!~\"$nsHide\",cluster=~\"$cluster\"}, pod)",
         "hide": 0,
         "includeAll": true,
         "label": "Pod",
@@ -1670,7 +1703,7 @@
         "name": "pod",
         "options": [],
         "query": {
-          "query": "label_values(kube_pod_info{namespace=~\"$namespace\",namespace!~\"$nsHide\"}, pod)",
+          "query": "label_values(kube_pod_info{namespace=~\"$namespace\",namespace!~\"$nsHide\",cluster=~\"$cluster\"}, pod)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -1694,7 +1727,7 @@
           "uid": "${DS_PROMETHEUS}"
         },
         "allValue": ".*",
-        "definition": "label_values(kube_pod_container_info{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\"}, container)",
+        "definition": "label_values(kube_pod_container_info{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\",cluster=~\"$cluster\"}, container)",
         "hide": 0,
         "includeAll": true,
         "label": "Container",
@@ -1702,7 +1735,7 @@
         "name": "container",
         "options": [],
         "query": {
-          "query": "label_values(kube_pod_container_info{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\"}, container)",
+          "query": "label_values(kube_pod_container_info{namespace=~\"$namespace\",namespace!~\"$nsHide\", pod=~\"$pod\",cluster=~\"$cluster\"}, container)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,

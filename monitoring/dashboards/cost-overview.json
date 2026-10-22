@@ -89,7 +89,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"})",
+          "expr": "sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"})",
           "legendFormat": "MTD",
           "refId": "A"
         }
@@ -148,7 +148,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) * days_in_month() / day_of_month()",
+          "expr": "sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"}) * days_in_month() / day_of_month()",
           "legendFormat": "projected",
           "refId": "A"
         }
@@ -212,7 +212,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sort_desc(sum by (resourceGroup) (azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\", resourceGroup=~\"$resource_group\"}))",
+          "expr": "sort_desc(sum by (resourceGroup) (azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",resourceGroup=~\"$resource_group\",timeframe=\"MonthToDate\"}))",
           "legendFormat": "{{resourceGroup}}",
           "refId": "A"
         }
@@ -276,7 +276,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sort_desc(sum by (serviceName) (azurerm_costs_by_service{timeframe=\"MonthToDate\", serviceName=~\"$service\"}))",
+          "expr": "sort_desc(sum by (serviceName) (azurerm_costs_by_service{cluster=~\"$cluster\",serviceName=~\"$service\",timeframe=\"MonthToDate\"}))",
           "legendFormat": "{{serviceName}}",
           "refId": "A"
         }
@@ -348,7 +348,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (resourceGroup, dateISO) (azurerm_costs_by_resourceGroup_daily{resourceGroup=~\"$resource_group\"})",
+          "expr": "sum by (resourceGroup, dateISO) (azurerm_costs_by_resourceGroup_daily{cluster=~\"$cluster\",resourceGroup=~\"$resource_group\"})",
           "range": false,
           "instant": true,
           "refId": "A",
@@ -454,7 +454,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (serviceName, dateISO) (azurerm_costs_by_service_daily{serviceName=~\"$service\"})",
+          "expr": "sum by (serviceName, dateISO) (azurerm_costs_by_service_daily{cluster=~\"$cluster\",serviceName=~\"$service\"})",
           "range": false,
           "instant": true,
           "refId": "A",
@@ -585,7 +585,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "label_replace(sort_desc(sum by (resourceID, serviceName) (azurerm_costs_by_resource{timeframe=\"MonthToDate\", serviceName=~\"$service\"})), \"resource\", \"$1\", \"resourceID\", \".*/([^/]+)$\")",
+          "expr": "label_replace(sort_desc(sum by (resourceID, serviceName) (azurerm_costs_by_resource{cluster=~\"$cluster\",serviceName=~\"$service\",timeframe=\"MonthToDate\"})), \"resource\", \"$1\", \"resourceID\", \".*/([^/]+)$\")",
           "format": "table",
           "instant": true,
           "legendFormat": "",
@@ -681,7 +681,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(node_total_hourly_cost)",
+          "expr": "sum(node_total_hourly_cost{cluster=~\"$cluster\"})",
           "legendFormat": "hourly",
           "refId": "A"
         }
@@ -751,7 +751,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "topk(10, (sum by (namespace) (container_cpu_allocation{namespace=~\"$namespace\"} * on(node) group_left() node_cpu_hourly_cost) + sum by (namespace) (container_memory_allocation_bytes{namespace=~\"$namespace\"} / 1073741824 * on(node) group_left() node_ram_hourly_cost)) * 730)",
+          "expr": "topk(10, (sum by (namespace) (container_cpu_allocation{cluster=~\"$cluster\",namespace=~\"$namespace\"} * on (node) group_left () node_cpu_hourly_cost{cluster=~\"$cluster\"}) + sum by (namespace) (container_memory_allocation_bytes{cluster=~\"$cluster\",namespace=~\"$namespace\"} / 1073741824 * on (node) group_left () node_ram_hourly_cost{cluster=~\"$cluster\"})) * 730)",
           "legendFormat": "{{namespace}}",
           "refId": "A"
         }
@@ -844,7 +844,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "(sum by (namespace) (container_cpu_allocation{namespace=~\"$namespace\"} * on(node) group_left() node_cpu_hourly_cost) + sum by (namespace) (container_memory_allocation_bytes{namespace=~\"$namespace\"} / 1073741824 * on(node) group_left() node_ram_hourly_cost)) * 730",
+          "expr": "(sum by (namespace) (container_cpu_allocation{cluster=~\"$cluster\",namespace=~\"$namespace\"} * on (node) group_left () node_cpu_hourly_cost{cluster=~\"$cluster\"}) + sum by (namespace) (container_memory_allocation_bytes{cluster=~\"$cluster\",namespace=~\"$namespace\"} / 1073741824 * on (node) group_left () node_ram_hourly_cost{cluster=~\"$cluster\"})) * 730",
           "legendFormat": "{{namespace}}",
           "refId": "A"
         }
@@ -903,7 +903,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(node_total_hourly_cost) * 730",
+          "expr": "sum(node_total_hourly_cost{cluster=~\"$cluster\"}) * 730",
           "legendFormat": "monthly",
           "refId": "A"
         }
@@ -988,7 +988,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "topk(20, (sum by (namespace, pod) (container_cpu_allocation{namespace=~\"$namespace\"} * on(node) group_left() node_cpu_hourly_cost) + sum by (namespace, pod) (container_memory_allocation_bytes{namespace=~\"$namespace\"} / 1073741824 * on(node) group_left() node_ram_hourly_cost)) * 730)",
+          "expr": "topk(20, (sum by (namespace, pod) (container_cpu_allocation{cluster=~\"$cluster\",namespace=~\"$namespace\"} * on (node) group_left () node_cpu_hourly_cost{cluster=~\"$cluster\"}) + sum by (namespace, pod) (container_memory_allocation_bytes{cluster=~\"$cluster\",namespace=~\"$namespace\"} / 1073741824 * on (node) group_left () node_ram_hourly_cost{cluster=~\"$cluster\"})) * 730)",
           "format": "table",
           "instant": true,
           "legendFormat": "",
@@ -1068,7 +1068,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum by (instance_type) (node_total_hourly_cost) * 730",
+          "expr": "sum by (instance_type) (node_total_hourly_cost{cluster=~\"$cluster\"}) * 730",
           "legendFormat": "{{instance_type}}",
           "refId": "A"
         }
@@ -1127,7 +1127,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "sum(pv_hourly_cost) * 730",
+          "expr": "sum(pv_hourly_cost{cluster=~\"$cluster\"}) * 730",
           "legendFormat": "PV monthly",
           "refId": "A"
         }
@@ -1170,7 +1170,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"} offset 1d)",
+          "expr": "sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"} offset 1d)",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -1233,7 +1233,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"} offset 1d)) / clamp_min((sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"} offset 7d)) / 7, 0.01)",
+          "expr": "(sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"} offset 1d)) / clamp_min((sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"} offset 1w)) / 7, 0.01)",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -1303,7 +1303,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"} offset 1d)) / clamp_min((sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"} offset 7d)) / 7, 0.01)",
+          "expr": "(sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"} offset 1d)) / clamp_min((sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"} offset 1w)) / 7, 0.01)",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -1391,19 +1391,52 @@
         "type": "datasource"
       },
       {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(up, cluster)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Cluster",
+        "multi": true,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(up, cluster)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
         "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}, resourceGroup)",
+        "definition": "label_values(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\",cluster=~\"$cluster\"}, resourceGroup)",
         "hide": 0,
         "includeAll": true,
         "label": "Resource group",
         "multi": true,
         "name": "resource_group",
         "options": [],
-        "query": "label_values(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}, resourceGroup)",
+        "query": "label_values(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\",cluster=~\"$cluster\"}, resourceGroup)",
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
@@ -1416,14 +1449,14 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(azurerm_costs_by_service{timeframe=\"MonthToDate\"}, serviceName)",
+        "definition": "label_values(azurerm_costs_by_service{timeframe=\"MonthToDate\",cluster=~\"$cluster\"}, serviceName)",
         "hide": 0,
         "includeAll": true,
         "label": "Service",
         "multi": true,
         "name": "service",
         "options": [],
-        "query": "label_values(azurerm_costs_by_service{timeframe=\"MonthToDate\"}, serviceName)",
+        "query": "label_values(azurerm_costs_by_service{timeframe=\"MonthToDate\",cluster=~\"$cluster\"}, serviceName)",
         "refresh": 2,
         "regex": "",
         "skipUrlSync": false,
@@ -1436,7 +1469,7 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(container_cpu_allocation, namespace)",
+        "definition": "label_values(container_cpu_allocation{cluster=~\"$cluster\"}, namespace)",
         "hide": 0,
         "includeAll": true,
         "label": "Namespace",
@@ -1445,7 +1478,7 @@
         "options": [],
         "query": {
           "qryType": 1,
-          "query": "label_values(container_cpu_allocation, namespace)",
+          "query": "label_values(container_cpu_allocation{cluster=~\"$cluster\"}, namespace)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 2,

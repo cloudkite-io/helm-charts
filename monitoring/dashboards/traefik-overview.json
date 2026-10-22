@@ -71,7 +71,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{service=~\"$service\"}[$__rate_interval]))",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",service=~\"$service\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -134,7 +134,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(increase(traefik_service_requests_total{service=~\"$service\"}[$__range]))",
+          "expr": "sum(increase(traefik_service_requests_total{cluster=~\"$cluster\",service=~\"$service\"}[$__range]))",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -197,7 +197,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{service=~\"$service\", code=~\"5..\"}[$__rate_interval])) / clamp_min(sum(rate(traefik_service_requests_total{service=~\"$service\"}[$__rate_interval])), 0.001)",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",code=~\"5..\",service=~\"$service\"}[$__rate_interval])) / clamp_min(sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",service=~\"$service\"}[$__rate_interval])), 0.001)",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -267,7 +267,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{service=~\"$service\", code=~\"4..\", code!=\"404\"}[$__rate_interval])) / clamp_min(sum(rate(traefik_service_requests_total{service=~\"$service\"}[$__rate_interval])), 0.001)",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",code!=\"404\",code=~\"4..\",service=~\"$service\"}[$__rate_interval])) / clamp_min(sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",service=~\"$service\"}[$__rate_interval])), 0.001)",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -337,7 +337,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{service=~\"$service\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{cluster=~\"$cluster\",service=~\"$service\"}[$__rate_interval])))",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -400,7 +400,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "count(count by (service) (traefik_service_requests_total{service=~\"$service\"}))",
+          "expr": "count(count by (service) (traefik_service_requests_total{cluster=~\"$cluster\",service=~\"$service\"}))",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -475,7 +475,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{service=~\"$service\", code=~\"2..\"}[$__rate_interval]))",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",code=~\"2..\",service=~\"$service\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -487,7 +487,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{service=~\"$service\", code=~\"3..\"}[$__rate_interval]))",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",code=~\"3..\",service=~\"$service\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -499,7 +499,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{service=~\"$service\", code=~\"4..\"}[$__rate_interval]))",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",code=~\"4..\",service=~\"$service\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "C",
@@ -511,7 +511,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{service=~\"$service\", code=~\"5..\"}[$__rate_interval]))",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",code=~\"5..\",service=~\"$service\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "D",
@@ -648,7 +648,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{service=~\"$service\"}[5m])) / clamp_min(sum(rate(traefik_service_requests_total{service=~\"$service\"}[30m])), 0.001)",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",service=~\"$service\"}[5m])) / clamp_min(sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",service=~\"$service\"}[30m])), 0.001)",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -746,7 +746,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (service) (rate(traefik_service_requests_total{service=~\"$service\", code=~\"5..\"}[$__rate_interval]))",
+          "expr": "sum by (service) (rate(traefik_service_requests_total{cluster=~\"$cluster\",code=~\"5..\",service=~\"$service\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -816,7 +816,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (service) (rate(traefik_service_requests_total{service=~\"$service\", code=~\"4..\", code!=\"404\"}[$__rate_interval]))",
+          "expr": "sum by (service) (rate(traefik_service_requests_total{cluster=~\"$cluster\",code!=\"404\",code=~\"4..\",service=~\"$service\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -886,7 +886,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sort_desc(sum by (service, code) (increase(traefik_service_requests_total{service=~\"$service\", code=~\"[45]..\"}[$__range])))",
+          "expr": "sort_desc(sum by (service, code) (increase(traefik_service_requests_total{cluster=~\"$cluster\",code=~\"[45]..\",service=~\"$service\"}[$__range])))",
           "range": false,
           "instant": true,
           "refId": "A",
@@ -1033,7 +1033,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.50, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{service=~\"$service\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{cluster=~\"$cluster\",service=~\"$service\"}[$__rate_interval])))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -1045,7 +1045,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.90, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{service=~\"$service\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.9, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{cluster=~\"$cluster\",service=~\"$service\"}[$__rate_interval])))",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -1057,7 +1057,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{service=~\"$service\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{cluster=~\"$cluster\",service=~\"$service\"}[$__rate_interval])))",
           "range": true,
           "instant": false,
           "refId": "C",
@@ -1069,7 +1069,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{service=~\"$service\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.99, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{cluster=~\"$cluster\",service=~\"$service\"}[$__rate_interval])))",
           "range": true,
           "instant": false,
           "refId": "D",
@@ -1141,7 +1141,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le, service) (rate(traefik_service_request_duration_seconds_bucket{service=~\"$service\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.95, sum by (le, service) (rate(traefik_service_request_duration_seconds_bucket{cluster=~\"$cluster\",service=~\"$service\"}[$__rate_interval])))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -1223,7 +1223,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (entrypoint) (traefik_entrypoint_open_connections)",
+          "expr": "sum by (entrypoint) (traefik_entrypoint_open_connections{cluster=~\"$cluster\"})",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -1292,7 +1292,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (service) (rate(traefik_service_responses_bytes_total{service=~\"$service\"}[$__rate_interval]))",
+          "expr": "sum by (service) (rate(traefik_service_responses_bytes_total{cluster=~\"$cluster\",service=~\"$service\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -1361,7 +1361,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "time() - max(traefik_config_last_reload_success)",
+          "expr": "time() - max(traefik_config_last_reload_success{cluster=~\"$cluster\"})",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -1434,6 +1434,39 @@
         "type": "datasource"
       },
       {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(up, cluster)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Cluster",
+        "multi": true,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(up, cluster)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
         "name": "service",
         "label": "Service",
         "description": "Backend service.",
@@ -1443,7 +1476,7 @@
           "uid": "${DS_PROMETHEUS}"
         },
         "query": {
-          "query": "label_values(traefik_service_requests_total, service)",
+          "query": "label_values(traefik_service_requests_total{cluster=~\"$cluster\"}, service)",
           "refId": "StandardVariableQuery"
         },
         "current": {

@@ -71,7 +71,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(kube_node_status_condition{condition=\"Ready\", status=\"true\"} == 0) or vector(0)",
+          "expr": "sum(kube_node_status_condition{cluster=~\"$cluster\",condition=\"Ready\",status=\"true\"} == 0) or vector(0)",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -136,7 +136,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(increase(container_oom_events_total[24h])) or vector(0)",
+          "expr": "sum(increase(container_oom_events_total{cluster=~\"$cluster\"}[1d])) or vector(0)",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -205,7 +205,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "count(kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes > 0.85) or vector(0)",
+          "expr": "count(kubelet_volume_stats_used_bytes{cluster=~\"$cluster\"} / kubelet_volume_stats_capacity_bytes{cluster=~\"$cluster\"} > 0.85) or vector(0)",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -270,7 +270,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{code=~\"5..\"}[$__rate_interval])) / clamp_min(sum(rate(traefik_service_requests_total[$__rate_interval])), 0.001)",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",code=~\"5..\"}[$__rate_interval])) / clamp_min(sum(rate(traefik_service_requests_total{cluster=~\"$cluster\"}[$__rate_interval])), 0.001)",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -340,7 +340,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "count(velero_backup_last_status == 0) or vector(0)",
+          "expr": "count(velero_backup_last_status{cluster=~\"$cluster\"} == 0) or vector(0)",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -405,7 +405,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "count(((x509_cert_not_after - time()) / 86400) < 30) or vector(0)",
+          "expr": "count(((x509_cert_not_after{cluster=~\"$cluster\"} - time()) / 86400) < 30) or vector(0)",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -470,7 +470,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(kube_pod_status_phase{phase=~\"Failed|Pending\"}) or vector(0)",
+          "expr": "sum(kube_pod_status_phase{cluster=~\"$cluster\",phase=~\"Failed|Pending\"}) or vector(0)",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -539,7 +539,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"})",
+          "expr": "sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"})",
           "range": true,
           "instant": false,
           "refId": "A"
@@ -615,7 +615,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (node) (kube_node_status_condition{condition=\"Ready\", status=\"true\"})",
+          "expr": "sum by (node) (kube_node_status_condition{cluster=~\"$cluster\",condition=\"Ready\",status=\"true\"})",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -686,7 +686,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "kube_node_status_condition{condition=~\"MemoryPressure|DiskPressure|PIDPressure|NetworkUnavailable\", status=\"true\"} == 1",
+          "expr": "kube_node_status_condition{cluster=~\"$cluster\",condition=~\"MemoryPressure|DiskPressure|PIDPressure|NetworkUnavailable\",status=\"true\"} == 1",
           "range": false,
           "instant": true,
           "refId": "A",
@@ -777,7 +777,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(1 - avg by (node) (rate(node_cpu_seconds_total{mode=\"idle\"}[$__rate_interval])))\nor\n(sum by (node) (rate(node_cpu_usage_seconds_total[$__rate_interval]))\n   / sum by (node) (kube_node_status_capacity{resource=\"cpu\"}))",
+          "expr": "(1 - avg by (node) (rate(node_cpu_seconds_total{cluster=~\"$cluster\",mode=\"idle\"}[$__rate_interval]))) or (sum by (node) (rate(node_cpu_usage_seconds_total{cluster=~\"$cluster\"}[$__rate_interval])) / sum by (node) (kube_node_status_capacity{cluster=~\"$cluster\",resource=\"cpu\"}))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -848,7 +848,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(1 - (sum by (node) (node_memory_MemAvailable_bytes) / sum by (node) (node_memory_MemTotal_bytes)))\nor\n(sum by (node) (node_memory_working_set_bytes)\n   / sum by (node) (kube_node_status_capacity{resource=\"memory\"}))",
+          "expr": "(1 - (sum by (node) (node_memory_MemAvailable_bytes{cluster=~\"$cluster\"}) / sum by (node) (node_memory_MemTotal_bytes{cluster=~\"$cluster\"}))) or (sum by (node) (node_memory_working_set_bytes{cluster=~\"$cluster\"}) / sum by (node) (kube_node_status_capacity{cluster=~\"$cluster\",resource=\"memory\"}))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -919,7 +919,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (namespace, pod) (increase(container_oom_events_total{namespace=~\"$namespace\"}[$__rate_interval]))",
+          "expr": "sum by (namespace, pod) (increase(container_oom_events_total{cluster=~\"$cluster\",namespace=~\"$namespace\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -997,7 +997,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "kube_pod_container_status_last_terminated_reason{reason=\"OOMKilled\", namespace=~\"$namespace\"} == 1",
+          "expr": "kube_pod_container_status_last_terminated_reason{cluster=~\"$cluster\",namespace=~\"$namespace\",reason=\"OOMKilled\"} == 1",
           "range": false,
           "instant": true,
           "refId": "A",
@@ -1009,7 +1009,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "kube_pod_container_status_waiting_reason{reason=\"CrashLoopBackOff\", namespace=~\"$namespace\"} == 1",
+          "expr": "kube_pod_container_status_waiting_reason{cluster=~\"$cluster\",namespace=~\"$namespace\",reason=\"CrashLoopBackOff\"} == 1",
           "range": false,
           "instant": true,
           "refId": "B",
@@ -1155,7 +1155,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "count by (node) (kube_pod_info)",
+          "expr": "count by (node) (kube_pod_info{cluster=~\"$cluster\"})",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -1167,7 +1167,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "max by (node) (kube_node_status_capacity{resource=\"pods\"})",
+          "expr": "max by (node) (kube_node_status_capacity{cluster=~\"$cluster\",resource=\"pods\"})",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -1265,7 +1265,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "time() - node_boot_time_seconds",
+              "expr": "time() - node_boot_time_seconds{cluster=~\"$cluster\"}",
               "range": true,
               "instant": false,
               "refId": "A",
@@ -1335,7 +1335,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum by (node) (node_load5) / count by (node) (node_cpu_seconds_total{mode=\"idle\"})",
+              "expr": "sum by (node) (node_load5{cluster=~\"$cluster\"}) / count by (node) (node_cpu_seconds_total{cluster=~\"$cluster\",mode=\"idle\"})",
               "range": true,
               "instant": false,
               "refId": "A",
@@ -1405,7 +1405,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "rate(node_pressure_cpu_waiting_seconds_total[$__rate_interval])",
+              "expr": "rate(node_pressure_cpu_waiting_seconds_total{cluster=~\"$cluster\"}[$__rate_interval])",
               "range": true,
               "instant": false,
               "refId": "A",
@@ -1417,7 +1417,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "rate(node_pressure_memory_stalled_seconds_total[$__rate_interval])",
+              "expr": "rate(node_pressure_memory_stalled_seconds_total{cluster=~\"$cluster\"}[$__rate_interval])",
               "range": true,
               "instant": false,
               "refId": "B",
@@ -1429,7 +1429,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "rate(node_pressure_io_stalled_seconds_total[$__rate_interval])",
+              "expr": "rate(node_pressure_io_stalled_seconds_total{cluster=~\"$cluster\"}[$__rate_interval])",
               "range": true,
               "instant": false,
               "refId": "C",
@@ -1499,7 +1499,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "100 * (1 - node_filesystem_avail_bytes{mountpoint=\"/\"} / node_filesystem_size_bytes{mountpoint=\"/\"})",
+              "expr": "100 * (1 - node_filesystem_avail_bytes{cluster=~\"$cluster\",mountpoint=\"/\"} / node_filesystem_size_bytes{cluster=~\"$cluster\",mountpoint=\"/\"})",
               "range": true,
               "instant": false,
               "refId": "A",
@@ -1570,7 +1570,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "100 * node_nf_conntrack_entries / node_nf_conntrack_entries_limit",
+              "expr": "100 * node_nf_conntrack_entries{cluster=~\"$cluster\"} / node_nf_conntrack_entries_limit{cluster=~\"$cluster\"}",
               "range": true,
               "instant": false,
               "refId": "A",
@@ -1582,7 +1582,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "100 * node_filefd_allocated / node_filefd_maximum",
+              "expr": "100 * node_filefd_allocated{cluster=~\"$cluster\"} / node_filefd_maximum{cluster=~\"$cluster\"}",
               "range": true,
               "instant": false,
               "refId": "B",
@@ -1653,7 +1653,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum by (node, device) (rate(node_disk_io_time_seconds_total[$__rate_interval]))",
+              "expr": "sum by (node, device) (rate(node_disk_io_time_seconds_total{cluster=~\"$cluster\"}[$__rate_interval]))",
               "range": true,
               "instant": false,
               "refId": "A",
@@ -1730,7 +1730,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum by (node, device) (rate(node_disk_reads_completed_total[$__rate_interval]))",
+              "expr": "sum by (node, device) (rate(node_disk_reads_completed_total{cluster=~\"$cluster\"}[$__rate_interval]))",
               "range": true,
               "instant": false,
               "refId": "A",
@@ -1742,7 +1742,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum by (node, device) (rate(node_disk_writes_completed_total[$__rate_interval]))",
+              "expr": "sum by (node, device) (rate(node_disk_writes_completed_total{cluster=~\"$cluster\"}[$__rate_interval]))",
               "range": true,
               "instant": false,
               "refId": "B",
@@ -1811,7 +1811,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum by (node, device) (rate(node_disk_read_bytes_total[$__rate_interval]))",
+              "expr": "sum by (node, device) (rate(node_disk_read_bytes_total{cluster=~\"$cluster\"}[$__rate_interval]))",
               "range": true,
               "instant": false,
               "refId": "A",
@@ -1823,7 +1823,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum by (node, device) (rate(node_disk_written_bytes_total[$__rate_interval]))",
+              "expr": "sum by (node, device) (rate(node_disk_written_bytes_total{cluster=~\"$cluster\"}[$__rate_interval]))",
               "range": true,
               "instant": false,
               "refId": "B",
@@ -1907,7 +1907,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sort_desc(kubelet_volume_stats_used_bytes{namespace=~\"$namespace\"} / kubelet_volume_stats_capacity_bytes{namespace=~\"$namespace\"})",
+          "expr": "sort_desc(kubelet_volume_stats_used_bytes{cluster=~\"$cluster\",namespace=~\"$namespace\"} / kubelet_volume_stats_capacity_bytes{cluster=~\"$cluster\",namespace=~\"$namespace\"})",
           "range": false,
           "instant": true,
           "refId": "A",
@@ -1980,7 +1980,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "kubelet_volume_stats_used_bytes{namespace=~\"$namespace\"} / kubelet_volume_stats_capacity_bytes{namespace=~\"$namespace\"}",
+          "expr": "kubelet_volume_stats_used_bytes{cluster=~\"$cluster\",namespace=~\"$namespace\"} / kubelet_volume_stats_capacity_bytes{cluster=~\"$cluster\",namespace=~\"$namespace\"}",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -2071,7 +2071,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{code=~\"2..\"}[$__rate_interval]))",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",code=~\"2..\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -2083,7 +2083,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{code=~\"3..\"}[$__rate_interval]))",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",code=~\"3..\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -2095,7 +2095,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{code=~\"4..\"}[$__rate_interval]))",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",code=~\"4..\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "C",
@@ -2107,7 +2107,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{code=~\"5..\"}[$__rate_interval]))",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",code=~\"5..\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "D",
@@ -2244,7 +2244,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{code=~\"5..\"}[$__rate_interval])) / clamp_min(sum(rate(traefik_service_requests_total[$__rate_interval])), 0.001)",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",code=~\"5..\"}[$__rate_interval])) / clamp_min(sum(rate(traefik_service_requests_total{cluster=~\"$cluster\"}[$__rate_interval])), 0.001)",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -2256,7 +2256,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total{code=~\"4..\", code!=\"404\"}[$__rate_interval])) / clamp_min(sum(rate(traefik_service_requests_total[$__rate_interval])), 0.001)",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\",code!=\"404\",code=~\"4..\"}[$__rate_interval])) / clamp_min(sum(rate(traefik_service_requests_total{cluster=~\"$cluster\"}[$__rate_interval])), 0.001)",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -2368,7 +2368,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(traefik_service_requests_total[5m])) / clamp_min(sum(rate(traefik_service_requests_total[30m])), 0.001)",
+          "expr": "sum(rate(traefik_service_requests_total{cluster=~\"$cluster\"}[5m])) / clamp_min(sum(rate(traefik_service_requests_total{cluster=~\"$cluster\"}[30m])), 0.001)",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -2453,7 +2453,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (service) (increase(traefik_service_requests_total{code=~\"4..\", code!=\"404\"}[5m]))",
+          "expr": "sum by (service) (increase(traefik_service_requests_total{cluster=~\"$cluster\",code!=\"404\",code=~\"4..\"}[5m]))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -2538,7 +2538,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "max by (database) (azure_sql_database_cpu_percent_used)",
+              "expr": "max by (database) (azure_sql_database_cpu_percent_used{cluster=~\"$cluster\"})",
               "range": true,
               "instant": false,
               "refId": "A",
@@ -2550,7 +2550,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "max by (database) (azure_sql_database_sessions_percent)",
+              "expr": "max by (database) (azure_sql_database_sessions_percent{cluster=~\"$cluster\"})",
               "range": true,
               "instant": false,
               "refId": "B",
@@ -2562,7 +2562,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "max by (database) (azure_sql_database_storage_percent)",
+              "expr": "max by (database) (azure_sql_database_storage_percent{cluster=~\"$cluster\"})",
               "range": true,
               "instant": false,
               "refId": "C",
@@ -2643,7 +2643,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum by (database) (increase(azure_sql_database_connection_failed[5m]))",
+              "expr": "sum by (database) (increase(azure_sql_database_connection_failed{cluster=~\"$cluster\"}[5m]))",
               "range": true,
               "instant": false,
               "refId": "A",
@@ -2655,7 +2655,7 @@
                 "uid": "${DS_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum by (database) (increase(azure_sql_database_deadlock[5m]))",
+              "expr": "sum by (database) (increase(azure_sql_database_deadlock{cluster=~\"$cluster\"}[5m]))",
               "range": true,
               "instant": false,
               "refId": "B",
@@ -2757,7 +2757,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "velero_backup_last_status",
+          "expr": "velero_backup_last_status{cluster=~\"$cluster\"}",
           "range": false,
           "instant": true,
           "refId": "A",
@@ -2769,7 +2769,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(time() - velero_backup_last_successful_timestamp) / 3600",
+          "expr": "(time() - velero_backup_last_successful_timestamp{cluster=~\"$cluster\"}) / 3600",
           "range": false,
           "instant": true,
           "refId": "B",
@@ -2962,7 +2962,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (schedule) (increase(velero_backup_attempt_total[$__rate_interval]))",
+          "expr": "sum by (schedule) (increase(velero_backup_attempt_total{cluster=~\"$cluster\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -2974,7 +2974,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (schedule) (increase(velero_backup_failure_total[$__rate_interval]))",
+          "expr": "sum by (schedule) (increase(velero_backup_failure_total{cluster=~\"$cluster\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "B",
@@ -2986,7 +2986,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (schedule) (increase(velero_backup_partial_failure_total[$__rate_interval]))",
+          "expr": "sum by (schedule) (increase(velero_backup_partial_failure_total{cluster=~\"$cluster\"}[$__rate_interval]))",
           "range": true,
           "instant": false,
           "refId": "C",
@@ -3057,7 +3057,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (namespace, pod, reason) (kube_pod_container_status_waiting_reason{reason=~\"CrashLoopBackOff|Error|ImagePullBackOff|CreateContainerConfigError\", namespace=~\"$infraNamespace\"}) > 0",
+          "expr": "sum by (namespace, pod, reason) (kube_pod_container_status_waiting_reason{cluster=~\"$cluster\",namespace=~\"$infraNamespace\",reason=~\"CrashLoopBackOff|Error|ImagePullBackOff|CreateContainerConfigError\"}) > 0",
           "range": false,
           "instant": true,
           "refId": "A",
@@ -3140,7 +3140,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (namespace, pod) (increase(kube_pod_container_status_restarts_total{namespace=~\"$infraNamespace\"}[$__rate_interval])) > 0",
+          "expr": "sum by (namespace, pod) (increase(kube_pod_container_status_restarts_total{cluster=~\"$cluster\",namespace=~\"$infraNamespace\"}[$__rate_interval])) > 0",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -3226,7 +3226,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "min by (secret_namespace, secret_name, subject_CN) ((x509_cert_not_after - time()) / 86400)",
+          "expr": "min by (secret_namespace, secret_name, subject_CN) ((x509_cert_not_after{cluster=~\"$cluster\"} - time()) / 86400)",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -3303,7 +3303,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sort(min by (secret_namespace, secret_name, subject_CN, issuer_CN) ((x509_cert_not_after - time()) / 86400))",
+          "expr": "sort(min by (secret_namespace, secret_name, subject_CN, issuer_CN) ((x509_cert_not_after{cluster=~\"$cluster\"} - time()) / 86400))",
           "range": false,
           "instant": true,
           "refId": "A",
@@ -3442,7 +3442,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (dateISO) (azurerm_costs_by_resourceGroup_daily)",
+          "expr": "sum by (dateISO) (azurerm_costs_by_resourceGroup_daily{cluster=~\"$cluster\"})",
           "range": false,
           "instant": true,
           "refId": "A",
@@ -3540,7 +3540,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"} offset 1d)) / clamp_min((sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{timeframe=\"MonthToDate\"} offset 7d)) / 7, 0.01)",
+          "expr": "(sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"} offset 1d)) / clamp_min((sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"}) - sum(azurerm_costs_by_resourceGroup{cluster=~\"$cluster\",timeframe=\"MonthToDate\"} offset 1w)) / 7, 0.01)",
           "range": true,
           "instant": false,
           "refId": "A",
@@ -3625,6 +3625,39 @@
         "type": "datasource"
       },
       {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(up, cluster)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Cluster",
+        "multi": true,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(up, cluster)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
         "name": "namespace",
         "label": "Namespace",
         "description": "Limits the workload panels. Node, HTTP, backup, certificate and cost panels are cluster-wide.",
@@ -3634,7 +3667,7 @@
           "uid": "${DS_PROMETHEUS}"
         },
         "query": {
-          "query": "label_values(kube_namespace_labels, namespace)",
+          "query": "label_values(kube_namespace_labels{cluster=~\"$cluster\"}, namespace)",
           "refId": "StandardVariableQuery"
         },
         "current": {
@@ -3663,7 +3696,7 @@
           "uid": "${DS_PROMETHEUS}"
         },
         "query": {
-          "query": "label_values(kube_namespace_labels, namespace)",
+          "query": "label_values(kube_namespace_labels{cluster=~\"$cluster\"}, namespace)",
           "refId": "StandardVariableQuery"
         },
         "current": {

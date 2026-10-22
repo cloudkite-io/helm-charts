@@ -96,7 +96,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "max by (database) (azure_sql_database_cpu_percent_used{database=~\"$database\"})",
+          "expr": "max by (database) (azure_sql_database_cpu_percent_used{cluster=~\"$cluster\",database=~\"$database\"})",
           "legendFormat": "{{database}}",
           "refId": "A"
         }
@@ -157,7 +157,7 @@
       },
       "targets": [
         {
-          "expr": "max by (database) (azure_sql_database_sessions_percent{database=~\"$database\"})",
+          "expr": "max by (database) (azure_sql_database_sessions_percent{cluster=~\"$cluster\",database=~\"$database\"})",
           "legendFormat": "{{database}}",
           "refId": "A"
         }
@@ -217,7 +217,7 @@
       },
       "targets": [
         {
-          "expr": "max by (database) (azure_sql_database_storage_percent{database=~\"$database\"})",
+          "expr": "max by (database) (azure_sql_database_storage_percent{cluster=~\"$cluster\",database=~\"$database\"})",
           "legendFormat": "{{database}}",
           "refId": "A"
         }
@@ -273,7 +273,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (database) (increase(azure_sql_database_connection_failed{database=~\"$database\"}[1h]))",
+          "expr": "sum by (database) (increase(azure_sql_database_connection_failed{cluster=~\"$cluster\",database=~\"$database\"}[1h]))",
           "legendFormat": "{{database}}",
           "refId": "A"
         }
@@ -341,7 +341,7 @@
       },
       "targets": [
         {
-          "expr": "azure_sql_database_cpu_percent_used{database=~\"$database\"}",
+          "expr": "azure_sql_database_cpu_percent_used{cluster=~\"$cluster\",database=~\"$database\"}",
           "legendFormat": "{{database}}",
           "refId": "A"
         }
@@ -405,17 +405,17 @@
       },
       "targets": [
         {
-          "expr": "azure_sql_database_cpu_percent_used{database=~\"$database\"}",
+          "expr": "azure_sql_database_cpu_percent_used{cluster=~\"$cluster\",database=~\"$database\"}",
           "legendFormat": "{{database}} cpu",
           "refId": "A"
         },
         {
-          "expr": "azure_sql_database_sessions_percent{database=~\"$database\"}",
+          "expr": "azure_sql_database_sessions_percent{cluster=~\"$cluster\",database=~\"$database\"}",
           "legendFormat": "{{database}} sessions",
           "refId": "B"
         },
         {
-          "expr": "azure_sql_database_storage_percent{database=~\"$database\"}",
+          "expr": "azure_sql_database_storage_percent{cluster=~\"$cluster\",database=~\"$database\"}",
           "legendFormat": "{{database}} storage",
           "refId": "C"
         }
@@ -479,7 +479,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (database) (increase(azure_sql_database_connection_failed{database=~\"$database\"}[5m]))",
+          "expr": "sum by (database) (increase(azure_sql_database_connection_failed{cluster=~\"$cluster\",database=~\"$database\"}[5m]))",
           "legendFormat": "{{database}}",
           "refId": "A"
         }
@@ -543,7 +543,7 @@
       },
       "targets": [
         {
-          "expr": "sum by (database) (increase(azure_sql_database_deadlock{database=~\"$database\"}[10m]))",
+          "expr": "sum by (database) (increase(azure_sql_database_deadlock{cluster=~\"$cluster\",database=~\"$database\"}[10m]))",
           "legendFormat": "{{database}}",
           "refId": "A"
         }
@@ -579,6 +579,7 @@
         "type": "datasource"
       },
       {
+        "allValue": ".*",
         "current": {
           "selected": true,
           "text": [
@@ -592,7 +593,39 @@
           "type": "prometheus",
           "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "label_values(azure_sql_database_cpu_percent_used, database)",
+        "definition": "label_values(up, cluster)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Cluster",
+        "multi": true,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(up, cluster)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(azure_sql_database_cpu_percent_used{cluster=~\"$cluster\"}, database)",
         "hide": 0,
         "includeAll": true,
         "label": "Azure SQL Database",
@@ -600,7 +633,7 @@
         "name": "database",
         "options": [],
         "query": {
-          "query": "label_values(azure_sql_database_cpu_percent_used, database)",
+          "query": "label_values(azure_sql_database_cpu_percent_used{cluster=~\"$cluster\"}, database)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,

@@ -4,6 +4,10 @@ Umbrella chart around `kube-prometheus-stack`, plus `version-checker`, `x509-cer
 and optionally `loki` and `prometheus-blackbox-exporter`. It also ships the Grafana dashboards under
 `dashboards/` and configures remote write to the central per-tenant Mimir.
 
+The Prometheus dashboards have a `Cluster` variable (from the `cluster` label remote write adds), so a
+tenant that sends several clusters to the central Mimir can be viewed one cluster at a time. In a
+cluster's own Grafana the label is absent and `All` matches everything.
+
 ## Default remote-write metrics
 
 `kube-prometheus-stack.prometheus.prometheusSpec.remoteWrite[0].writeRelabelConfigs` is a `keep`
