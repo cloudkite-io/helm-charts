@@ -1,6 +1,6 @@
 # aks-karpenter-nodepools
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.1.0](https://img.shields.io/badge/AppVersion-v0.1.0-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.2.0](https://img.shields.io/badge/AppVersion-v0.2.0-informational?style=flat-square)
 
 Spot-first Karpenter `NodePool`s and an `AKSNodeClass` for AKS [node auto-provisioning][nap] (NAP). It also
 works with self-hosted [Karpenter on Azure][provider], which uses the same CRDs.
@@ -22,7 +22,7 @@ az aks update --name "$CLUSTER_NAME" --resource-group "$RESOURCE_GROUP" \
 
 helm install aks-karpenter-nodepools \
   oci://us-central1-docker.pkg.dev/cloudkite-public/public-helm-charts/aks-karpenter-nodepools \
-  --version 0.1.0 --values my-values.yaml
+  --version 0.2.0 --values my-values.yaml
 ```
 
 ## Running workloads on spot
@@ -70,6 +70,7 @@ fixed AKS spot pools keep working. Don't set it in `labels`.
 | nodePools.spot.capacityType | list | `["spot"]` | Values for `karpenter.sh/capacity-type`: `spot`, `on-demand`, or both. |
 | nodePools.spot.arch | list | `["amd64"]` | Values for `kubernetes.io/arch`: `amd64`, `arm64`, or both. |
 | nodePools.spot.skuFamily | list | `["D","F"]` | VM size families allowed (`karpenter.azure.com/sku-family`), e.g. `D` general purpose, `F` compute optimized, `E` memory optimized. Empty allows every family. |
+| nodePools.spot.skuSeries | list | `[]` | VM size series allowed (`karpenter.azure.com/sku-series`), e.g. `Ds_v5`, `Das_v6`, `Fs_v2`. Narrows `skuFamily` further. Empty allows every series. |
 | nodePools.spot.zones | list | `[]` | Availability zones allowed, as `<region>-<n>` (e.g. `eastus-1`). Empty allows every zone in the cluster's region. Pin this on single-zone clusters. |
 | nodePools.spot.minSkuCpu | string | `"3"` | Node size floor: vCPU count must be greater than this. `"3"` means 4 vCPU or more, which keeps the per-node DaemonSet overhead to a small share of each node. |
 | nodePools.spot.maxSkuCpu | string | `"17"` | Node size cap: vCPU count must be less than this. `"17"` means 16 vCPU or fewer, so one spot eviction can't take out a large slice of the cluster. |

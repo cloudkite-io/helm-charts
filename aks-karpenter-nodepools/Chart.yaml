@@ -3,8 +3,8 @@ apiVersion: v2
 name: aks-karpenter-nodepools
 description: Karpenter NodePool and AKSNodeClass custom resources for AKS node auto-provisioning
 type: application
-version: 0.1.0
-appVersion: v0.1.0
+version: 0.2.0
+appVersion: v0.2.0
 home: https://github.com/cloudkite-io/helm-charts/tree/main/aks-karpenter-nodepools
 sources:
   - https://github.com/cloudkite-io/helm-charts/tree/main/aks-karpenter-nodepools
