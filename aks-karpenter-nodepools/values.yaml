@@ -39,6 +39,9 @@ nodePools:
     # -- VM size families allowed (`karpenter.azure.com/sku-family`), e.g. `D` general
     # purpose, `F` compute optimized, `E` memory optimized. Empty allows every family.
     skuFamily: ["D", "F"]
+    # -- VM size series allowed (`karpenter.azure.com/sku-series`), e.g. `Ds_v5`,
+    # `Das_v6`, `Fs_v2`. Narrows `skuFamily` further. Empty allows every series.
+    skuSeries: []
     # -- Availability zones allowed, as `<region>-<n>` (e.g. `eastus-1`). Empty allows
     # every zone in the cluster's region. Pin this on single-zone clusters.
     zones: []
@@ -89,6 +92,7 @@ nodePools:
     weight: 10
     capacityType: ["on-demand"]
     skuFamily: ["D", "F"]
+    skuSeries: []
     zones: []
     minSkuCpu: "3"
     maxSkuCpu: "17"

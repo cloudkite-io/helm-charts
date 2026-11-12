@@ -63,6 +63,12 @@ spec:
           values:
             {{- toYaml . | nindent 12 }}
         {{- end }}
+        {{- with $pool.skuSeries }}
+        - key: karpenter.azure.com/sku-series
+          operator: In
+          values:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
         {{- with $pool.zones }}
         - key: topology.kubernetes.io/zone
           operator: In
